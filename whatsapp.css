@@ -1,0 +1,285 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+}
+
+body{
+    background:#f5f7fa;
+    color:#333;
+}
+
+/* Header */
+
+header{
+    background:#0b3d91;
+    color:white;
+    padding:18px 8%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.logo{
+    font-size:clamp(20px,4vw,26px);
+    font-weight:bold;
+    text-align:center;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+    gap:20px;
+}
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: 0.3s ease;
+    position:relative;
+    border-bottom: 3px solid gold;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+
+
+nav a:hover{
+    color:#ffd54f;
+}
+
+/* Hero */
+
+.hero{
+    background:linear-gradient(
+    rgba(0,0,0,.6),
+    rgba(0,0,0,.6)),
+    url('https://images.unsplash.com/photo-1611605698335-8b1569810432');
+
+    background-size:cover;
+    background-position:center;
+    color:white;
+    text-align:center;
+    padding:120px 20px;
+}
+
+.hero-content{
+    max-width:700px;
+    margin:auto;
+}
+
+.hero h1{
+    font-size:clamp(2rem,6vw,48px);
+    margin-bottom:20px;
+}
+
+.hero p{
+    line-height:1.8;
+    margin-bottom:30px;
+    font-size:1.05rem;
+}
+
+/* WhatsApp Button */
+
+.whatsapp-btn{
+    background:#25D366;
+    color:white;
+    text-decoration:none;
+    padding:15px 30px;
+    border-radius:10px;
+    font-weight:bold;
+    display:inline-block;
+    transition:0.3s;
+}
+
+.whatsapp-btn:hover{
+    transform:translateY(-3px);
+}
+
+/* Support Cards */
+
+.support-section{
+    padding:70px 8%;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+}
+
+.support-card{
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.support-card:hover{
+    transform:translateY(-6px);
+}
+
+.support-card h3{
+    color:#0b3d91;
+    margin-bottom:15px;
+}
+
+/* Hours */
+
+.hours{
+    padding:60px 8%;
+    text-align:center;
+}
+
+.hours h2{
+    color:#0b3d91;
+    margin-bottom:20px;
+}
+
+.hours-box{
+    background:white;
+    max-width:500px;
+    margin:auto;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.hours-box p{
+    margin:10px 0;
+}
+
+/* Contact Options */
+
+.contact-options{
+    padding:60px 8%;
+    text-align:center;
+}
+
+.contact-options h2{
+    color:#0b3d91;
+    margin-bottom:25px;
+}
+
+.buttons{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.call-btn,
+.contact-btn,
+.index-btn{
+    text-decoration:none;
+    color:white;
+    padding:14px 25px;
+    border-radius:8px;
+    font-weight:bold;
+     transition:.3s;
+}
+.call-btn:hover,
+.contact-btn:hover,
+.index-btn:hover{
+    transform:translateY(-3px);
+}
+.call-btn{
+    background:#ff9800;
+}
+
+.contact-btn{
+    background:#0b3d91;
+}
+.index-btn{
+  background:cyan;
+  color: #000;
+}
+
+/* Footer */
+
+footer{
+    background:#0b3d91;
+    color:white;
+    text-align:center;
+    padding:20px;
+    margin-top:40px;
+}
+
+/* Mobile */
+
+@media(max-width:768px){
+
+    header{
+        flex-direction:column;
+        gap:15px;
+        text-align:center;
+    }
+
+    nav ul{
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:10px;
+    }
+
+    .hero{
+        padding:80px 15px;
+    }
+
+    .hero h1{
+        font-size:2rem;
+    }
+
+    .hero p{
+        font-size:1rem;
+    }
+
+    .support-section{
+        padding:50px 5%;
+    }
+
+    .support-card{
+        padding:20px;
+    }
+
+    .buttons{
+        flex-direction:column;
+        align-items:center;
+    }
+
+    .call-btn,
+    .contact-btn,
+    .index-btn{
+        width:100%;
+        max-width:280px;
+        text-align:center;
+    }
+
+}
+
+
+@media(max-width:480px){
+
+    .logo{
+        font-size:18px;
+    }
+
+    .hero h1{
+        font-size:1.7rem;
+    }
+
+    .hero p{
+        font-size:.95rem;
+    }
+
+    .hours-box{
+        padding:20px;
+    }
+
+    footer{
+        font-size:.9rem;
+    }
+
+}

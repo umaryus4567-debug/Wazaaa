@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Login | ServicePro</title>
+    <link rel="stylesheet" href="staff.css">
+</head>
+<body>
+<div id="loadingScreen" class="page-loader" style="display:none;">
+
+    <div class="loader-content">
+
+        <div class="spinner"></div>
+
+        <p>Please wait...</p>
+
+    </div>
+
+</div>
+    <!-- Navigation -->
+    <header>
+        <div class="logo">
+            UY Power Solutions
+        </div>
+
+        <nav>
+            <ul>
+                <li><a href="service.html">Service</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="staff.html" class="active">Staff Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Login Section -->
+    <section class="login-section">
+
+        <div class="login-card">
+
+            <div class="login-header">
+                <h1>Staff Login<ion-icon name="people-outline"></ion-icon></h1>
+                <p>
+                    Authorized personnel only. Please sign in to continue.
+                </p>
+            </div>
+
+            <form id="loginForm">
+
+                <div class="input-group">
+                    <label><ion-icon name="mail"></ion-icon>Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required>
+                </div>
+
+               <div class="input-group">
+
+    <label>
+        <ion-icon name="lock-open"></ion-icon>
+        Password
+    </label>
+
+    <div class="password-box">
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            required>
+
+        <span id="togglePassword">
+
+            <ion-icon
+            name="eye-outline"></ion-icon>
+
+        </span>
+
+    </div>
+
+</div>
+
+                <div class="options">
+                    <label>
+                        <input type="checkbox">
+                        Remember Me
+                    </label>
+
+                    <a href="#">Forgot Password?</a>
+                </div>
+
+                <button type="submit">
+                    <ion-icon name="lock-closed"></ion-icon>
+                    Login
+                </button>
+
+            </form>
+
+            <div class="security-note">
+                <p>
+                    <ion-icon name="lock-closed"></ion-icon>
+                    Your login credentials are protected and encrypted.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+
+        <a href="https://wa.me/2348163196577"
+           class="btn whatsapp">
+          <ion-icon name="logo-whatsapp"></ion-icon>
+          
+            WhatsApp Us
+        </a>
+
+        <a href="tel:+2348163196577"
+           class="btn call">
+          <ion-icon name="call"></ion-icon>
+            Call Technician
+        </a>
+        
+        <a href="home.html"
+           class="btn dex">
+            <ion-icon name="exit-outline"></ion-icon>
+            Exit
+        </a>
+
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026UY Power Solutions Licensed Electrical Installation, Repairs & Maintenance </p>
+    </footer>
+        <script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js"></script>
+<script type="module" src="staff.js"></script>
+
+</div>
+</body>
+</html>

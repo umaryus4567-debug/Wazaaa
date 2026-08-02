@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Track Service Request</title>
+
+<link rel="stylesheet" href="track.css">
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        View my request 
+    </div>
+
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="request.html">Request Service</a>
+        <a href="service.html">Services</a>
+        <a href="track.html" class="active">Track Request</a>
+        <a href="contact.html">Contact</a>
+    </nav>
+
+</header>
+
+<section class="hero">
+
+    <h1>Track Your Request</h1>
+
+    <p>
+        Enter the phone number used when
+        submitting your request.
+    </p>
+
+</section>
+
+<section class="tracker">
+
+    <div class="search-card">
+
+        <h2>Request Status Lookup</h2>
+
+              <input
+type="text"
+id="searchInput"
+placeholder="Enter Phone Number or Request ID">
+
+        <button id="searchBtn">
+            Check Status
+        </button>
+        <button id="refreshBtn" class="refresh-btn" style="display:none;">
+    🔄 Refresh Status
+</button>
+
+    </div>
+
+</section>
+
+<section>
+
+    <div id="result"></div>
+
+</section>
+
+<script
+type="module"
+src="track.js">
+</script>
+
+</body>
+</html>

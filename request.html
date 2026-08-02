@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d47a1">
+    <title>Campus Electrical Support Portal</title>
+    <link rel="stylesheet" href="req.css">
+    <link rel="stylesheet" href="loader.css">
+</head>
+
+<body>
+<div id="loader" class="loader">
+
+    <div class="loader-box">
+
+        <div class="loader-logo">
+            ⚡
+        </div>
+
+        <h2>UY Power Solutions</h2>
+
+        <p>Loading...</p>
+
+    </div>
+
+</div>
+<section class="req">
+
+    <h1> UY Electrical Service Request</h1>
+
+    <p class="subtitle">
+        Report electrical faults and maintenance issues on campus and off-campus.
+    </p>
+
+    <form id="serviceRequestForm">
+
+        <div class="Name">
+            <label>
+                Name:
+                <input type="text" id="customerName" placeholder="Name" required>
+            </label>
+        </div>
+
+        <div class="Name">
+            <label>
+                Phone No:
+                <input type="tel" id="phone" placeholder="Phone Number" required>
+            </label>
+        </div>
+
+        <div class="Name">
+            <label>Location:</label>
+
+            <select id="location" name="location" required>
+                <option value="">Select Location</option>
+                <option value="Hostel A">Hostel A</option>
+                <option value="Hostel B">Hostel B</option>
+                <option value="Lecture Hall">Lecture Hall</option>
+                <option value="Off Campus">Off Campus</option>
+            </select>
+        </div>
+
+        <div class="Name">
+            <label>
+                Area:
+                <input type="text" id="area" placeholder="Area">
+            </label>
+        </div>
+
+        <div class="Name">
+            <label>
+                Local Bus Stop:
+                <input type="text" id="busStop" placeholder="Bus Stop">
+            </label>
+        </div>
+
+        <div class="Name">
+            <label>
+                Residential Address:
+                <input type="text" id="address" placeholder="Residential Address">
+            </label>
+        </div>
+
+        <div class="Name">
+            <label>
+                Description:
+
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="5"
+                    cols="40"
+                    placeholder="Enter your description here..."
+                    required></textarea>
+
+            </label>
+        </div>
+
+        <div>
+<h3>Urgency</h3>
+
+<div class="urgency-group">
+
+    <div class="checkbox">
+        <label>
+            <input type="radio" name="urgency" value="Low">
+            Low <ion-icon name="bulb"></ion-icon>
+        </label>
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="radio" name="urgency" value="Medium">
+            Medium  <ion-icon name="flash"></ion-icon>
+        </label>
+    </div>
+
+    <div class="checkbox">
+        <label>
+            <input type="radio" name="urgency" value="High">
+            High <ion-icon name="warning"></ion-icon>
+        </label>
+    </div>
+
+</div>
+
+        </div>
+
+        <button type="submit">
+            Submit Request
+
+        </button>
+        <p id="successMessage"></p>
+
+    </form>
+  <a href="home.html" class="exit-link">
+    <button>
+      EXIT
+        <ion-icon name="exit-outline" size="medium"></ion-icon>
+        </button>
+                </a>
+</section>
+
+<script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js"></script>
+<script type="module" src="request.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Create Account | UY Power Solutions</title>
+
+<!-- Google Font -->
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<!-- Font Awesome -->
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<!-- CSS -->
+
+<link rel="stylesheet"
+href="register.css">
+
+</head>
+
+<body>
+
+<!-- ===========================
+BACKGROUND
+=========================== -->
+
+<div class="bg-shapes">
+
+<div class="shape shape1"></div>
+
+<div class="shape shape2"></div>
+
+<div class="shape shape3"></div>
+
+</div>
+
+<!-- ===========================
+AUTH CONTAINER
+=========================== -->
+
+<div class="auth-container">
+
+<!-- ===========================
+LEFT PANEL
+=========================== -->
+
+<div class="left-panel">
+
+<div class="overlay"></div>
+
+<div class="left-content">
+
+<div class="logo">
+
+<i class="fa-solid fa-bolt"></i>
+
+<h1>UY Power</h1>
+
+</div>
+
+<h2>
+
+Join UY Power Solutions
+
+</h2>
+
+<p>
+
+Create your customer account to request electrical services, track repairs, manage appointments, and receive instant service updates.
+
+</p>
+
+<div class="features">
+
+<div>
+
+<i class="fa-solid fa-circle-check"></i>
+
+Easy Service Booking
+
+</div>
+
+<div>
+
+<i class="fa-solid fa-circle-check"></i>
+
+Track Your Requests
+
+</div>
+
+<div>
+
+<i class="fa-solid fa-circle-check"></i>
+
+Instant Notifications
+
+</div>
+
+<div>
+
+<i class="fa-solid fa-circle-check"></i>
+
+24/7 Customer Support
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ===========================
+RIGHT PANEL
+=========================== -->
+
+<div class="right-panel">
+
+<div class="auth-card">
+
+<div class="card-header">
+
+<h2>
+
+Create Account
+
+</h2>
+
+<p>
+
+Let's get you started.
+
+</p>
+
+</div>
+
+<!-- Alert -->
+
+<div
+id="alertBox"
+class="alert-box">
+
+</div>
+
+<!-- ===========================
+REGISTER FORM
+=========================== -->
+
+<form id="registerForm">
+  
+  <!-- ===========================
+FULL NAME
+=========================== -->
+
+<div class="input-box">
+
+<label for="fullName">
+
+Full Name
+
+</label>
+
+<div class="input-wrapper">
+
+<i class="fa-solid fa-user left-icon"></i>
+
+<input
+type="text"
+id="fullName"
+placeholder="Enter your full name"
+required>
+
+</div>
+
+</div>
+
+<!-- ===========================
+EMAIL
+=========================== -->
+
+<div class="input-box">
+
+<label for="email">
+
+Email Address
+
+</label>
+
+<div class="input-wrapper">
+
+<i class="fa-solid fa-envelope left-icon"></i>
+
+<input
+type="email"
+id="email"
+placeholder="Enter your email"
+required>
+
+</div>
+
+</div>
+
+<!-- ===========================
+PHONE
+=========================== -->
+
+<div class="input-box">
+
+<label for="phone">
+
+Phone Number
+
+</label>
+
+<div class="input-wrapper">
+
+<i class="fa-solid fa-phone left-icon"></i>
+
+<input
+type="tel"
+id="phone"
+placeholder="08012345678"
+required>
+
+</div>
+
+</div>
+
+<!-- ===========================
+PASSWORD
+=========================== -->
+
+<div class="input-box">
+
+<label for="password">
+
+Password
+
+</label>
+
+<div class="input-wrapper">
+
+<i class="fa-solid fa-lock left-icon"></i>
+
+<input
+type="password"
+id="password"
+placeholder="Create a password"
+required>
+
+<button
+type="button"
+id="togglePassword"
+class="password-toggle">
+
+<i class="fa-solid fa-eye"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<!-- ===========================
+CONFIRM PASSWORD
+=========================== -->
+
+<div class="input-box">
+
+<label for="confirmPassword">
+
+Confirm Password
+
+</label>
+
+<div class="input-wrapper">
+
+<i class="fa-solid fa-lock left-icon"></i>
+
+<input
+type="password"
+id="confirmPassword"
+placeholder="Confirm your password"
+required>
+
+<button
+type="button"
+id="toggleConfirmPassword"
+class="password-toggle">
+
+<i class="fa-solid fa-eye"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<!-- ===========================
+TERMS
+=========================== -->
+
+<div class="options">
+
+<label class="remember-label">
+
+<input
+type="checkbox"
+id="agreeTerms"
+required>
+
+I agree to the
+<a href="#">Terms & Conditions</a>
+
+</label>
+
+</div>
+
+<!-- ===========================
+REGISTER BUTTON
+=========================== -->
+
+<button
+type="submit"
+id="registerButton"
+class="auth-button">
+
+<span id="buttonText">
+
+Create Account
+
+</span>
+
+<span
+id="buttonLoader"
+class="button-loader">
+
+<i class="fa-solid fa-spinner fa-spin"></i>
+
+</span>
+
+</button>
+
+<!-- ===========================
+DIVIDER
+=========================== -->
+
+<div class="divider">
+
+<span>
+
+OR
+
+</span>
+
+</div>
+
+<!-- ===========================
+GOOGLE SIGNUP
+=========================== -->
+
+<div class="social-buttons">
+
+<button
+type="button"
+id="googleRegister"
+class="social-button">
+
+<i class="fa-brands fa-google"></i>
+
+Continue with Google
+
+</button>
+
+</div>
+
+<!-- ===========================
+LOGIN LINK
+=========================== -->
+
+<p class="bottom-text">
+
+Already have an account?
+
+<a href="login.html">
+
+Login
+
+</a>
+
+</p>
+
+</form>
+
+<!-- ===========================
+LOADING SCREEN
+=========================== -->
+
+</div>
+
+</div>
+
+</div>
+
+<div
+id="loadingScreen"
+class="loading-screen">
+
+<div class="loading-card">
+
+<i class="fa-solid fa-bolt"></i>
+
+<h3>
+
+Creating Your Account...
+
+</h3>
+
+<p>
+
+Please wait while we prepare your account.
+
+</p>
+
+<div class="progress">
+
+<div class="progress-bar"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ===========================
+TOAST NOTIFICATION
+=========================== -->
+
+<div
+id="toast"
+class="toast">
+
+<i
+id="toastIcon"
+class="fa-solid fa-circle-check">
+
+</i>
+
+<p
+id="toastMessage">
+
+</p>
+
+</div>
+
+<!-- ===========================
+SUCCESS MODAL
+=========================== -->
+
+<div
+id="successModal"
+class="success-modal">
+
+<div class="success-card">
+
+<div class="success-icon">
+
+<i class="fa-solid fa-circle-check"></i>
+
+</div>
+
+<h2>
+
+Registration Successful 🎉
+
+</h2>
+
+<p>
+
+Your account has been created successfully.
+
+You can now log in and request electrical services anytime.
+
+</p>
+
+<a
+href="login.html"
+class="success-button">
+
+Go to Login
+
+</a>
+
+</div>
+
+</div>
+
+<!-- ===========================
+JAVASCRIPT
+=========================== -->
+
+<script type="module"
+src="register.js"></script>
+
+</body>
+
+</html>

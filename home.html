@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d47a1">
+    <title>Campus Electrical Support Portal</title>
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="loader.css">
+</head>
+
+<body>
+ 
+  <!-- Loading Screen -->
+<div id="loader">
+
+    <div class="loader-content">
+
+        <div class="loader-logo">
+            ⚡
+        </div>
+
+        <h2>UY Power Solutions</h2>
+
+        <p>Loading...</p>
+
+        <div class="loader-spinner"></div>
+
+    </div>
+
+</div>
+
+    <!-- Header -->
+    
+    <section class="main">
+      <!-- Notification Panel -->
+
+
+</div>
+        <header class="head">
+
+            <div class="logo">
+                <div class="logo1">
+                    <img src="logo.jpg" alt="Campus Electrical Support Logo">
+                </div>
+
+                <h2 id="title">Campus/Off-Campus Electrical Support</h2>
+                 
+            </div>
+
+<div class="top-user-bar">
+
+    <div class="notification-container">
+
+        <button
+            id="notificationButton"
+            class="notification-btn">
+
+            <ion-icon name="notifications-outline"></ion-icon>
+
+            <span id="notificationCount"></span>
+
+        </button>
+
+        <div
+            id="notificationDropdown"
+            class="notification-dropdown">
+
+            <div class="notification-header">
+
+                <h3>Notifications</h3>
+
+                <small id="clearNotifications">
+
+                    Mark all as read
+
+                </small>
+
+            </div>
+
+            <div id="notificationList">
+
+                <div
+                    id="emptyNotification"
+                    class="empty-notification">
+
+                    No notifications yet.
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="user-info">
+      <a href="profile.html">
+
+        <img
+            id="userImage"
+            src="default-user.png"
+            alt="Profile">
+        </a>
+
+        <div>
+
+            <h4 id="userName">Loading...</h4>
+
+            <small id="userEmail"></small>
+
+        </div>
+
+    </div>
+
+    <button id="logoutButton">
+
+        Logout
+
+    </button>
+
+</div>
+<div id="staffDashboardContainer"><a href="dashboard.html">Staff dashboard</a></div>
+
+            <nav class="nav">
+              
+                <a href="home.html" class="active">
+                  <ion-icon name="home"></ion-icon>
+                  Home
+                  </a>
+                <a href="service.html">
+                <ion-icon name="bulb"></ion-icon>
+                  Service
+                  </a>
+                <a href="request.html">
+                  <ion-icon name="book"></ion-icon>
+                   Request Services
+                  </a>
+                <a href="contact.html">
+                  <ion-icon name="call"></ion-icon>
+                  Contact
+                  </a>
+                <a href="about.html">
+                  <ion-icon name="people-circle"></ion-icon>
+                   About</a>
+            </nav>
+            
+           
+
+        </header>
+
+        <!-- Hero -->
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <h2>
+                    Need Electrical Assistance on Campus?
+                </h2>
+
+                <p id="n">
+                    Report electrical faults, request repairs,
+                    or contact a technician quickly and easily.
+                </p>
+
+                <a href="request.html">
+                    <button type="button" class="btn">
+                        Request Service
+                    </button>
+                </a>
+
+                <a href="whatsapp.html">
+                    <button type="button" class="btn">
+                        WhatsApp Us
+                    </button>
+                </a>
+
+            </div>
+
+        </section>
+
+    </section>
+
+    <!-- Services -->
+    <section class="services-overview">
+
+        <h2>Services Available</h2>
+
+        <div class="services-container">
+
+            <article class="service-card">
+                <h3><ion-icon name="bulb"></ion-icon> Light Installation</h3>
+
+                <p>
+                    Installation and replacement of faulty bulbs,
+                    fittings, and lighting systems.
+                </p>
+            </article>
+
+            <article class="service-card">
+                <h3><ion-icon name="construct"></ion-icon> Socket Repairs</h3>
+
+                <p>
+                    Inspection and repair of damaged sockets
+                    and electrical outlets.
+                </p>
+            </article>
+
+            <article class="service-card">
+                <h3><ion-icon name="flash"></ion-icon>Fault Troubleshooting</h3>
+
+                <p>
+                    Identification and correction of electrical
+                    faults within campus facilities.
+                </p>
+            </article>
+
+            <article class="service-card">
+                <h3><ion-icon name="aperture"></ion-icon>Fan Installation</h3>
+
+                <p>
+                    Installation and maintenance of ceiling
+                    and standing fans.
+                </p>
+            </article>
+
+            <article class="service-card">
+                <h3><ion-icon name="home"></ion-icon> Wiring Services</h3>
+
+                <p>
+                    Safe wiring and rewiring services carried
+                    out according to standards.
+                </p>
+            </article>
+
+            <article class="service-card">
+                <h3><ion-icon name="shield-checkmark"></ion-icon> Maintenance</h3>
+
+                <p>
+                    Routine checks and preventive maintenance
+                    for electrical systems.
+                </p>
+            </article>
+
+        </div>
+
+    </section>
+
+    <!-- Common Issues -->
+    <section class="why-choose-us">
+
+        <h2>Common Issues We Handle</h2>
+
+        <div class="reasons-container">
+
+            <div class="reason">
+                <h3><ion-icon name="bulb"></ion-icon> Faulty Lighting</h3>
+
+                <p>
+                    Flickering lights, damaged fittings,
+                    and bulb replacements.
+                </p>
+            </div>
+
+            <div class="reason">
+                <h3><ion-icon name="construct"></ion-icon> Damaged Sockets</h3>
+
+                <p>
+                    Loose, burnt, or non-functioning
+                    electrical outlets.
+                </p>
+            </div>
+
+            <div class="reason">
+                <h3><ion-icon name="aperture"></ion-icon>Fan Problems</h3>
+
+                <p>
+                    Faulty fans, unusual noises,
+                    and installation needs.
+                </p>
+            </div>
+
+            <div class="reason">
+                <h3>
+                  <ion-icon name="warning"></ion-icon>Power Interruptions</h3>
+
+                <p>
+                    Troubleshooting electrical faults
+                    affecting rooms and offices.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+
+        <h2>How It Works</h2>
+
+        <div class="steps">
+
+            <div class="step">
+                <h3>1. Submit a Request</h3>
+
+                <p>
+                    Complete the request form with
+                    details of the issue.
+                </p>
+            </div>
+
+            <div class="step">
+                <h3>2. Verification</h3>
+
+                <p>
+                    The maintenance team reviews and
+                    confirms the request.
+                </p>
+            </div>
+
+            <div class="step">
+                <h3>3. Technician Assignment</h3>
+
+                <p>
+                    A technician is assigned to handle
+                    the reported fault.
+                </p>
+            </div>
+
+            <div class="step">
+                <h3>4. Problem Resolution</h3>
+
+                <p>
+                    Repairs are completed and the issue
+                    is resolved promptly.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+    <!-- Wazaaaaaa -->
+    <section class="stats-section">
+
+    <div class="stat-item">
+        <h2 class="loading-counter"></h2>
+        <p>Requests Completed</p>
+    </div>
+
+    <div class="stat-item">
+       <h2 class="loading-counter"></h2>
+        <p>Satisfied Clients</p>
+    </div>
+
+    <div class="stat-item">
+        <h2>24/7</h2>
+        <p>Emergency Support</p>
+    </div>
+
+    <div class="stat-item">
+        <h2>99%</h2>
+        <p>Success Rate</p>
+    </div>
+
+</section>
+
+    <!-- Emergency Notice -->
+    <section class="emergency-notice">
+
+        <h2><ion-icon name="warning"></ion-icon>Electrical Emergency?</h2>
+
+        <p>
+             In case of an electrical emergency, switch off the main power
+            supply if it is safe to do so and contact us immediately.
+            If it is safe to do so, switch off the main power
+            supply and contact the maintenance team immediately.
+        </p>
+
+        <a href="contact.html">
+            <button type="button" class="btn">
+                Call Technician
+            </button>
+        </a>
+
+    </section>
+
+    <!-- Footer -->
+    <footer>
+
+        <div class="footer-contact">
+
+            <h3>Contact Information</h3>
+
+            <p>
+                <strong><ion-icon name="call"></ion-icon>Phone:</strong>
+                <a href="tel:08163196577">
+                    08163196577
+                </a>
+            </p>
+
+            <p>
+                <strong><ion-icon name="mail"></ion-icon>Email:</strong>
+                <a href="mailto:umaryus4567@gmail.com">
+                    umaryus4567@gmail.com
+                </a>
+            </p>
+
+            <p>
+                <strong>Location:</strong>
+                F.C.T Dei-Dei, Md Abubakar Barracks, Abuja
+            </p>
+
+        </div>
+
+        <div class="footer-hours">
+
+            <h3>Service Availability</h3>
+
+            <p>Monday – Saturday</p>
+
+            <p>8:00 AM – 6:00 PM</p>
+
+            <p>Emergency Support Available</p>
+            
+            <p>Inclusdes sunday's depending on the urgency</p>
+
+        </div>
+
+        <div class="footer-bottom">
+
+            <p>
+                &copy; 2026 Campus Electrical Support.
+                All rights reserved.
+            </p>
+
+            <p>
+                Version 1.0
+            </p>
+
+        </div>
+
+    </footer>
+
+
+<a href="Whatsapp.html"
+class="floating-whatsapp">
+
+
+<ion-icon name="logo-whatsapp"></ion-icon>
+
+</a>
+    <script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js"></script>
+
+<script type="module" src="home.js"></script>
+<script type="module" src="auth-guard.js"></script>
+<div id="toast" class="toast"></div>
+</body>
+</html>

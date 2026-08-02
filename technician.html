@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>
+Technician Management
+</title>
+
+<link
+rel="stylesheet"
+href="tech.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>UY<br>
+<ion-icon name="person"></ion-icon>
+SVG Technician Management
+</h1>
+<p class="subtitle">
+Manage technicians, availability and contact information.
+</p>
+<div class="add-tech">
+
+<input
+type="text"
+id="techName"
+placeholder="Technician Name">
+
+<input
+type="text"
+id="techPhone"
+placeholder="Phone Number">
+
+<input
+type="text"
+id="techSpecialty"
+placeholder="Specialty (Electrical, AC, Generator...)">
+
+<select id="techStatus">
+
+<option value="Available">
+Available
+</option>
+
+<option value="Busy">
+Busy
+</option>
+
+<option value="Offline">
+Offline
+</option>
+
+</select>
+
+<button id="addTechBtn">
+<ion-icon name="person-add"></ion-icon>
+Add Technician
+</button>
+
+</div>
+
+<div id="techniciansContainer">
+
+</div>
+
+</div>
+     <script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js"></script>
+<script
+type="module"
+src="nician.js">
+</script>
+
+</body>
+
+</html>
