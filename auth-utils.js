@@ -29,45 +29,68 @@ googleProvider.setCustomParameters({
 REGISTER
 ==================================*/
 
+/*==================================
+REGISTER USER
+==================================*/
+
 export async function registerUser(fullName, email, password, phone) {
 
-    console.log("Step 1: Creating Authentication account...");
+    try {
 
-    const credential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-    );
+        // Create Authentication Account
+        const credential =
+        await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
 
-    const user = credential.user;
+        const user = credential.user;
 
-    console.log("✅ Authentication account created.");
+        // Update Display Name
+        await updateProfile(user, {
+            displayName: fullName
+        });
 
-    await updateProfile(user, {
-        displayName: fullName
-    });
+        // User Document Reference
+        const userRef = doc(db, "users", user.uid);
 
-    console.log("✅ Profile updated.");
+        // Save User Data
+        await setDoc(userRef, {
 
-    console.log("Step 2: Saving to Firestore...");
+            uid: user.uid,
 
-    await setDoc(doc(db, "users", user.uid), {
+            fullName: fullName,
 
-        uid: user.uid,
-        fullName,
-        email,
-        phone,
-        role: "customer",
-        provider: "email",
-        photoURL: user.photoURL || "",
-        createdAt: serverTimestamp(),
-        lastLogin: serverTimestamp()
+            email: email,
 
-    });
+            phone: phone,
 
-    console.log("✅ Firestore document created.");
+            role: "customer",
 
-    return user;
+            provider: "email",
+
+            photoURL: user.photoURL || "",
+
+            createdAt: serverTimestamp(),
+
+            lastLogin: serverTimestamp()
+
+        });
+
+        console.log("✅ User saved to Firestore");
+
+        return user;
+
+    }
+
+    catch (error) {
+
+        console.error("REGISTER ERROR:", error);
+
+        throw error;
+
+    }
 
 }
 
