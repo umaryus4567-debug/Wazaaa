@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firestore Test</title>
+</head>
+<body>
+
+<button id="test">Create User Document</button>
+
+<script type="module">
+import { db } from "./firebase-config.js";
+import {
+    doc,
+    setDoc
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+document.getElementById("test").onclick = async () => {
+
+    try{
+
+        await setDoc(doc(db,"users","test123"),{
+
+            name:"Test User",
+
+            email:"test@test.com"
+
+        });
+
+        alert("SUCCESS");
+
+    }
+
+    catch(error){
+
+        alert(error.code);
+        alert(error.message);
+        console.error(error);
+
+    }
+
+};
+</script>
+
+</body>
+</html>
