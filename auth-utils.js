@@ -31,8 +31,9 @@ REGISTER
 
 export async function registerUser(fullName, email, password, phone) {
 
-    const credential =
-    await createUserWithEmailAndPassword(
+    console.log("Step 1: Creating Authentication account...");
+
+    const credential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
@@ -40,31 +41,31 @@ export async function registerUser(fullName, email, password, phone) {
 
     const user = credential.user;
 
-    await updateProfile(user,{
+    console.log("✅ Authentication account created.");
+
+    await updateProfile(user, {
         displayName: fullName
     });
 
-    await setDoc(doc(db,"users",user.uid),{
+    console.log("✅ Profile updated.");
 
-        uid:user.uid,
+    console.log("Step 2: Saving to Firestore...");
 
+    await setDoc(doc(db, "users", user.uid), {
+
+        uid: user.uid,
         fullName,
-
         email,
-
         phone,
-
-        role:"customer",
-
-        provider:"email",
-
-        photoURL:user.photoURL || "",
-
-        createdAt:serverTimestamp(),
-
-        lastLogin:serverTimestamp()
+        role: "customer",
+        provider: "email",
+        photoURL: user.photoURL || "",
+        createdAt: serverTimestamp(),
+        lastLogin: serverTimestamp()
 
     });
+
+    console.log("✅ Firestore document created.");
 
     return user;
 
