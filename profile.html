@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Profile | UY Power Solutions</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<link rel="stylesheet" href="profile.css">
+<link rel="stylesheet" href="loader.css">
+</head>
+
+<body>
+  <div id="loader" class="loader">
+
+    <div class="loader-box">
+
+        <div class="loader-logo">
+            ⚡
+        </div>
+
+        <h2>UY Power Solutions</h2>
+
+        <p>Loading...</p>
+
+    </div>
+
+</div>
+
+<div class="profile-container">
+
+    <!-- Header -->
+
+    <div class="profile-header">
+
+        <a href="home.html" class="back-btn">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+        </a>
+
+        <h2>My Profile</h2>
+
+    </div>
+
+    <!-- Profile Card -->
+
+    <div class="profile-card">
+
+        <div class="profile-image-section">
+
+            <img
+            id="profileImage"
+            src="default-user.png"
+            alt="Profile">
+
+            <button
+            id="changePhoto">
+
+                <i class="fa-solid fa-camera"></i>
+
+            </button>
+
+        </div>
+
+        <h2 id="displayName">
+
+            Loading...
+
+        </h2>
+
+        <p id="displayEmail">
+
+            Loading...
+
+        </p>
+
+    </div>
+
+    <!-- Personal Information -->
+
+    <div class="info-card">
+
+        <h3>
+
+            Personal Information
+
+        </h3>
+
+        <div class="input-group">
+
+            <label>
+
+                Full Name
+
+            </label>
+
+            <input
+            type="text"
+            id="fullName">
+
+        </div>
+
+        <div class="input-group">
+
+            <label>
+
+                Phone Number
+
+            </label>
+
+            <input
+            type="tel"
+            id="phone">
+
+        </div>
+
+        <div class="input-group">
+
+            <label>
+
+                Email Address
+
+            </label>
+
+            <input
+            type="email"
+            id="email"
+            readonly>
+
+        </div>
+
+    </div>
+
+    <!-- Account Information -->
+
+    <div class="info-card">
+
+        <h3>
+
+            Account Information
+
+        </h3>
+
+        <div class="account-row">
+
+            <span>
+
+                Provider
+
+            </span>
+
+            <span id="provider">
+
+                Loading...
+
+            </span>
+
+        </div>
+
+        <div class="account-row">
+
+            <span>
+
+                Member Since
+
+            </span>
+
+            <span id="memberSince">
+
+                Loading...
+
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- Buttons -->
+
+    <div class="button-group">
+
+        <button
+        id="saveProfile">
+
+            <i class="fa-solid fa-floppy-disk"></i>
+
+            Save Changes
+
+        </button>
+
+        <button
+        id="changePassword">
+
+            <i class="fa-solid fa-lock"></i>
+
+            Change Password
+
+        </button>
+
+    </div>
+
+</div>
+ <!--==============================
+CHANGE PASSWORD MODAL
+===============================-->
+
+<div id="passwordModal" class="password-modal">
+
+    <div class="password-card">
+
+        <h2>Change Password</h2>
+
+        <p>Enter your new password below.</p>
+
+        <div class="input-group">
+          
+          <div class="input-group">
+
+    <label>Current Password</label>
+
+    <input
+        type="password"
+        id="currentPassword"
+        placeholder="Enter current password">
+
+</div>
+
+            <label>New Password</label>
+
+            <input
+                type="password"
+                id="newPassword"
+                placeholder="Enter new password">
+
+        </div>
+
+        <div class="input-group">
+
+            <label>Confirm Password</label>
+
+            <input
+                type="password"
+                id="confirmNewPassword"
+                placeholder="Confirm new password">
+
+        </div>
+
+        <div class="password-buttons">
+
+            <button id="cancelPassword">
+
+                Cancel
+
+            </button>
+
+            <button id="savePassword">
+
+                Update Password
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+<script type="module"
+src="profile.js"></script>
+
+</body>
+
+</html>

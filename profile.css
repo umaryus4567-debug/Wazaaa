@@ -1,0 +1,765 @@
+/*==============================
+UY POWER SOLUTIONS
+PROFILE PAGE
+==============================*/
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:"Poppins",sans-serif;
+
+    background:linear-gradient(
+        135deg,
+        #0f172a,
+        #1e3a8a,
+        #2563eb
+    );
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    padding:30px 15px;
+
+}
+
+.profile-container{
+
+    width:100%;
+
+    max-width:500px;
+
+}
+
+.profile-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-bottom:25px;
+
+    color:#fff;
+
+}
+
+.profile-header h2{
+
+    font-size:26px;
+
+    font-weight:700;
+
+}
+
+.back-btn{
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.15);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#fff;
+
+    text-decoration:none;
+
+    transition:.3s;
+
+}
+
+.back-btn:hover{
+
+    background:#fff;
+
+    color:#2563eb;
+
+    transform:scale(1.05);
+
+}
+
+/*==============================
+PROFILE CARD
+==============================*/
+
+.profile-card{
+
+    background:rgba(255,255,255,.12);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.18);
+
+    border-radius:25px;
+
+    padding:30px 20px;
+
+    text-align:center;
+
+    color:#fff;
+
+    margin-bottom:25px;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.18);
+    
+    transition:.4s ease;
+
+}
+
+.profile-card:hover{
+
+transform:translateY(-6px);
+
+box-shadow:0 25px 50px rgba(0,0,0,.22);
+
+}
+.profile-image-section{
+
+    position:relative;
+
+    width:130px;
+
+    height:130px;
+
+    margin:0 auto 20px;
+
+}
+
+.profile-image-section img{
+
+    width:130px;
+
+    height:130px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:5px solid rgba(255,255,255,.9);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+    
+    transition:.4s ease;
+cursor:pointer;
+
+}
+.profile-image-section img:hover{
+
+transform:scale(1.05) rotate(2deg);
+
+}
+
+
+#changePhoto{
+
+    position:absolute;
+
+    right:0;
+
+    bottom:0;
+
+    width:40px;
+
+    height:40px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    color:#fff;
+
+    cursor:pointer;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:16px;
+
+    transition:.3s;
+
+}
+
+#changePhoto:hover{
+
+    transform:scale(1.1);
+
+    background:#1d4ed8;
+
+}
+
+#displayName{
+
+    font-size:24px;
+
+    font-weight:700;
+
+    margin-bottom:8px;
+
+}
+
+#displayEmail{
+
+    font-size:15px;
+
+    opacity:.9;
+
+    word-break:break-word;
+
+}
+
+/*==============================
+INFORMATION CARDS
+==============================*/
+
+.info-card{
+
+    background:#ffffff;
+
+    border-radius:22px;
+
+    padding:22px;
+
+    margin-bottom:22px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    
+    transition:.35s ease;
+position:relative;
+overflow:hidden;
+
+}
+
+.info-card::before{
+
+content:"";
+
+position:absolute;
+
+top:0;
+
+left:0;
+
+width:100%;
+
+height:4px;
+
+background:linear-gradient(
+90deg,
+#2563eb,
+#38bdf8
+);
+
+transform:scaleX(0);
+
+transform-origin:left;
+
+transition:.4s;
+
+}
+
+.info-card:hover::before{
+
+transform:scaleX(1);
+
+}
+
+.info-card:hover{
+
+transform:translateY(-6px);
+
+box-shadow:0 20px 40px rgba(37,99,235,.15);
+
+}
+
+.info-card h3{
+
+    color:#1e293b;
+
+    margin-bottom:20px;
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+/*==============================
+INPUT GROUP
+==============================*/
+
+.input-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    margin-bottom:18px;
+
+}
+
+.input-group:last-child{
+
+    margin-bottom:0;
+
+}
+
+.input-group label{
+
+    font-size:14px;
+
+    font-weight:600;
+
+    color:#475569;
+
+    margin-bottom:8px;
+
+}
+
+.input-group input{
+
+    width:100%;
+
+    padding:14px 16px;
+
+    border:2px solid #e2e8f0;
+
+    border-radius:14px;
+
+    font-size:15px;
+
+    font-family:"Poppins",sans-serif;
+
+    transition:.3s;
+
+    outline:none;
+
+    
+    background:#fcfdff;
+
+}
+
+.input-group input:focus{
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+    
+    transform:translateY(-2px);
+
+}
+
+.input-group input[readonly]{
+
+    background:#f8fafc;
+
+    color:#64748b;
+
+    cursor:not-allowed;
+
+}
+
+/*==============================
+ACCOUNT ROW
+==============================*/
+
+.account-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px 0;
+
+    border-bottom:1px solid #e2e8f0;
+
+}
+
+.account-row:last-child{
+
+    border-bottom:none;
+
+}
+
+.account-row span:first-child{
+
+    color:#64748b;
+
+    font-weight:500;
+
+}
+
+.account-row span:last-child{
+
+    color:#0f172a;
+
+    font-weight:600;
+
+}
+
+/*==============================
+BUTTON GROUP
+==============================*/
+
+.button-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
+}
+
+.button-group button{
+
+    width:100%;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:16px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    font-family:"Poppins",sans-serif;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+#saveProfile{
+
+    background:#2563eb;
+
+    color:#fff;
+    
+    position:relative;
+
+overflow:hidden;
+
+}
+
+#saveProfile::before{
+
+content:"";
+
+position:absolute;
+
+top:0;
+
+left:-100%;
+
+width:100%;
+
+height:100%;
+
+background:rgba(255,255,255,.2);
+
+transition:.5s;
+
+}
+
+#saveProfile:hover::before{
+
+left:100%;
+
+}
+
+#saveProfile:hover{
+
+    background:#1d4ed8;
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 25px rgba(37,99,235,.35);
+
+}
+
+#changePassword{
+
+    background:#fff;
+
+    color:#2563eb;
+
+    border:2px solid #2563eb;
+    
+    transition:.35s ease;
+
+}
+
+#changePassword:hover{
+
+background:#2563eb;
+
+color:#fff;
+
+transform:translateY(-2px);
+
+box-shadow:0 12px 28px rgba(37,99,235,.25);
+
+}
+
+.button-group button i{
+
+    margin-right:10px;
+
+}
+
+/*==============================
+FADE ANIMATION
+==============================*/
+
+.profile-header,
+.profile-card,
+.info-card,
+.button-group{
+
+animation:fadeUp .6s ease;
+
+}
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(25px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+
+
+@keyframes profileGlow{
+
+0%{
+
+box-shadow:0 0 0 rgba(37,99,235,.3);
+
+}
+
+50%{
+
+box-shadow:0 0 25px rgba(37,99,235,.35);
+
+}
+
+100%{
+
+box-shadow:0 0 0 rgba(37,99,235,.3);
+
+}
+
+}
+
+.profile-image-section img{
+
+animation:profileGlow 4s infinite;
+
+}
+
+/*==============================
+PASSWORD MODAL
+==============================*/
+
+.password-modal{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.55);
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+    
+    backdrop-filter:blur(6px);
+
+}
+
+.password-card{
+
+    width:90%;
+
+    max-width:420px;
+
+    background:#fff;
+
+    border-radius:22px;
+
+    padding:25px;
+
+    animation:fadeUp .3s ease;
+    
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+
+transition:.35s ease;
+
+}
+
+.password-card h2{
+
+    color:#0f172a;
+
+    margin-bottom:8px;
+
+}
+
+.password-card p{
+
+    color:#64748b;
+
+    margin-bottom:20px;
+
+}
+
+.password-buttons{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-top:20px;
+
+}
+
+.password-buttons button{
+
+    flex:1;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-weight:600;
+    
+    transition:.3s ease;
+
+}
+
+#cancelPassword:hover{
+
+background:#cbd5e1;
+
+transform:translateY(-2px);
+
+}
+
+#savePassword:hover{
+
+background:#1d4ed8;
+
+transform:translateY(-2px);
+
+box-shadow:0 10px 25px rgba(37,99,235,.3);
+
+}
+
+#cancelPassword{
+
+    background:#e2e8f0;
+
+}
+
+#savePassword{
+
+    background:#2563eb;
+
+    color:#fff;
+
+}
+
+/*==============================
+MOBILE
+==============================*/
+
+@media(max-width:600px){
+
+    body{
+
+        padding:15px;
+
+    }
+
+    .profile-container{
+
+        max-width:100%;
+
+    }
+
+    .profile-card{
+
+        padding:25px 18px;
+
+    }
+
+    .profile-image-section{
+
+        width:110px;
+
+        height:110px;
+
+    }
+
+    .profile-image-section img{
+
+        width:110px;
+
+        height:110px;
+
+    }
+
+    #displayName{
+
+        font-size:22px;
+
+    }
+
+}

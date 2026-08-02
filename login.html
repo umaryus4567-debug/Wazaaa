@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Customer Login | UY Power Solutions</title>
+
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<link rel="stylesheet"
+href="auth.css">
+<link rel="stylesheet" href="loader.css">
+</head>
+
+<body>
+<div id="loader" class="loader">
+
+    <div class="loader-box">
+
+        <div class="loader-logo">
+            ⚡
+        </div>
+
+        <h2>UY Power Solutions</h2>
+
+        <p>Loading...</p>
+
+    </div>
+
+</div>
+<!-- Background -->
+
+<div class="bg-shapes">
+
+<div class="shape shape1"></div>
+
+<div class="shape shape2"></div>
+
+<div class="shape shape3"></div>
+
+</div>
+
+<!-- Main Container -->
+
+<div class="auth-container">
+
+<!-- LEFT SIDE -->
+
+<div class="left-panel">
+
+<div class="overlay"></div>
+
+<div class="left-content">
+
+<div class="logo">
+
+<i class="fa-solid fa-bolt"></i>
+
+<h1>UY Power</h1>
+
+</div>
+
+<h2>
+
+Powering Homes & Businesses
+
+</h2>
+
+<p>
+
+Professional electrical installation,
+
+maintenance,
+
+solar solutions,
+
+generator services,
+
+and emergency repairs.
+
+</p>
+
+<div class="features">
+
+<div>
+
+<i class="fa-solid fa-circle-check"></i>
+
+Certified Electricians
+
+</div>
+
+<div>
+
+<i class="fa-solid fa-circle-check"></i>
+
+24/7 Emergency Support
+
+</div>
+
+<div>
+
+<i class="fa-solid fa-circle-check"></i>
+
+Affordable Pricing
+
+</div>
+
+<div>
+
+<i class="fa-solid fa-circle-check"></i>
+
+Fast Response Time
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- RIGHT SIDE -->
+
+<div class="right-panel">
+
+<div class="auth-card">
+
+<div class="card-header">
+
+<h2>
+
+Welcome Back 👋
+
+</h2>
+
+<p>
+
+Login to your customer account
+
+</p>
+
+</div>
+
+<!-- Alert -->
+
+<div
+id="messageBox"
+class="alert-box">
+
+</div>
+
+<form id="loginForm">
+
+<div class="input-box">
+
+<label>Email Address</label>
+
+<div class="input-wrapper">
+
+<i class="fa-solid fa-envelope left-icon"></i>
+
+<input
+type="email"
+id="email"
+placeholder="Enter your email"
+required>
+
+</div>
+
+</div>
+
+<div class="input-box">
+
+<label>Password</label>
+
+<div class="input-wrapper">
+
+<i class="fa-solid fa-lock left-icon"></i>
+
+<input
+type="password"
+id="password">
+
+<button
+type="button"
+id="togglePassword"
+class="password-toggle">
+
+<i class="fa-solid fa-eye"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<div class="options">
+
+<label>
+
+<input
+type="checkbox"
+id="remember">
+
+Remember Me
+
+</label>
+
+<a href="forgot-password.html" id="forgotPassword">
+    Forgot Password?
+</a>
+
+</div>
+
+<button
+type="submit"
+id="authButton"
+class="auth-button">
+
+<span id="buttonText">Login</span>
+
+<span id="buttonLoader" class="button-loader">
+<i class="fa-solid fa-spinner fa-spin"></i>
+</span>
+
+</button>
+
+
+
+</form>
+
+<div class="divider">
+
+<span>
+
+OR
+
+</span>
+
+</div>
+
+<div class="social-buttons">
+
+
+<button type="button" id="googleLogin" class="social-button">
+    <i class="fa-brands fa-google"></i>
+    Continue with Google
+</button>
+
+</div>
+
+<p class="bottom-text">
+
+Don't have an account?
+
+<a href="index.html">
+
+Create Account
+
+</a>
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Loading -->
+
+<div
+id="loadingScreen"
+class="loading-screen">
+
+<div class="loading-card">
+
+<i class="fa-solid fa-bolt"></i>
+
+<h3>
+
+Signing You In...
+
+</h3>
+
+<div class="progress">
+
+<div class="progress-bar"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Toast -->
+
+<div
+id="toast"
+class="toast">
+
+<i
+id="toastIcon">
+
+</i>
+
+<p
+id="toastMessage">
+
+</p>
+
+</div>
+<script type="module" src="auth.js"></script>
+
+</body>
+
+</html>
