@@ -36,7 +36,16 @@ const logoutButton =
 document.getElementById("logoutButton");
 
 protectPage();
-loadUser();
+
+onAuthStateChanged(auth,(user)=>{
+
+    if(user){
+
+        loadUser();
+
+    }
+
+});
 onAuthStateChanged(auth, (user) => {
 
     if (!user) return;
@@ -189,26 +198,25 @@ SHOW STAFF DASHBOARD BUTTON
 const staffContainer =
 document.getElementById("staffDashboardContainer");
 
-if(staffContainer){
+onAuthStateChanged(auth, async (user) => {
 
-    try{
+    if (!user) return;
 
-        const user = auth.currentUser;
+    if (!staffContainer) return;
 
-        if(user){
+    try {
 
-            const snap = await getDoc(
-                doc(db,"users",user.uid)
-            );
+        const snap = await getDoc(
+            doc(db, "users", user.uid)
+        );
 
-            if(snap.exists()){
+        if (snap.exists()) {
 
-                const data = snap.data();
+            const data = snap.data();
 
-                if(data.role === "staff"){
+            if (data.role === "staff") {
 
-                    staffContainer.innerHTML = `
-
+                staffContainer.innerHTML = `
                     <a href="dashboard.html"
                     class="staff-dashboard-btn">
 
@@ -217,24 +225,20 @@ if(staffContainer){
                         Staff Dashboard
 
                     </a>
-
-                    `;
-
-                }
-
+                `;
             }
 
         }
 
     }
 
-    catch(error){
+    catch (error) {
 
         console.error(error);
 
     }
 
-}
+});
 
 window.addEventListener("load", () => {
 
