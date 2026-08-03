@@ -356,6 +356,8 @@ registerForm.addEventListener("submit", async (e) => {
             phone.value.trim()
 
         );
+        console.log("Returned user:", user);
+alert("UID: " + user.uid);
 
         await createNotification({
 
