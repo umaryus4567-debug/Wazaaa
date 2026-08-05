@@ -13,11 +13,15 @@ import {
     getDocs,
     deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+/*==================================
+CREATE NOTIFICATION
+==================================*/
+
 export async function createNotification(data) {
 
-    await addDoc(
-        collection(db, "notifications"),
-        {
+    try {
+
+        const notification = {
 
             uid: data.uid,
 
@@ -37,99 +41,262 @@ export async function createNotification(data) {
 
             createdAt: serverTimestamp()
 
-        }
-    );
+        };
+
+        const docRef = await addDoc(
+
+            collection(db, "notifications"),
+
+            notification
+
+        );
+
+        console.log("Notification created:", docRef.id);
+
+        return docRef.id;
+
+    }
+
+    catch (error) {
+
+        console.error("Notification Error:", error);
+
+        throw error;
+
+    }
 
 }
+/*==================================
+LISTEN FOR NOTIFICATIONS
+==================================*/
+
 export function listenForNotifications(uid, callback) {
 
-    const q = query(
-        collection(db, "notifications"),
-        where("uid", "==", uid),
-        orderBy("createdAt", "desc")
-    );
+    try {
 
-    return onSnapshot(q, (snapshot) => {
+        const q = query(
 
-        const notifications = [];
+            collection(db, "notifications"),
 
-        snapshot.forEach((doc) => {
+            where("uid", "==", uid),
 
-            notifications.push({
+            orderBy("createdAt", "desc")
 
-                id: doc.id,
+        );
 
-                ...doc.data()
+        return onSnapshot(
 
-            });
+            q,
+
+            (snapshot) => {
+
+                const notifications = [];
+
+                snapshot.forEach((document) => {
+
+                    notifications.push({
+
+                        id: document.id,
+
+                        ...document.data()
+
+                    });
+
+                });
+
+                callback(notifications);
+
+            },
+
+            (error) => {
+
+                console.error(
+                    "Notification Listener Error:",
+                    error
+                );
+
+            }
+
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+/*==================================
+MARK ALL AS READ
+==================================*/
+
+export async function markAllNotificationsAsRead(uid) {
+
+    try {
+
+        const q = query(
+
+            collection(db, "notifications"),
+
+            where("uid", "==", uid),
+
+            where("read", "==", false)
+
+        );
+
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+
+            console.log("No unread notifications.");
+
+            return;
+
+        }
+
+        const promises = [];
+
+        snapshot.forEach((document) => {
+
+            promises.push(
+
+                updateDoc(
+
+                    doc(db, "notifications", document.id),
+
+                    {
+                        read: true
+                    }
+
+                )
+
+            );
 
         });
 
-        callback(notifications);
+        await Promise.all(promises);
 
-    });
+        console.log("All notifications marked as read.");
 
-}
-export async function markAllNotificationsAsRead(uid) {
+    }
 
-    const q = query(
-        collection(db, "notifications"),
-        where("uid", "==", uid),
-        where("read", "==", false)
-    );
+    catch (error) {
 
-    const snapshot = await getDocs(q);
+        console.error(
 
-    const promises = [];
+            "Mark Notifications Error:",
 
-    snapshot.forEach((document) => {
-
-        promises.push(
-
-            updateDoc(doc(db, "notifications", document.id), {
-
-                read: true
-
-            })
+            error
 
         );
 
-    });
+        throw error;
 
-    await Promise.all(promises);
+    }
 
 }
+
+/*==================================
+DELETE NOTIFICATION
+==================================*/
 
 export async function deleteNotification(notificationId) {
 
-    await deleteDoc(
-        doc(db, "notifications", notificationId)
-    );
+    try {
 
-}
-export async function clearAllNotifications(uid) {
+        await deleteDoc(
 
-    const q = query(
-        collection(db, "notifications"),
-        where("uid", "==", uid)
-    );
-
-    const snapshot = await getDocs(q);
-
-    const promises = [];
-
-    snapshot.forEach((document) => {
-
-        promises.push(
-
-            deleteDoc(
-                doc(db, "notifications", document.id)
-            )
+            doc(db, "notifications", notificationId)
 
         );
 
-    });
+        console.log(
 
-    await Promise.all(promises);
+            "Notification deleted:",
+
+            notificationId
+
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+
+            "Delete Notification Error:",
+
+            error
+
+        );
+
+        throw error;
+
+    }
+
+}
+/*==================================
+CLEAR ALL NOTIFICATIONS
+==================================*/
+
+export async function clearAllNotifications(uid) {
+
+    try {
+
+        const q = query(
+
+            collection(db, "notifications"),
+
+            where("uid", "==", uid)
+
+        );
+
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+
+            console.log("No notifications to delete.");
+
+            return;
+
+        }
+
+        const promises = [];
+
+        snapshot.forEach((document) => {
+
+            promises.push(
+
+                deleteDoc(
+
+                    doc(db, "notifications", document.id)
+
+                )
+
+            );
+
+        });
+
+        await Promise.all(promises);
+
+        console.log("All notifications cleared.");
+
+    }
+
+    catch (error) {
+
+        console.error(
+
+            "Clear Notifications Error:",
+
+            error
+
+        );
+
+        throw error;
+
+    }
 
 }

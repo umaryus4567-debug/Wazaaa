@@ -361,27 +361,29 @@ registerForm.addEventListener("submit", async (e) => {
 
         console.log("User created:", user.uid);
 
-        //await createNotification({
+await createNotification({
 
-           // uid: user.uid,
+    uid: user.uid,
 
-         //   title: "Welcome to UY Power Solutions",
+    title: "Welcome to UY Power Solutions",
 
-        //    message: "Your account has been created successfully.",
+    message: "Your account has been created successfully. Welcome aboard!",
 
-         //   type: "success",
+    type: "success",
 
-       //     icon: "fa-circle-check",
+    icon: "fa-circle-check",
 
-      //      sender: "system",
+    sender: "system",
 
-       //     link: "home.html"
+    link: "home.html"
 
-   //     });
+});
 
         hideLoading();
 
-        showToast("Registration successful!");
+        showToast(
+    "Account created successfully!"
+);
 
         showSuccessModal();
 
@@ -412,8 +414,7 @@ GOOGLE REGISTRATION
 ==================================================*/
 
 googleRegister.addEventListener("click", async () => {
-  console.log("Google button clicked");
-alert("Google button clicked");
+
 
     showLoading();
 

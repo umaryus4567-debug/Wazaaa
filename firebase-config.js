@@ -21,3 +21,14 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 export { app, auth, db };
+import {
+    doc,
+    setDoc
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+await setDoc(doc(db, "test", "connection"), {
+    message: "Firestore works",
+    time: Date.now()
+});
+
+console.log("✅ Firestore connection successful");
