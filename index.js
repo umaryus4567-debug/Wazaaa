@@ -330,9 +330,11 @@ function validateForm(){
     return true;
 
 }
+
+
 /*==================================================
 PART 3
-REGISTER USER
+EMAIL REGISTRATION
 ==================================================*/
 
 registerForm.addEventListener("submit", async (e) => {
@@ -356,32 +358,30 @@ registerForm.addEventListener("submit", async (e) => {
             phone.value.trim()
 
         );
-        console.log("Returned user:", user);
-alert("UID: " + user.uid);
 
-        await createNotification({
+        console.log("User created:", user.uid);
 
-            uid: user.uid,
+        //await createNotification({
 
-            title: "Welcome to UY Power Solutions",
+           // uid: user.uid,
 
-            message: "Your account has been created successfully. Welcome aboard!",
+         //   title: "Welcome to UY Power Solutions",
 
-            type: "success",
+        //    message: "Your account has been created successfully.",
 
-            icon: "fa-circle-check",
+         //   type: "success",
 
-            sender: "system",
+       //     icon: "fa-circle-check",
 
-            link: "home.html"
+      //      sender: "system",
 
-        });
+       //     link: "home.html"
+
+   //     });
 
         hideLoading();
 
-        showToast(
-            "Account created successfully!"
-        );
+        showToast("Registration successful!");
 
         showSuccessModal();
 
@@ -395,64 +395,13 @@ alert("UID: " + user.uid);
 
     }
 
-    catch(error){
+    catch (error) {
 
         hideLoading();
 
         console.error(error);
 
-        switch(error.code){
-
-            case "auth/email-already-in-use":
-
-                showToast(
-                    "This email is already registered.",
-                    "error"
-                );
-
-                markInvalid(email);
-
-                break;
-
-            case "auth/invalid-email":
-
-                showToast(
-                    "Invalid email address.",
-                    "error"
-                );
-
-                markInvalid(email);
-
-                break;
-
-            case "auth/weak-password":
-
-                showToast(
-                    "Password is too weak.",
-                    "error"
-                );
-
-                markInvalid(password);
-
-                break;
-
-            case "auth/network-request-failed":
-
-                showToast(
-                    "Please check your internet connection.",
-                    "error"
-                );
-
-                break;
-
-            default:
-
-                showToast(
-                    error.message,
-                    "error"
-                );
-
-        }
+        showToast(error.message, "error");
 
     }
 
