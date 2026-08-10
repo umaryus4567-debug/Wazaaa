@@ -1,8 +1,6 @@
 import {
-    auth,
-    guestOnly,
     loginUser,
-    resetPassword,
+    guestOnly,
     logoutUser
 } from "./auth-utils.js";
 
@@ -13,161 +11,46 @@ import {
     getDoc
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-/*==================================
-GUEST ONLY
-==================================*/
-
+// Only guests should access this page
 guestOnly();
 
-/*==================================
-DOM
-==================================*/
-
-const form =
-document.getElementById("loginForm");
-
-const email =
-document.getElementById("email");
-
-const password =
-document.getElementById("password");
-
-/*==================================
-UI ELEMENTS
-==================================*/
-
-const remember =
-document.querySelector(".options input[type='checkbox']");
-
-const forgotPassword =
-document.querySelector(".options a");
+// DOM Elements
+const form = document.getElementById("loginForm");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
 
 /*==================================
 LOADING
 ==================================*/
+
+const loginButton = form.querySelector("button");
+
 function setLoading(state){
 
-    loadingScreen.style.display =
-    state ? "flex" : "none";
+    if(state){
 
-    authButton.disabled = state;
+        loginButton.disabled = true;
+        loginButton.innerHTML = `
+            <ion-icon name="hourglass-outline"></ion-icon>
+            Signing In...
+        `;
 
-    googleButton.disabled = state;
+    }else{
 
-    authButton.innerHTML =
-
-    state
-
-    ? `<ion-icon name="hourglass"></ion-icon> Signing In...`
-
-    : `<ion-icon name="lock-closed"></ion-icon> Login`;
-
-}
-/*==================================
-TOAST
-==================================*/
-
-function showToast(message,type="success"){
-
-    const toast =
-    document.getElementById("toast");
-
-    const icon =
-    document.getElementById("toastIcon");
-
-    const text =
-    document.getElementById("toastMessage");
-
-    text.textContent = message;
-
-    if(type==="success"){
-
-        toast.style.borderLeftColor="#22c55e";
-
-        icon.setAttribute(
-        "name",
-        "checkmark-circle"
-        );
-
-        icon.style.color="#22c55e";
-
-    }
-
-    else{
-
-        toast.style.borderLeftColor="#ef4444";
-
-        icon.setAttribute(
-        "name",
-        "close-circle"
-        );
-
-        icon.style.color="#ef4444";
-
-    }
-
-    toast.classList.add("show");
-
-    setTimeout(()=>{
-
-        toast.classList.remove("show");
-
-    },3000);
-
-}
-/*==================================
-REMEMBER ME
-==================================*/
-
-window.addEventListener("load",()=>{
-
-    const savedEmail =
-    localStorage.getItem("staffRememberEmail");
-
-    if(savedEmail){
-
-        email.value = savedEmail;
-
-        remember.checked = true;
-
-    }
-
-});
-
-function saveRememberEmail(){
-
-    if(remember.checked){
-
-        localStorage.setItem(
-            "staffRememberEmail",
-            email.value
-        );
-
-    }
-
-    else{
-
-        localStorage.removeItem(
-            "staffRememberEmail"
-        );
+        loginButton.disabled = false;
+        loginButton.innerHTML = `
+            <ion-icon name="lock-closed"></ion-icon>
+            Login
+        `;
 
     }
 
 }
-
-remember.addEventListener(
-"change",
-saveRememberEmail);
-
-email.addEventListener(
-"keyup",
-saveRememberEmail);
-
 /*==================================
 STAFF LOGIN
 ==================================*/
 
-form.addEventListener("submit", async (e) => {
+form.addEventListener("submit", async (e)=>{
 
     e.preventDefault();
 
@@ -177,9 +60,10 @@ form.addEventListener("submit", async (e) => {
     const passwordValue =
     password.value.trim();
 
+
     if(emailValue === ""){
 
-        showToast("Please enter your email.","error");
+        alert("Please enter your email.");
 
         email.focus();
 
@@ -187,9 +71,10 @@ form.addEventListener("submit", async (e) => {
 
     }
 
+
     if(passwordValue === ""){
 
-        showToast("Please enter your password.","error");
+        alert("Please enter your password.");
 
         password.focus();
 
@@ -197,7 +82,9 @@ form.addEventListener("submit", async (e) => {
 
     }
 
+
     setLoading(true);
+
 
     try{
 
@@ -207,147 +94,101 @@ form.addEventListener("submit", async (e) => {
             passwordValue
         );
 
-        const userDoc =
+
+        const userSnapshot =
         await getDoc(
-            doc(db,"users",user.uid)
+            doc(
+                db,
+                "users",
+                user.uid
+            )
         );
 
-        if(!userDoc.exists()){
+
+        if(!userSnapshot.exists()){
+
+            await logoutUser();
 
             setLoading(false);
 
-            showToast(
-            "User record not found."
+            alert(
+            "User account record not found."
             );
 
             return;
 
         }
 
-        const data =
-        userDoc.data();
-        
-        
-        if(data.role !== "staff"){
 
-    await logoutUser();
+        const userData =
+        userSnapshot.data();
 
-    setLoading(false);
 
-    showToast(
-    "Access denied. Staff only."
-    );
 
-    return;
+        if(userData.role !== "staff"){
 
-}
+            await logoutUser();
 
-        showToast(
-"Welcome back, Staff!"
-);
+            setLoading(false);
 
-setTimeout(()=>{
+            alert(
+            "Access denied. Staff account only."
+            );
 
-    window.location.replace(
-    "dashboard.html"
-    );
+            return;
 
-},1000);
+        }
 
-        },1000);
+
+
+        alert(
+        "Staff login successful ✅"
+        );
+
+
+        window.location.replace(
+        "dashboard.html"
+        );
+
 
     }
 
+
     catch(error){
+
 
         setLoading(false);
 
-        console.error(error);
-
-        showToast(error.message);
-
-    }
-
-});
-
-/*==================================
-FORGOT PASSWORD
-==================================*/
-
-forgotPassword.addEventListener("click", async (e) => {
-
-    e.preventDefault();
-
-    const emailValue =
-    email.value.trim();
-
-    if(emailValue === ""){
-
-        showToast(
-            "Enter your email first.",
-            "error"
-        );
-
-        email.focus();
-
-        return;
-
-    }
-
-    try{
-
-        await resetPassword(emailValue);
-
-        showToast(
-            "Password reset email sent."
-        );
-
-    }
-
-    catch(error){
 
         console.error(error);
 
-        showToast(
-            error.message,
-            "error"
-        );
+
+
+        if(error.code === "auth/invalid-credential"){
+
+            alert(
+            "Invalid email or password."
+            );
+
+        }
+
+        else if(error.code === "auth/network-request-failed"){
+
+            alert(
+            "Check your internet connection."
+            );
+
+        }
+
+        else{
+
+            alert(
+            error.message
+            );
+
+        }
 
     }
 
-});
-/*==================================
-PASSWORD TOGGLE
-==================================*/
-
-const togglePassword =
-document.getElementById("togglePassword");
-
-togglePassword.addEventListener("click",()=>{
-
-    const icon =
-    togglePassword.querySelector("ion-icon");
-
-    if(password.type==="password"){
-
-        password.type="text";
-
-        icon.setAttribute(
-        "name",
-        "eye-off-outline"
-        );
-
-    }
-
-    else{
-
-        password.type="password";
-
-        icon.setAttribute(
-        "name",
-        "eye-outline"
-        );
-
-    }
 
 });

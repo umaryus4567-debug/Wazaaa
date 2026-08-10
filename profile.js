@@ -1,148 +1,231 @@
 /*==================================================
 UY POWER SOLUTIONS
-PROFILE
-Part 1
+PROFILE SYSTEM
 ==================================================*/
 
 import { auth, db } from "./firebase-config.js";
 
-import { protectPage } from "./auth-utils.js";
-
 import {
     doc,
     getDoc,
-    updateDoc
+    updateDoc,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 import {
     onAuthStateChanged,
-    getAuth,
+    updateProfile,
     updatePassword,
     EmailAuthProvider,
     reauthenticateWithCredential
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
-console.log("Imported Auth =", auth);
-console.log("Fresh Auth =", getAuth());
+import {
+    protectPage
+} from "./auth-utils.js";
+
 
 /*==================================
 PROTECT PAGE
 ==================================*/
 
-//protectPage();
+protectPage();
+
 
 /*==================================
 DOM ELEMENTS
 ==================================*/
 
 const profileImage =
-document.getElementById("profileImage");
+    document.getElementById("profileImage");
 
 const displayName =
-document.getElementById("displayName");
+    document.getElementById("displayName");
 
 const displayEmail =
-document.getElementById("displayEmail");
+    document.getElementById("displayEmail");
 
 const fullName =
-document.getElementById("fullName");
+    document.getElementById("fullName");
 
 const phone =
-document.getElementById("phone");
+    document.getElementById("phone");
 
 const email =
-document.getElementById("email");
+    document.getElementById("email");
 
 const provider =
-document.getElementById("provider");
+    document.getElementById("provider");
 
 const memberSince =
-document.getElementById("memberSince");
+    document.getElementById("memberSince");
 
 const saveProfile =
-document.getElementById("saveProfile");
+    document.getElementById("saveProfile");
 
 const changePhoto =
-document.getElementById("changePhoto");
+    document.getElementById("changePhoto");
 
 const changePassword =
-document.getElementById("changePassword");
+    document.getElementById("changePassword");
 
 const passwordModal =
-document.getElementById("passwordModal");
+    document.getElementById("passwordModal");
 
 const currentPassword =
-document.getElementById("currentPassword");
+    document.getElementById("currentPassword");
 
 const newPassword =
-document.getElementById("newPassword");
+    document.getElementById("newPassword");
 
 const confirmNewPassword =
-document.getElementById("confirmNewPassword");
+    document.getElementById("confirmNewPassword");
 
 const cancelPassword =
-document.getElementById("cancelPassword");
+    document.getElementById("cancelPassword");
 
 const savePassword =
-document.getElementById("savePassword");
+    document.getElementById("savePassword");
 
-console.log("Profile.js Loaded Successfully");
+
+console.log("=================================");
+console.log("UY POWER SOLUTIONS");
+console.log("Profile System Loaded");
+console.log("=================================");
+
+
+/*==================================
+TOAST
+==================================*/
+
+function showToast(message, type = "success") {
+
+    let toast =
+        document.getElementById("profileToast");
+
+    /*
+    Create toast if it doesn't exist
+    */
+
+    if (!toast) {
+
+        toast = document.createElement("div");
+
+        toast.id = "profileToast";
+
+        toast.style.position = "fixed";
+        toast.style.bottom = "25px";
+        toast.style.left = "50%";
+        toast.style.transform = "translateX(-50%)";
+        toast.style.padding = "14px 22px";
+        toast.style.borderRadius = "12px";
+        toast.style.color = "#fff";
+        toast.style.fontWeight = "600";
+        toast.style.fontFamily = "Poppins, sans-serif";
+        toast.style.zIndex = "99999";
+        toast.style.boxShadow =
+            "0 10px 30px rgba(0,0,0,.25)";
+        toast.style.transition = ".3s";
+
+        document.body.appendChild(toast);
+
+    }
+
+    toast.textContent = message;
+
+    toast.style.background =
+        type === "error"
+            ? "#ef4444"
+            : "#22c55e";
+
+    toast.style.opacity = "1";
+
+    clearTimeout(toast._timer);
+
+    toast._timer = setTimeout(() => {
+
+        toast.style.opacity = "0";
+
+    }, 3000);
+
+}
+
 
 /*==================================
 LOAD USER DATA
 ==================================*/
 
 onAuthStateChanged(auth, async (user) => {
-console.log("USER =", user);
-console.log("UID =", user?.uid);
-console.log("EMAIL =", user?.email);
-console.log("CURRENT TYPE =", typeof auth.currentUser);
 
-console.log("AUTH OBJECT =", auth);
+    console.log("Authenticated user:", user?.uid);
 
-console.log("CURRENT VALUE =", auth.currentUser);
+    if (!user) {
 
-console.log("ALL AUTH KEYS =", Object.keys(auth));
-    if (!user) return;
+        console.log("No authenticated user.");
+
+        return;
+
+    }
 
     try {
 
-        const userRef = doc(db, "users", user.uid);
+        const userRef =
+            doc(db, "users", user.uid);
 
-        const userSnap = await getDoc(userRef);
+        const userSnap =
+            await getDoc(userRef);
+
 
         if (!userSnap.exists()) {
 
-            console.log("User document not found.");
+            console.warn(
+                "User document does not exist:",
+                user.uid
+            );
+
+            showToast(
+                "Your profile data could not be found.",
+                "error"
+            );
 
             return;
 
         }
 
-        const data = userSnap.data();
+
+        const data =
+            userSnap.data();
+
 
         /*==============================
         PROFILE CARD
         ==============================*/
 
         displayName.textContent =
-            data.fullName || user.displayName || "Customer";
+            data.fullName ||
+            user.displayName ||
+            "Customer";
+
 
         displayEmail.textContent =
-            user.email;
+            user.email || "";
+
 
         /*==============================
-        INPUTS
+        PERSONAL INFORMATION
         ==============================*/
 
         fullName.value =
             data.fullName || "";
 
+
         phone.value =
             data.phone || "";
 
+
         email.value =
             user.email || "";
+
 
         /*==============================
         PROFILE IMAGE
@@ -153,202 +236,290 @@ console.log("ALL AUTH KEYS =", Object.keys(auth));
             user.photoURL ||
             "default-user.png";
 
+
         /*==============================
         PROVIDER
         ==============================*/
 
-        provider.textContent =
-            data.provider === "google"
-            ? "Google Account"
-            : "Email Account";
+        if (data.provider === "google") {
+
+            provider.textContent =
+                "Google Account";
+
+        }
+
+        else {
+
+            provider.textContent =
+                "Email Account";
+
+        }
+
 
         /*==============================
         MEMBER SINCE
         ==============================*/
 
-        if (data.createdAt?.toDate) {
+        if (
+            data.createdAt &&
+            typeof data.createdAt.toDate === "function"
+        ) {
 
             memberSince.textContent =
                 data.createdAt
                     .toDate()
                     .toLocaleDateString();
 
-        } else {
+        }
+
+        else {
 
             memberSince.textContent =
                 "Unavailable";
 
         }
 
-        console.log("Profile Loaded Successfully");
+
+        console.log(
+            "✅ Profile Loaded Successfully"
+        );
 
     }
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "PROFILE LOAD ERROR:",
+            error
+        );
+
+        showToast(
+            "Unable to load your profile.",
+            "error"
+        );
 
     }
 
 });
+
 
 /*==================================
 SAVE PROFILE
 ==================================*/
 
-saveProfile.addEventListener("click", async () => {
+saveProfile.addEventListener(
+    "click",
+    async () => {
 
-    const user = auth.currentUser;
+        const user =
+            auth.currentUser;
 
-    if (!user) return;
 
-    try {
+        if (!user) {
 
-        saveProfile.disabled = true;
+            showToast(
+                "You are not logged in.",
+                "error"
+            );
 
-        saveProfile.innerHTML =
-        '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+            return;
 
-        await updateDoc(
+        }
 
-            doc(db, "users", user.uid),
 
-            {
+        const name =
+            fullName.value.trim();
 
-                fullName: fullName.value.trim(),
+        const phoneNumber =
+            phone.value.trim();
 
-                phone: phone.value.trim()
 
-            }
+        /*==============================
+        VALIDATION
+        ==============================*/
 
-        );
+        if (name.length < 3) {
 
-        displayName.textContent =
-        fullName.value.trim();
+            showToast(
+                "Full name must contain at least 3 characters.",
+                "error"
+            );
 
-        showToast("Profile updated successfully");
+            fullName.focus();
+
+            return;
+
+        }
+
+
+        if (
+            phoneNumber &&
+            !/^[0-9]{11}$/.test(phoneNumber)
+        ) {
+
+            showToast(
+                "Phone number must contain exactly 11 digits.",
+                "error"
+            );
+
+            phone.focus();
+
+            return;
+
+        }
+
+
+        try {
+
+            saveProfile.disabled = true;
+
+            saveProfile.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Saving...
+            `;
+
+
+            /*==============================
+            UPDATE FIREBASE AUTH
+            ==============================*/
+
+            await updateProfile(user, {
+
+                displayName: name
+
+            });
+
+
+            /*==============================
+            UPDATE FIRESTORE
+            ==============================*/
+
+            await updateDoc(
+
+                doc(db, "users", user.uid),
+
+                {
+
+                    fullName: name,
+
+                    phone: phoneNumber,
+
+                    updatedAt:
+                        serverTimestamp()
+
+                }
+
+            );
+
+
+            /*==============================
+            UPDATE UI
+            ==============================*/
+
+            displayName.textContent =
+                name;
+
+
+            showToast(
+                "Profile updated successfully."
+            );
+
+
+            console.log(
+                "✅ Profile updated:",
+                user.uid
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "PROFILE UPDATE ERROR:",
+                error
+            );
+
+            showToast(
+                "Unable to update your profile.",
+                "error"
+            );
+
+        }
+
+        finally {
+
+            saveProfile.disabled =
+                false;
+
+            saveProfile.innerHTML = `
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save Changes
+            `;
+
+        }
 
     }
+);
 
-    catch (error) {
-
-        console.error(error);
-
-        alert("Unable to update profile.");
-
-    }
-
-    finally {
-
-        saveProfile.disabled = false;
-
-        saveProfile.innerHTML =
-        '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
-
-    }
-
-});
 
 /*==================================
 OPEN PASSWORD MODAL
 ==================================*/
 
-changePassword.addEventListener("click", () => {
+changePassword.addEventListener(
+    "click",
+    () => {
 
-    const user = auth.currentUser;
+        const user =
+            auth.currentUser;
 
-    if (!user) return;
 
-    const providerId = user.providerData[0]?.providerId;
+        if (!user) {
 
-    if (providerId === "google.com") {
+            showToast(
+                "You are not logged in.",
+                "error"
+            );
 
-        alert(
-            "Your password is managed through your Google account."
-        );
+            return;
 
-        return;
+        }
+
+
+        const providerId =
+            user.providerData[0]?.providerId;
+
+
+        if (providerId === "google.com") {
+
+            showToast(
+                "Your password is managed through Google.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        passwordModal.style.display =
+            "flex";
 
     }
+);
 
-    passwordModal.style.display = "flex";
-
-});
 
 /*==================================
 CLOSE PASSWORD MODAL
 ==================================*/
 
-cancelPassword.addEventListener("click", () => {
+cancelPassword.addEventListener(
+    "click",
+    () => {
 
-    passwordModal.style.display = "none";
+        passwordModal.style.display =
+            "none";
 
-    newPassword.value = "";
-
-    confirmNewPassword.value = "";
-
-});
-
-/*==================================
-UPDATE PASSWORD
-==================================*/
-
-savePassword.addEventListener("click", async () => {
-
-    const user = auth.currentUser;
-
-    if (!user) return;
-
-    if (newPassword.value.trim().length < 6) {
-
-        alert("Password must be at least 6 characters.");
-
-        return;
-
-    }
-
-    if (newPassword.value !== confirmNewPassword.value) {
-
-        alert("Passwords do not match.");
-
-        return;
-
-    }
-
-    try {
-
-        savePassword.disabled = true;
-
-        savePassword.innerHTML =
-        '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
-
-const credential = EmailAuthProvider.credential(
-
-    user.email,
-
-    currentPassword.value
-
-);
-
-await reauthenticateWithCredential(
-
-    user,
-
-    credential
-
-);
-
-await updatePassword(
-
-    user,
-
-    newPassword.value
-
-);
-
-        alert("Password updated successfully.");
-
-        passwordModal.style.display = "none";
 
         currentPassword.value = "";
 
@@ -357,33 +528,244 @@ await updatePassword(
         confirmNewPassword.value = "";
 
     }
+);
 
-    catch (error) {
 
-        console.error(error);
+/*==================================
+UPDATE PASSWORD
+==================================*/
 
-        alert(error.message);
+savePassword.addEventListener(
+    "click",
+    async () => {
+
+        const user =
+            auth.currentUser;
+
+
+        if (!user) {
+
+            showToast(
+                "You are not logged in.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const current =
+            currentPassword.value;
+
+        const newPass =
+            newPassword.value;
+
+        const confirm =
+            confirmNewPassword.value;
+
+
+        /*==============================
+        VALIDATION
+        ==============================*/
+
+        if (!current) {
+
+            showToast(
+                "Please enter your current password.",
+                "error"
+            );
+
+            currentPassword.focus();
+
+            return;
+
+        }
+
+
+        if (newPass.length < 6) {
+
+            showToast(
+                "New password must be at least 6 characters.",
+                "error"
+            );
+
+            newPassword.focus();
+
+            return;
+
+        }
+
+
+        if (newPass !== confirm) {
+
+            showToast(
+                "Passwords do not match.",
+                "error"
+            );
+
+            confirmNewPassword.focus();
+
+            return;
+
+        }
+
+
+        try {
+
+            savePassword.disabled = true;
+
+            savePassword.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Updating...
+            `;
+
+
+            /*==============================
+            REAUTHENTICATE USER
+            ==============================*/
+
+            const credential =
+                EmailAuthProvider.credential(
+                    user.email,
+                    current
+                );
+
+
+            await reauthenticateWithCredential(
+                user,
+                credential
+            );
+
+
+            /*==============================
+            UPDATE PASSWORD
+            ==============================*/
+
+            await updatePassword(
+                user,
+                newPass
+            );
+
+
+            /*==============================
+            SUCCESS
+            ==============================*/
+
+            showToast(
+                "Password updated successfully."
+            );
+
+
+            passwordModal.style.display =
+                "none";
+
+
+            currentPassword.value = "";
+
+            newPassword.value = "";
+
+            confirmNewPassword.value = "";
+
+
+            console.log(
+                "✅ Password updated successfully"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "PASSWORD UPDATE ERROR:",
+                error
+            );
+
+
+            if (
+                error.code ===
+                "auth/invalid-credential"
+            ) {
+
+                showToast(
+                    "Current password is incorrect.",
+                    "error"
+                );
+
+            }
+
+            else if (
+                error.code ===
+                "auth/weak-password"
+            ) {
+
+                showToast(
+                    "The new password is too weak.",
+                    "error"
+                );
+
+            }
+
+            else {
+
+                showToast(
+                    error.message,
+                    "error"
+                );
+
+            }
+
+        }
+
+        finally {
+
+            savePassword.disabled =
+                false;
+
+            savePassword.innerHTML = `
+                <i class="fa-solid fa-lock"></i>
+                Update Password
+            `;
+
+        }
 
     }
+);
 
-    finally {
 
-        savePassword.disabled = false;
+/*==================================
+PHOTO BUTTON
+==================================*/
 
-        savePassword.innerHTML = "Update Password";
+changePhoto.addEventListener(
+    "click",
+    () => {
+
+        showToast(
+            "Photo upload will be added next."
+        );
 
     }
+);
 
-});
-window.addEventListener("load", () => {
 
-    setTimeout(() => {
+/*==================================
+PAGE LOADER
+==================================*/
 
-        document
-            .getElementById("loader")
-            ?.classList.add("loader-hide");
+window.addEventListener(
+    "load",
+    () => {
 
-    }, 700);
+        setTimeout(() => {
 
-});
+            document
+                .getElementById("loader")
+                ?.classList.add(
+                    "loader-hide"
+                );
 
+        }, 700);
+
+    }
+);

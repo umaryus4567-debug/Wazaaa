@@ -27,43 +27,109 @@ async function saveUserData(user, data = {}) {
 
     const userRef = doc(db, "users", user.uid);
 
-    const snapshot = await getDoc(userRef);
+    try {
 
-    const userData = {
+        console.log(
+            "Preparing user profile:",
+            user.uid
+        );
 
-        uid: user.uid,
+        const snapshot = await getDoc(userRef);
 
-        fullName:
-            data.fullName ||
-            user.displayName ||
-            "Customer",
+        const existingData = snapshot.exists()
+            ? snapshot.data()
+            : {};
 
-        email: user.email,
+        const userData = {
 
-        phone:
-            data.phone || "",
+            uid: user.uid,
 
-        role: "customer",
+            fullName:
+                data.fullName ||
+                user.displayName ||
+                existingData.fullName ||
+                "Customer",
 
-        provider:
-            data.provider || "email",
+            email:
+                user.email ||
+                existingData.email ||
+                "",
 
-        photoURL:
-            user.photoURL || "",
+            phone:
+                data.phone ||
+                existingData.phone ||
+                "",
 
-        createdAt:
-            snapshot.exists()
-                ? snapshot.data().createdAt
-                : serverTimestamp(),
+            role:
+                existingData.role ||
+                data.role ||
+                "customer",
 
-        lastLogin:
-            serverTimestamp()
+            accountStatus:
+                existingData.accountStatus ||
+                "active",
 
-    };
+            provider:
+                data.provider ||
+                existingData.provider ||
+                user.providerData[0]?.providerId ||
+                "email",
 
-    await setDoc(userRef, userData);
+            photoURL:
+                user.photoURL ||
+                existingData.photoURL ||
+                "",
 
-    return userData;
+            createdAt:
+                existingData.createdAt ||
+                serverTimestamp(),
+
+            updatedAt:
+                serverTimestamp(),
+
+            lastLogin:
+                serverTimestamp()
+
+        };
+
+        console.log(
+            "Saving user document:",
+            user.uid
+        );
+
+        await setDoc(
+            userRef,
+            userData
+        );
+
+        console.log(
+            "✅ USER PROFILE SAVED"
+        );
+
+        console.log(
+            "UID:",
+            user.uid
+        );
+
+        console.log(
+            "PATH:",
+            `users/${user.uid}`
+        );
+
+        return userData;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ FIRESTORE USER SAVE ERROR:",
+            error
+        );
+
+        throw error;
+
+    }
 
 }
 /*==================================
@@ -93,15 +159,18 @@ export async function registerUser(fullName, email, password, phone) {
 
         console.log("Saving user to Firestore...");
 
-        await saveUserData(user, {
+        const savedData = await saveUserData(user, {
 
-            fullName: fullName,
+    fullName: fullName,
 
-            phone: phone,
+    phone: phone,
 
-            provider: "email"
+    provider: "email"
 
-        });
+});
+
+console.log("✅ USER PROFILE CREATED:", savedData);
+console.log("✅ USER PROFILE PATH:", `users/${user.uid}`);
 
         console.log("User successfully saved.");
 
@@ -118,6 +187,7 @@ export async function registerUser(fullName, email, password, phone) {
     }
 
 }
+
 /*==================================
 LOGIN USER
 ==================================*/
@@ -129,51 +199,138 @@ export async function loginUser(email, password) {
         console.log("Logging user in...");
 
         const credential =
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
+            await signInWithEmailAndPassword(
+                auth,
+                email,
+                password
+            );
 
         const user = credential.user;
 
-        console.log("Checking Firestore document...");
+        console.log(
+            "Authentication successful:",
+            user.uid
+        );
+
+
+        /*==================================
+        GET USER DOCUMENT
+        ==================================*/
 
         const userRef =
-        doc(db, "users", user.uid);
+            doc(db, "users", user.uid);
 
         const snap =
-        await getDoc(userRef);
+            await getDoc(userRef);
+
+
+        /*==================================
+        USER DOCUMENT MISSING
+        ==================================*/
 
         if (!snap.exists()) {
 
-            console.log("User document missing. Recreating...");
+            console.log(
+                "User document missing. Recreating..."
+            );
 
             await saveUserData(user, {
 
                 fullName:
-                user.displayName || "Customer",
+                    user.displayName ||
+                    "Customer",
 
                 phone: "",
 
                 provider:
-                user.providerData[0]?.providerId || "email"
+                    user.providerData[0]?.providerId ||
+                    "email"
 
             });
 
         }
+
+
+        /*==================================
+        CHECK ACCOUNT STATUS
+        ==================================*/
 
         else {
 
+            const data = snap.data();
+
+            const accountStatus =
+                data.accountStatus || "active";
+
+
+            console.log(
+                "Account Status:",
+                accountStatus
+            );
+
+
+            /*==================================
+            SUSPENDED
+            ==================================*/
+
+            if (accountStatus === "suspended") {
+
+                console.warn(
+                    "⚠️ Account suspended."
+                );
+
+                await signOut(auth);
+
+                window.location.replace(
+                    "account-suspended.html"
+                );
+
+                return null;
+
+            }
+
+
+            /*==================================
+            DISABLED
+            ==================================*/
+
+            if (accountStatus === "disabled") {
+
+                console.warn(
+                    "🚫 Account disabled."
+                );
+
+                await signOut(auth);
+
+                window.location.replace(
+                    "account-disabled.html"
+                );
+
+                return null;
+
+            }
+
+
+            /*==================================
+            ACTIVE
+            ==================================*/
+
             await updateDoc(userRef, {
 
-                lastLogin: serverTimestamp()
+                lastLogin:
+                    serverTimestamp(),
+
+                updatedAt:
+                    serverTimestamp()
 
             });
 
         }
 
-        console.log("Login successful.");
+
+        console.log(
+            "✅ Login successful."
+        );
 
         return user;
 
@@ -181,7 +338,10 @@ export async function loginUser(email, password) {
 
     catch (error) {
 
-        console.error("LOGIN ERROR:", error);
+        console.error(
+            "LOGIN ERROR:",
+            error
+        );
 
         throw error;
 
@@ -234,51 +394,7 @@ export async function googleLogin() {
     }
 
 }
-/*==================================
-LOGIN USER
-==================================*/
 
-export async function loginUser(email, password) {
-
-    try {
-
-        console.log("Signing in...");
-
-        const credential =
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
-        );
-
-        const user = credential.user;
-
-        console.log("Login successful:", user.uid);
-
-        await saveUserData(user, {
-
-            fullName:
-            user.displayName || "Customer",
-
-            phone: "",
-
-            provider: "email"
-
-        });
-
-        return user;
-
-    }
-
-    catch(error){
-
-        console.error("LOGIN ERROR:", error);
-
-        throw error;
-
-    }
-
-}
 /*==================================
 LOGOUT USER
 ==================================*/
@@ -395,30 +511,7 @@ export async function loadUser() {
     }
 
 }
-/*==================================
-PROTECT PAGE
-==================================*/
 
-export function protectPage() {
-
-    return new Promise((resolve) => {
-
-        onAuthStateChanged(auth, (user) => {
-
-            if (!user) {
-
-                window.location.replace("login.html");
-                return;
-
-            }
-
-            resolve(user);
-
-        });
-
-    });
-
-}
 /*==================================
 GUEST ONLY
 ==================================*/
@@ -508,3 +601,35 @@ export function protectStaffPage() {
     });
 
 }
+
+export async function resetPassword(email) {
+
+    try {
+
+        console.log("Sending password reset email...");
+
+        await sendPasswordResetEmail(
+            auth,
+            email.trim().toLowerCase()
+        );
+
+        console.log(
+            "Password reset email sent successfully."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "PASSWORD RESET ERROR:",
+            error
+        );
+
+        throw error;
+
+    }
+
+}
+
+export { auth, db };

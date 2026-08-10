@@ -16,7 +16,7 @@ import {
 GUEST ONLY
 ==================================*/
 
-guestOnly();
+//guestOnly();
 
 /*==================================
 DOM ELEMENTS
@@ -391,9 +391,10 @@ await createNotification({
 
         setTimeout(() => {
 
-            window.location.href = "login.html";
+    console.log("Registration test complete.");
+    console.log("User should now exist in Firestore.");
 
-        }, 2000);
+}, 2000);
 
     }
 
@@ -450,7 +451,7 @@ googleRegister.addEventListener("click", async () => {
 
         setTimeout(() => {
 
-            window.location.href = "home.html";
+          window.location.href = "home.html"; 
 
         }, 1800);
 

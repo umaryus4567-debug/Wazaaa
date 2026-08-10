@@ -7,16 +7,9 @@
     <link rel="stylesheet" href="staff.css">
 </head>
 <body>
+<!-- Loading Screen -->
 <div id="loadingScreen" class="page-loader" style="display:none;">
-
-    <div class="loader-content">
-
-        <div class="spinner"></div>
-
-        <p>Please wait...</p>
-
-    </div>
-
+    <h3>Signing In...</h3>
 </div>
     <!-- Navigation -->
     <header>
@@ -57,14 +50,13 @@
                         required>
                 </div>
 
-               <div class="input-group">
-
+              <div class="input-group">
     <label>
         <ion-icon name="lock-open"></ion-icon>
         Password
     </label>
 
-    <div class="password-box">
+    <div class="password-wrapper">
 
         <input
             type="password"
@@ -73,10 +65,7 @@
             required>
 
         <span id="togglePassword">
-
-            <ion-icon
-            name="eye-outline"></ion-icon>
-
+            <ion-icon name="eye-outline"></ion-icon>
         </span>
 
     </div>
@@ -91,11 +80,16 @@
 
                     <a href="#">Forgot Password?</a>
                 </div>
+                <button
+    type="submit"
+    id="authButton">
 
-                <button type="submit">
-                    <ion-icon name="lock-closed"></ion-icon>
-                    Login
-                </button>
+    <ion-icon name="lock-closed"></ion-icon>
+
+    Login
+
+</button>
+
 
             </form>
 
@@ -140,8 +134,17 @@
     </footer>
         <script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js"></script>
-<script type="module" src="staff.js"></script>
+<div id="toast" class="toast">
+
+    <ion-icon
+        id="toastIcon"
+        name="checkmark-circle">
+    </ion-icon>
+
+    <span id="toastMessage"></span>
 
 </div>
+</div>
+<script type="module" src="staff-login.js"></script>
 </body>
 </html>

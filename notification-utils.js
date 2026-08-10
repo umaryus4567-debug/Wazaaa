@@ -24,6 +24,8 @@ export async function createNotification(data) {
         const notification = {
 
             uid: data.uid,
+            
+            requestId: data.requestId || "",
 
             title: data.title,
 
@@ -78,9 +80,7 @@ export function listenForNotifications(uid, callback) {
 
             collection(db, "notifications"),
 
-            where("uid", "==", uid),
-
-            orderBy("createdAt", "desc")
+            where("uid", "==", uid)
 
         );
 
@@ -104,6 +104,19 @@ export function listenForNotifications(uid, callback) {
 
                 });
 
+                // Sort newest notifications first
+                notifications.sort((a, b) => {
+
+                    const timeA =
+                        a.createdAt?.toMillis?.() || 0;
+
+                    const timeB =
+                        b.createdAt?.toMillis?.() || 0;
+
+                    return timeB - timeA;
+
+                });
+
                 callback(notifications);
 
             },
@@ -123,7 +136,52 @@ export function listenForNotifications(uid, callback) {
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "Notification Listener Setup Error:",
+            error
+        );
+
+    }
+
+}
+
+/*==================================
+MARK ONE NOTIFICATION AS READ
+==================================*/
+
+export async function markNotificationAsRead(notificationId) {
+
+    try {
+
+        await updateDoc(
+
+            doc(
+                db,
+                "notifications",
+                notificationId
+            ),
+
+            {
+                read: true
+            }
+
+        );
+
+        console.log(
+            "Notification marked as read:",
+            notificationId
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Mark Notification Error:",
+            error
+        );
+
+        throw error;
 
     }
 
@@ -140,9 +198,7 @@ export async function markAllNotificationsAsRead(uid) {
 
             collection(db, "notifications"),
 
-            where("uid", "==", uid),
-
-            where("read", "==", false)
+            where("uid", "==", uid)
 
         );
 
@@ -150,7 +206,7 @@ export async function markAllNotificationsAsRead(uid) {
 
         if (snapshot.empty) {
 
-            console.log("No unread notifications.");
+            console.log("No notifications found.");
 
             return;
 
@@ -160,25 +216,37 @@ export async function markAllNotificationsAsRead(uid) {
 
         snapshot.forEach((document) => {
 
-            promises.push(
+            const data = document.data();
 
-                updateDoc(
+            if (data.read === false) {
 
-                    doc(db, "notifications", document.id),
+                promises.push(
 
-                    {
-                        read: true
-                    }
+                    updateDoc(
 
-                )
+                        doc(
+                            db,
+                            "notifications",
+                            document.id
+                        ),
 
-            );
+                        {
+                            read: true
+                        }
+
+                    )
+
+                );
+
+            }
 
         });
 
         await Promise.all(promises);
 
-        console.log("All notifications marked as read.");
+        console.log(
+            "All unread notifications marked as read."
+        );
 
     }
 

@@ -4,14 +4,11 @@ import { onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
 import {
-    protectStaffPage,
-    logoutUser
+    protectStaffPage
 } from "./auth-utils.js";
 
-await protectStaffPage();
-
+protectStaffPage();
 let allRequests = [];
-
 let technicians = [];
 import {
 collection,
@@ -21,9 +18,13 @@ updateDoc,
 deleteDoc,
 getDocs,
 getDoc,
-addDoc
+setDoc,
+serverTimestamp
 }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+import {
+    createNotification
+} from "./notification-utils.js";
 
 async function loadTechnicians(){
 
@@ -53,12 +54,12 @@ document.getElementById("requestsContainer");
 const searchInput =
 document.getElementById("searchInput");
 
-const logoutButton =
-document.getElementById("logoutButton");
+
 /* ==========================
    LOAD REQUESTS
 ========================== */
 await loadTechnicians();
+
 onSnapshot(
     collection(db, "service-request"),
 
@@ -83,36 +84,42 @@ onSnapshot(
 
             total++;
 
-            if(data.Status === "Pending") pending++;
+            if (data.Status === "Pending") {
+                pending++;
+            }
 
-            if(data.Status === "Accepted") accepted++;
+            if (data.Status === "Accepted") {
+                accepted++;
+            }
 
-            if(data.Status === "Declined") declined++;
+            if (data.Status === "Declined") {
+                declined++;
+            }
 
-            if(data.Status === "Completed ✅") completed++;
+            if (data.Status === "Completed ✅") {
+                completed++;
+            }
+
         });
 
-        document.getElementById(
-            "totalCount"
-        ).textContent = total;
+        document.getElementById("totalCount").textContent = total;
+        document.getElementById("pendingCount").textContent = pending;
+        document.getElementById("acceptedCount").textContent = accepted;
+        document.getElementById("declinedCount").textContent = declined;
+        document.getElementById("completedCount").textContent = completed;
 
-        document.getElementById(
-            "pendingCount"
-        ).textContent = pending;
-
-        document.getElementById(
-            "acceptedCount"
-        ).textContent = accepted;
-
-        document.getElementById(
-            "declinedCount"
-        ).textContent = declined;
-
-        document.getElementById(
-            "completedCount"
-        ).textContent = completed;
+        console.log("📦 SERVICE REQUESTS:", allRequests);
 
         renderRequests(allRequests);
+    },
+
+    (error) => {
+
+        console.error(
+            "❌ Service Request Listener Error:",
+            error
+        );
+
     }
 );
 
@@ -285,20 +292,63 @@ function addButtonEvents(){
 
         btn.onclick = async () => {
 
-            await updateDoc(
-                doc(
-                    db,
-                    "service-request",
-                    btn.dataset.id
-                ),
-                {
-                    Status:"Accepted"
-                }
-            );
+     const requestId = btn.dataset.id;
+
+const requestRef = doc(
+    db,
+    "service-request",
+    requestId
+);
+
+const requestSnap = await getDoc(requestRef);
+
+if (!requestSnap.exists()) {
+
+    alert("Request not found.");
+
+    return;
+
+}
+
+const requestData = requestSnap.data();
+
+
+await updateDoc(
+    requestRef,
+    {
+        Status: "Accepted"
+    }
+);
+
+
+/*==================================
+CUSTOMER NOTIFICATION
+==================================*/
+
+await createNotification({
+
+    uid: requestData.CustomerId,
+
+    requestId: requestId,
+
+    title: "Request Accepted",
+
+    message:
+        "Good news! Your electrical service request has been accepted by our maintenance team.",
+
+    type: "request_accepted",
+
+    icon: "fa-circle-check",
+
+    sender: "staff",
+
+    link: ""
+
+});
         };
     });
     
-     document
+document
 .querySelectorAll(".Archive")
 .forEach(button => {
 
@@ -309,49 +359,95 @@ function addButtonEvents(){
         try {
 
             const requestRef =
-            doc(
-                db,
-                "service-request",
-                id
-            );
+                doc(
+                    db,
+                    "service-request",
+                    id
+                );
+
 
             const requestSnap =
-            await getDoc(requestRef);
+                await getDoc(requestRef);
 
-            if(!requestSnap.exists()){
+
+            if (!requestSnap.exists()) {
 
                 alert(
-                    "Request not found"
+                    "Request not found."
                 );
 
                 return;
+
             }
 
-            const requestData =
-            requestSnap.data();
 
-            await addDoc(
-                collection(
+            const requestData =
+                requestSnap.data();
+
+
+            /*==================================
+            SAVE TO SERVICE HISTORY
+            ==================================*/
+
+            const historyRef =
+                doc(
                     db,
-                    "service-history"
-                ),
-                requestData
+                    "service-history",
+                    id
+                );
+
+
+            await setDoc(
+                historyRef,
+                {
+                    ...requestData,
+
+                    Status: "Completed ✅",
+    
+    ArchivedAt:
+    serverTimestamp()
+                }
             );
+
+
+            console.log(
+                "✅ Request saved to service-history:",
+                id
+            );
+
+
+            /*==================================
+            REMOVE FROM ACTIVE REQUESTS
+            ==================================*/
 
             await deleteDoc(
                 requestRef
             );
 
+
+            console.log(
+                "✅ Request removed from service-request:",
+                id
+            );
+
+
             alert(
                 "Request archived successfully ✅"
             );
 
-        } catch(error){
 
-            console.error(error);
+        }
+
+        catch (error) {
+
+            console.error(
+                "❌ Archive Error:",
+                error
+            );
+
 
             alert(
-                "Failed to archive request"
+                "Failed to archive request. Check the console."
             );
 
         }
@@ -518,16 +614,59 @@ Service Team`;
 
         btn.onclick = async () => {
 
-            await updateDoc(
-                doc(
-                    db,
-                    "service-request",
-                    btn.dataset.id
-                ),
-                {
-                    Status:"Declined"
-                }
-            );
+        const requestId = btn.dataset.id;
+
+const requestRef = doc(
+    db,
+    "service-request",
+    requestId
+);
+
+const requestSnap = await getDoc(requestRef);
+
+if (!requestSnap.exists()) {
+
+    alert("Request not found.");
+
+    return;
+
+}
+
+const requestData = requestSnap.data();
+
+
+await updateDoc(
+    requestRef,
+    {
+        Status: "Declined"
+    }
+);
+
+
+/*==================================
+CUSTOMER NOTIFICATION
+==================================*/
+
+await createNotification({
+
+    uid: requestData.CustomerId,
+
+    requestId: requestId,
+
+    title: "Request Declined",
+
+    message:
+        "Your electrical service request has been reviewed and unfortunately could not be accepted at this time.",
+
+    type: "request_declined",
+
+    icon: "fa-circle-xmark",
+
+    sender: "staff",
+
+    link: ""
+
+});
         };
     });
 
@@ -537,16 +676,59 @@ Service Team`;
 
         btn.onclick = async () => {
 
-            await updateDoc(
-                doc(
-                    db,
-                    "service-request",
-                    btn.dataset.id
-                ),
-                {
-                    Status:"Completed ✅"
-                }
-            );
+      const requestId = btn.dataset.id;
+
+const requestRef = doc(
+    db,
+    "service-request",
+    requestId
+);
+
+const requestSnap = await getDoc(requestRef);
+
+if (!requestSnap.exists()) {
+
+    alert("Request not found.");
+
+    return;
+
+}
+
+const requestData = requestSnap.data();
+
+
+await updateDoc(
+    requestRef,
+    {
+        Status: "Completed ✅"
+    }
+);
+
+
+/*==================================
+CUSTOMER NOTIFICATION
+==================================*/
+
+await createNotification({
+
+    uid: requestData.CustomerId,
+
+    requestId: requestId,
+
+    title: "Service Completed",
+
+    message:
+        "Your electrical service request has been completed. Thank you for choosing UY Power Solutions.",
+
+    type: "request_completed",
+
+    icon: "fa-circle-check",
+
+    sender: "staff",
+
+    link: ""
+
+});
         };
     });
 }
@@ -572,48 +754,14 @@ function getStatusColor(status){
             return "#ff9800";
     }
 }
+window.addEventListener("load", () => {
 
-const loader =
-document.getElementById("loader");
+    setTimeout(() => {
 
-if(loader){
+        document
+            .getElementById("loader")
+            ?.classList.add("loader-hide");
 
-    setTimeout(()=>{
+    }, 700);
 
-        loader.classList.add("loader-hide");
-
-    },500);
-
-}
-
-/* ==========================
-   LOGOUT
-========================== */
-
-if(logoutButton){
-
-    logoutButton.addEventListener("click", async ()=>{
-
-        try{
-
-            logoutButton.disabled = true;
-
-            await logoutUser();
-
-            window.location.replace("login.html");
-
-        }
-
-        catch(error){
-
-            console.error(error);
-
-            logoutButton.disabled = false;
-
-            alert("Logout failed.");
-
-        }
-
-    });
-
-}
+});
