@@ -1,336 +1,683 @@
-import { db }
-from "./firebase-config.js";
+import { auth, db } from "./firebase-config.js";
 
 import {
-collection,
-query,
-where,
-getDocs,
-doc,
-getDoc
-}
-from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+    collection,
+    query,
+    where,
+    getDocs,
+    doc,
+    getDoc
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
 
 const searchBtn =
-document.getElementById("searchBtn");
+    document.getElementById("searchBtn");
+
 const refreshBtn =
-document.getElementById("refreshBtn");
+    document.getElementById("refreshBtn");
 
 const result =
-document.getElementById("result");
-document
-.getElementById("searchInput")
-.addEventListener("keypress",(e)=>{
+    document.getElementById("result");
 
-if(e.key==="Enter"){
+const searchInput =
+    document.getElementById("searchInput");
 
-searchBtn.click();
 
-}
+let currentUser = null;
+
+
+/* =========================================
+   AUTHENTICATION
+========================================= */
+
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+
+        console.log(
+            "❌ Track page requires login."
+        );
+
+        result.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">🔐</div>
+
+                <h3>Login Required</h3>
+
+                <p>
+                    Please login to track your service request.
+                </p>
+
+                <a href="login.html">
+                    Login
+                </a>
+
+            </div>
+
+        `;
+
+        searchBtn.disabled = true;
+
+        return;
+    }
+
+
+    currentUser = user;
+
+    searchBtn.disabled = false;
+
+
+    console.log(
+        "✅ Track page authenticated:",
+        user.uid
+    );
 
 });
 
+
+/* =========================================
+   ENTER KEY
+========================================= */
+
+searchInput.addEventListener(
+    "keypress",
+    (e) => {
+
+        if (e.key === "Enter") {
+
+            searchBtn.click();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   SEARCH
+========================================= */
 searchBtn.addEventListener(
-"click",
-async () => {
+    "click",
+    async () => {
 
-const searchValue =
-document
-.getElementById("searchInput")
-.value
-.trim();
+        if (!currentUser) {
 
-if(!searchValue){
+            alert("Please login first.");
 
-alert(
-"Enter Phone Number or Request ID"
+            return;
+
+        }
+
+        const searchValue =
+            searchInput.value.trim();
+
+        if (!searchValue) {
+
+            alert(
+                "Enter Phone Number or Request ID"
+            );
+
+            return;
+
+        }
+
+        result.innerHTML = `
+
+            <div class="loading-card">
+
+                <div class="spinner"></div>
+
+                <p>
+                    Searching for your request...
+                </p>
+
+            </div>
+
+        `;
+
+        try {
+
+            let activeSnapshot = null;
+            let historySnapshot = null;
+
+            /*
+            =========================================
+            REQUEST ID SEARCH
+            =========================================
+            */
+
+            /*
+             A Firestore auto-generated document ID
+             is normally 20 characters long.
+
+             If the user enters a 20-character value,
+             treat it as a possible Request ID.
+            */
+
+            if (searchValue.length === 20) {
+
+                const requestDoc =
+                    await getDoc(
+                        doc(
+                            db,
+                            "service-request",
+                            searchValue
+                        )
+                    );
+
+                if (
+                    requestDoc.exists()
+                    &&
+                    requestDoc.data().CustomerId
+                        === currentUser.uid
+                ) {
+
+                    result.innerHTML =
+                        buildCard(
+                            requestDoc.data(),
+                            requestDoc.id
+                        );
+
+                    refreshBtn.style.display =
+                        "block";
+
+                    return;
+
+                }
+
+                /*
+                Check service history using the
+                request ID as the document ID.
+                */
+
+                const historyDoc =
+                    await getDoc(
+                        doc(
+                            db,
+                            "service-history",
+                            searchValue
+                        )
+                    );
+
+                if (
+                    historyDoc.exists()
+                    &&
+                    historyDoc.data().CustomerId
+                        === currentUser.uid
+                ) {
+
+                    result.innerHTML =
+                        buildCard(
+                            historyDoc.data(),
+                            historyDoc.id
+                        );
+
+                    refreshBtn.style.display =
+                        "block";
+
+                    return;
+
+                }
+
+            }
+
+
+            /*
+            =========================================
+            PHONE NUMBER SEARCH
+            =========================================
+            */
+
+            const activeQuery =
+                query(
+
+                    collection(
+                        db,
+                        "service-request"
+                    ),
+
+                    where(
+                        "CustomerId",
+                        "==",
+                        currentUser.uid
+                    ),
+
+                    where(
+                        "Phone",
+                        "==",
+                        searchValue
+                    )
+
+                );
+
+
+            activeSnapshot =
+                await getDocs(
+                    activeQuery
+                );
+
+
+            /*
+            =========================================
+            SERVICE HISTORY
+            =========================================
+            */
+
+            const historyQuery =
+                query(
+
+                    collection(
+                        db,
+                        "service-history"
+                    ),
+
+                    where(
+                        "CustomerId",
+                        "==",
+                        currentUser.uid
+                    ),
+
+                    where(
+                        "Phone",
+                        "==",
+                        searchValue
+                    )
+
+                );
+
+
+            historySnapshot =
+                await getDocs(
+                    historyQuery
+                );
+
+
+            /*
+            =========================================
+            NO RESULTS
+            =========================================
+            */
+
+            if (
+                activeSnapshot.empty
+                &&
+                historySnapshot.empty
+            ) {
+
+                result.innerHTML = `
+
+                    <div class="empty-state">
+
+                        <div class="empty-icon">
+                            📭
+                        </div>
+
+                        <h3>
+                            No Request Found
+                        </h3>
+
+                        <p>
+                            We couldn't find a request
+                            matching the information
+                            you entered.
+                        </p>
+
+                        <p class="hint">
+                            Please check your phone
+                            number or Request ID.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            /*
+            =========================================
+            DISPLAY RESULTS
+            =========================================
+            */
+
+            result.innerHTML = "";
+
+
+            activeSnapshot.forEach(
+                (docItem) => {
+
+                    const data =
+                        docItem.data();
+
+                    result.innerHTML +=
+                        buildCard(
+                            data,
+                            docItem.id
+                        );
+
+                }
+            );
+
+
+            historySnapshot.forEach(
+                (docItem) => {
+
+                    const data =
+                        docItem.data();
+
+                    result.innerHTML +=
+                        buildCard(
+                            data,
+                            docItem.id
+                        );
+
+                }
+            );
+
+
+            refreshBtn.style.display =
+                "block";
+
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "❌ TRACK REQUEST ERROR:",
+                error
+            );
+
+
+            result.innerHTML = `
+
+                <div class="result-card">
+
+                    <h3>
+                        Error
+                    </h3>
+
+                    <p>
+                        Failed to retrieve request.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+    }
 );
 
-return;
+
+/* =========================================
+   BUILD REQUEST CARD
+========================================= */
+
+function buildCard(data, id) {
+
+    let date = "";
+
+
+    if (data.CreatedAt) {
+
+        try {
+
+            date =
+                data.CreatedAt
+                    .toDate()
+                    .toLocaleString();
+
+        }
+
+        catch (error) {
+
+            date = "";
+
+        }
+
+    }
+
+
+    return `
+
+        <div class="result-card">
+
+            <h3>
+                ${data.Customername || ""}
+            </h3>
+
+
+            <div class="request-id">
+
+                <b>
+                    Request ID:
+                </b>
+
+                <span id="req-${id}">
+                    ${id}
+                </span>
+
+                <button
+                    class="copy-btn"
+                    onclick="copyRequestID('${id}')">
+
+                    Copy
+
+                </button>
+
+            </div>
+
+
+            <p>
+
+                <b>Phone:</b>
+
+                ${data.Phone || ""}
+
+            </p>
+
+
+            <p>
+
+                <b>Location:</b>
+
+                ${data.Location || ""}
+
+            </p>
+
+
+            <p>
+
+                <b>Description:</b>
+
+                ${data.Description || ""}
+
+            </p>
+
+
+            <p>
+
+                <b>Urgency:</b>
+
+                ${data.Urgency || ""}
+
+            </p>
+
+
+            <p>
+
+                <b>Date Submitted:</b>
+
+                ${date}
+
+            </p>
+
+
+            <p>
+
+                <b>Technician:</b>
+
+                ${data.Technician || "Not Assigned Yet"}
+
+            </p>
+
+
+            <div class="timeline">
+
+                ${buildTimeline(
+                    data.Status
+                )}
+
+            </div>
+
+
+            <div
+                class="status-badge
+                ${getStatusClass(data.Status)}">
+
+                ${data.Status || "Pending"}
+
+            </div>
+
+        </div>
+
+    `;
+
 }
 
-result.innerHTML = `
-<div class="loading-card">
 
-<div class="spinner"></div>
+/* =========================================
+   STATUS CLASS
+========================================= */
 
-<p>Searching for your request...</p>
+function getStatusClass(status) {
 
-</div>
-`;
+    switch (status) {
 
-try{
+        case "Accepted":
 
-/* SEARCH BY REQUEST ID */
+            return "accepted";
 
-const requestDoc =
-await getDoc(
-doc(
-db,
-"service-request",
-searchValue
-)
+
+        case "Declined":
+
+            return "declined";
+
+
+        case "Completed":
+
+        case "Completed ✅":
+
+            return "completed";
+
+
+        default:
+
+            return "pending";
+
+    }
+
+}
+
+
+/* =========================================
+   TIMELINE
+========================================= */
+
+function buildTimeline(status) {
+
+    const steps = [
+
+        "Pending",
+
+        "Accepted",
+
+        "Completed"
+
+    ];
+
+
+    let currentStatus =
+        status === "Completed ✅"
+            ? "Completed"
+            : status;
+
+
+    let html = "";
+
+
+    steps.forEach(
+        (step) => {
+
+            const active =
+                steps.indexOf(step)
+                <=
+                steps.indexOf(currentStatus)
+                    ? "active"
+                    : "";
+
+
+            html += `
+
+                <div
+                    class="timeline-step ${active}">
+
+                    <div class="circle"></div>
+
+                    <span>
+                        ${step}
+                    </span>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    return html;
+
+}
+
+
+/* =========================================
+   COPY REQUEST ID
+========================================= */
+
+window.copyRequestID =
+    function(id) {
+
+        navigator
+            .clipboard
+            .writeText(id);
+
+        alert(
+            "✅ Request ID copied."
+        );
+
+    };
+
+
+/* =========================================
+   REFRESH
+========================================= */
+
+refreshBtn.addEventListener(
+    "click",
+    () => {
+
+        searchBtn.click();
+
+    }
 );
-
-if(requestDoc.exists()){
-
-const data =
-requestDoc.data();
-
-result.innerHTML =
-buildCard(
-data,
-requestDoc.id
-);
-
-refreshBtn.style.display = "block";
-
-return;
-}
-
-/* SEARCH BY PHONE */
-
-const q =
-query(
-collection(
-db,
-"service-request"
-),
-where(
-"Phone",
-"==",
-searchValue
-)
-);
-
-const snapshot =
-await getDocs(q);
-
-result.innerHTML = "";
-
-if(snapshot.empty){
-
-result.innerHTML = `
-
-<div class="empty-state">
-
-<div class="empty-icon">📭</div>
-
-<h3>No Request Found</h3>
-
-<p>
-We couldn't find any request matching the phone number or Request ID you entered.
-</p>
-
-<p class="hint">
-Please check your details and try again.
-</p>
-
-</div>
-
-`;
-
-return;
-}
-
-snapshot.forEach(docItem => {
-
-const data =
-docItem.data();
-
-result.innerHTML +=
-buildCard(
-data,
-docItem.id
-);
-
-});
-
-refreshBtn.style.display = "block";
-
-}catch(error){
-
-console.log(error);
-
-result.innerHTML = `
-
-<div class="result-card">
-
-<h3>Error</h3>
-
-<p>
-Failed to retrieve request.
-</p>
-
-</div>
-
-`;
-
-}
-
-});
-
-function buildCard(data,id){
-
-let date = "";
-
-if(data.CreatedAt){
-
-date =
-data.CreatedAt
-.toDate()
-.toLocaleString();
-}
-
-return `
-
-<div class="result-card">
-
-<h3>
-${data.Customername || ""}
-</h3>
-
-<div class="request-id">
-
-<b>Request ID:</b>
-
-<span id="req-${id}">
-${id}
-</span>
-
-<button
-class="copy-btn"
-onclick="copyRequestID('${id}')">
-
-Copy
-
-</button>
-
-</div>
-
-<p>
-
-<b>Phone:</b>
-${data.Phone || ""}
-
-</p>
-
-<p>
-
-<b>Location:</b>
-${data.Location || ""}
-
-</p>
-
-<p>
-
-<b>Description:</b>
-${data.Description || ""}
-
-</p>
-
-<p>
-
-<b>Urgency:</b>
-${data.Urgency || ""}
-
-</p>
-
-<p>
-
-<b>Date Submitted:</b>
-${date}
-
-</p>
-
-<p>
-
-<b>Technician:</b>
-${data.Technician || "Not Assigned Yet"}
-
-</p>
-
-<div class="timeline">
-
-${buildTimeline(data.Status)}
-
-</div>
-
-<div
-class="status-badge ${getStatusClass(data.Status)}">
-
-${data.Status || "Pending"}
-
-</div>
-
-</div>
-
-`;
-}
-
-function getStatusClass(status){
-
-switch(status){
-
-case "Accepted":
-return "accepted";
-
-case "Declined":
-return "declined";
-
-case "Completed ✅":
-return "completed";
-
-default:
-return "pending";
-}
-
-}
-function buildTimeline(status){
-
-const steps=[
-"Pending",
-"Accepted",
-"Completed ✅"
-];
-
-let html="";
-
-steps.forEach(step=>{
-
-const active=
-steps.indexOf(step)<=steps.indexOf(status)
-? "active"
-: "";
-
-html+=`
-
-<div class="timeline-step ${active}">
-
-<div class="circle"></div>
-
-<span>${step.replace(" ✅","")}</span>
-
-</div>
-
-`;
-
-});
-
-return html;
-
-}
-
-window.copyRequestID = function(id){
-
-navigator.clipboard.writeText(id);
-
-alert("✅ Request ID copied.");
-
-};
-
-refreshBtn.addEventListener("click", () => {
-
-searchBtn.click();
-
-});
