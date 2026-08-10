@@ -1,132 +1,189 @@
-import { db }
-from "./firebase-config.js";
+import { auth, db } from "./firebase-config.js";
 
 import {
-collection,
-getDocs
-}
-from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+    collection,
+    query,
+    where,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
 
 const historyList =
-document.getElementById(
-"historyList"
-);
+    document.getElementById("historyList");
 
-loadHistory();
 
-async function loadHistory(){
+/* =========================================
+   CHECK CUSTOMER AUTHENTICATION
+========================================= */
 
-historyList.innerHTML =
-"<p>Loading...</p>";
+onAuthStateChanged(auth, async (user) => {
 
-try{
+    if (!user) {
 
-const snapshot =
-await getDocs(
-collection(
-db,
-"service-history"
-)
-);
+        window.location.replace("login.html");
 
-historyList.innerHTML = "";
+        return;
+    }
 
-if(snapshot.empty){
+    console.log(
+        "✅ Customer authenticated:",
+        user.uid
+    );
 
-historyList.innerHTML =
-
-`
-<div class="empty">
-
-No archived requests found.
-
-</div>
-`;
-
-return;
-}
-
-snapshot.forEach(doc=>{
-
-const data =
-doc.data();
-
-historyList.innerHTML +=
-
-`
-<div class="history-card">
-
-<h3>
-
-${data.Customername || ""}
-
-</h3>
-
-<p>
-
-<b>Phone:</b>
-
-${data.Phone || ""}
-
-</p>
-
-<p>
-
-<b>Location:</b>
-
-${data.Location || ""}
-
-</p>
-
-<p>
-
-<b>Description:</b>
-
-${data.Description || ""}
-
-</p>
-
-<p>
-
-<b>Urgency:</b>
-
-${data.Urgency || ""}
-
-</p>
-
-<p class="tech">
-
-👨‍🔧 Technician:
-
-${data.Technician || "Not Assigned"}
-
-</p>
-
-<p class="status">
-
-✅ Completed
-
-</p>
-
-</div>
-`;
+    await loadHistory(user.uid);
 
 });
 
-}catch(error){
 
-console.log(error);
+/* =========================================
+   LOAD CUSTOMER HISTORY
+========================================= */
 
-historyList.innerHTML =
+async function loadHistory(uid) {
 
-`
-<div class="empty">
+    historyList.innerHTML =
+        "<p>Loading...</p>";
 
-Failed to load history.
+    try {
 
-</div>
-`;
+        const q = query(
 
-}
+            collection(
+                db,
+                "service-history"
+            ),
+
+            where(
+                "CustomerId",
+                "==",
+                uid
+            )
+
+        );
+
+
+        const snapshot =
+            await getDocs(q);
+
+
+        historyList.innerHTML = "";
+
+
+        if (snapshot.empty) {
+
+            historyList.innerHTML = `
+
+                <div class="empty">
+
+                    No completed service requests yet.
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        snapshot.forEach((doc) => {
+
+            const data =
+                doc.data();
+
+
+            historyList.innerHTML += `
+
+                <div class="history-card">
+
+                    <h3>
+
+                        ${data.Customername || ""}
+
+                    </h3>
+
+
+                    <p>
+
+                        <b>Phone:</b>
+
+                        ${data.Phone || ""}
+
+                    </p>
+
+
+                    <p>
+
+                        <b>Location:</b>
+
+                        ${data.Location || ""}
+
+                    </p>
+
+
+                    <p>
+
+                        <b>Description:</b>
+
+                        ${data.Description || ""}
+
+                    </p>
+
+
+                    <p>
+
+                        <b>Urgency:</b>
+
+                        ${data.Urgency || ""}
+
+                    </p>
+
+
+                    <p class="tech">
+
+                        👨‍🔧 Technician:
+
+                        ${data.Technician || "Not Assigned"}
+
+                    </p>
+
+
+                    <p class="status">
+
+                        ✅ Completed
+
+                    </p>
+
+                </div>
+
+            `;
+
+        });
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ HISTORY ERROR:",
+            error
+        );
+
+
+        historyList.innerHTML = `
+
+            <div class="empty">
+
+                Failed to load history.
+
+            </div>
+
+        `;
+
+    }
 
 }
