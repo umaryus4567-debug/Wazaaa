@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-
+console.log("🔥 AUTH-UTILS.JS LOADED - VERSION TEST");
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -18,6 +18,8 @@ import {
     updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+console.log("🔥 FIREBASE AUTH UTILS ACTIVE");
+
 const googleProvider = new GoogleAuthProvider();
 
 googleProvider.setCustomParameters({
@@ -196,7 +198,7 @@ export async function loginUser(email, password) {
 
     try {
 
-        console.log("Logging user in...");
+        console.log("🔐 Attempting Firebase Authentication login...");
 
         const credential =
             await signInWithEmailAndPassword(
@@ -208,138 +210,16 @@ export async function loginUser(email, password) {
         const user = credential.user;
 
         console.log(
-            "Authentication successful:",
+            "✅ FIREBASE AUTHENTICATION SUCCESS:",
             user.uid
-        );
-
-
-        /*==================================
-        GET USER DOCUMENT
-        ==================================*/
-
-        const userRef =
-            doc(db, "users", user.uid);
-
-        const snap =
-            await getDoc(userRef);
-
-
-        /*==================================
-        USER DOCUMENT MISSING
-        ==================================*/
-
-        if (!snap.exists()) {
-
-            console.log(
-                "User document missing. Recreating..."
-            );
-
-            await saveUserData(user, {
-
-                fullName:
-                    user.displayName ||
-                    "Customer",
-
-                phone: "",
-
-                provider:
-                    user.providerData[0]?.providerId ||
-                    "email"
-
-            });
-
-        }
-
-
-        /*==================================
-        CHECK ACCOUNT STATUS
-        ==================================*/
-
-        else {
-
-            const data = snap.data();
-
-            const accountStatus =
-                data.accountStatus || "active";
-
-
-            console.log(
-                "Account Status:",
-                accountStatus
-            );
-
-
-            /*==================================
-            SUSPENDED
-            ==================================*/
-
-            if (accountStatus === "suspended") {
-
-                console.warn(
-                    "⚠️ Account suspended."
-                );
-
-                await signOut(auth);
-
-                window.location.replace(
-                    "account-suspended.html"
-                );
-
-                return null;
-
-            }
-
-
-            /*==================================
-            DISABLED
-            ==================================*/
-
-            if (accountStatus === "disabled") {
-
-                console.warn(
-                    "🚫 Account disabled."
-                );
-
-                await signOut(auth);
-
-                window.location.replace(
-                    "account-disabled.html"
-                );
-
-                return null;
-
-            }
-
-
-            /*==================================
-            ACTIVE
-            ==================================*/
-
-            await updateDoc(userRef, {
-
-                lastLogin:
-                    serverTimestamp(),
-
-                updatedAt:
-                    serverTimestamp()
-
-            });
-
-        }
-
-
-        console.log(
-            "✅ Login successful."
         );
 
         return user;
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
-            "LOGIN ERROR:",
+            "❌ FIREBASE AUTHENTICATION ERROR:",
             error
         );
 

@@ -9,10 +9,8 @@ import {
     googleLogin,
     resetPassword
 } from "./auth-utils.js";
-
-import {
-    createNotification
-} from "./notification-utils.js";
+console.log("🔥 AUTH.JS LOADED");
+console.log("🔥 loginUser function:", loginUser);
 
 /*==================================
 GUEST ONLY
@@ -244,33 +242,14 @@ loginForm.addEventListener("submit", async (e) => {
 
     try {
 
-        const user = await loginUser(
+const user = await loginUser(
+    emailValue,
+    passwordValue
+);
 
-            emailValue,
+console.log("✅ AUTHENTICATION LOGIN SUCCESS:", user.uid);
 
-            passwordValue
-
-        );
-
-        await createNotification({
-
-            uid: user.uid,
-
-            title: "Login Successful",
-
-            message: "Welcome back to UY Power Solutions.",
-
-            type: "success",
-
-            icon: "fa-right-to-bracket",
-
-            sender: "system",
-
-            link: "home.html"
-
-        });
-
-        hideLoading();
+hideLoading();
 
         showToast("Login successful!");
 
@@ -335,27 +314,9 @@ googleButton.addEventListener("click", async () => {
 
     try {
 
-        const user = await googleLogin();
+const user = await googleLogin();
 
-        await createNotification({
-
-            uid: user.uid,
-
-            title: "Google Login",
-
-            message: "You logged in successfully with Google.",
-
-            type: "success",
-
-            icon: "fa-google",
-
-            sender: "system",
-
-            link: "home.html"
-
-        });
-
-        hideLoading();
+hideLoading();
 
         showToast("Google Login Successful!");
 
