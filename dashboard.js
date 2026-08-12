@@ -125,6 +125,101 @@ onSnapshot(
 );
 
 console.log("Technicians Array:", technicians);
+
+/*==================================
+UPDATE WEBSITE STATISTICS
+==================================*/
+
+async function updateWebsiteStatistics() {
+
+    try {
+
+        const statsRef =
+            doc(
+                db,
+                "site-stats",
+                "overview"
+            );
+
+        const statsSnap =
+            await getDoc(statsRef);
+
+        if (!statsSnap.exists()) {
+
+            await setDoc(
+                statsRef,
+                {
+                    completedRequests: 0,
+                    satisfiedClients: 0,
+                    declinedRequests: 0,
+                    successRate: 0
+                }
+            );
+
+        }
+
+        const updatedSnap =
+            await getDoc(statsRef);
+
+        const stats =
+            updatedSnap.data();
+
+        const completed =
+            Number(
+                stats.completedRequests || 0
+            );
+
+        const declined =
+            Number(
+                stats.declinedRequests || 0
+            );
+
+        const totalFinal =
+            completed + declined;
+
+        const successRate =
+            totalFinal > 0
+                ? Math.round(
+                    (completed / totalFinal) * 100
+                )
+                : 0;
+
+        await updateDoc(
+            statsRef,
+            {
+                successRate: successRate
+            }
+        );
+
+        console.log(
+            "📊 Website statistics updated:",
+            {
+                completedRequests:
+                    completed,
+
+                satisfiedClients:
+                    stats.satisfiedClients,
+
+                declinedRequests:
+                    declined,
+
+                successRate:
+                    successRate
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ Website statistics update error:",
+            error
+        );
+
+    }
+
+}
 /* ==========================
    RENDER REQUESTS
 ========================== */
@@ -411,6 +506,27 @@ document
             );
             
             /*==================================
+UPDATE PUBLIC STATISTICS
+==================================*/
+
+await updateDoc(
+    doc(
+        db,
+        "site-stats",
+        "overview"
+    ),
+    {
+        completedRequests:
+            increment(1),
+
+        satisfiedClients:
+            increment(1)
+    }
+);
+
+await updateWebsiteStatistics();
+            
+            /*==================================
 UPDATE PUBLIC COMPLETED STATISTICS
 ==================================*/
 
@@ -666,7 +782,23 @@ await updateDoc(
         Status: "Declined"
     }
 );
+/*==================================
+UPDATE DECLINED STATISTICS
+==================================*/
 
+await updateDoc(
+    doc(
+        db,
+        "site-stats",
+        "overview"
+    ),
+    {
+        declinedRequests:
+            increment(1)
+    }
+);
+
+await updateWebsiteStatistics();
 
 /*==================================
 CUSTOMER NOTIFICATION

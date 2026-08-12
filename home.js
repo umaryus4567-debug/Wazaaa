@@ -48,18 +48,11 @@ const logoutButton =
 const staffContainer =
     document.getElementById("staffDashboardContainer");
     
-    /*==================================
-LOAD COMPLETED REQUEST STATISTIC
+/*==================================
+LOAD PUBLIC WEBSITE STATISTICS
 ==================================*/
 
-async function loadCompletedRequestCount() {
-
-    const counter =
-        document.querySelector(
-            ".loading-counter"
-        );
-
-    if (!counter) return;
+async function loadWebsiteStatistics() {
 
     try {
 
@@ -72,245 +65,168 @@ async function loadCompletedRequestCount() {
         const statsSnap =
             await getDoc(statsRef);
 
+        /*==================================
+        DEFAULT VALUES
+        ==================================*/
 
         let completedRequests = 0;
+        let satisfiedClients = 0;
+        let successRate = null;
 
+
+        /*==================================
+        READ STATISTICS
+        ==================================*/
 
         if (statsSnap.exists()) {
 
+            const stats =
+                statsSnap.data();
+
             completedRequests =
                 Number(
-                    statsSnap.data()
-                        .completedRequests || 0
+                    stats.completedRequests || 0
                 );
 
+            satisfiedClients =
+                Number(
+                    stats.satisfiedClients || 0
+                );
+
+            if (
+                stats.successRate !== undefined &&
+                stats.successRate !== null
+            ) {
+
+                successRate =
+                    Number(stats.successRate);
+
+            }
+
         }
 
 
         console.log(
-            "📊 Real completed requests:",
-            completedRequests
+            "📊 Website Statistics:",
+            {
+                completedRequests,
+                satisfiedClients,
+                successRate
+            }
         );
-
-
-        animateCounter(
-            counter,
-            completedRequests
-        );
-
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "❌ Completed request statistic error:",
-            error
-        );
-
-        counter.textContent = "0";
-
-    }
-
-}
-
-/*==================================
-LOAD SATISFIED CLIENT STATISTIC
-==================================*/
-
-async function loadSatisfiedClientCount() {
-
-    const counter =
-        document.getElementById(
-            "satisfiedClientsCount"
-        );
-
-    if (!counter) return;
-
-    try {
-
-        const historyRef =
-            collection(
-                db,
-                "service-history"
-            );
-
-        const snapshot =
-            await getDocs(historyRef);
-
-        const satisfiedClients =
-            snapshot.size;
-
-
-        console.log(
-            "😊 Real satisfied clients:",
-            satisfiedClients
-        );
-
-
-        animateCounter(
-            counter,
-            satisfiedClients
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "❌ Satisfied client statistic error:",
-            error
-        );
-
-        counter.textContent = "0";
-
-    }
-
-}
-
-/*==================================
-LOAD REAL SUCCESS RATE
-==================================*/
-
-async function loadSuccessRate() {
-
-    const counter =
-        document.getElementById(
-            "successRateCount"
-        );
-
-    if (!counter) return;
-
-    try {
-
-        const requestsRef =
-            collection(
-                db,
-                "service-request"
-            );
-
-        const historyRef =
-            collection(
-                db,
-                "service-history"
-            );
-
-
-        const [
-            requestsSnapshot,
-            historySnapshot
-        ] = await Promise.all([
-
-            getDocs(requestsRef),
-
-            getDocs(historyRef)
-
-        ]);
-
-
-        let completed = 0;
-        let declined = 0;
 
 
         /*==================================
-        CHECK ACTIVE REQUESTS
+        REQUESTS COMPLETED
         ==================================*/
 
-        requestsSnapshot.forEach((documentItem) => {
-
-            const data =
-                documentItem.data();
-
-            if (data.Status === "Completed ✅") {
-
-                completed++;
-
-            }
-
-            else if (data.Status === "Declined") {
-
-                declined++;
-
-            }
-
-        });
-
-
-        /*==================================
-        CHECK ARCHIVED COMPLETED REQUESTS
-        ==================================*/
-
-        historySnapshot.forEach((documentItem) => {
-
-            const data =
-                documentItem.data();
-
-            if (data.Status === "Completed ✅") {
-
-                completed++;
-
-            }
-
-        });
-
-
-        const finalRequests =
-            completed + declined;
-
-
-        /*==================================
-        NO FINAL RESULTS YET
-        ==================================*/
-
-        if (finalRequests === 0) {
-
-            counter.textContent = "—";
-
-            console.log(
-                "📊 Success rate: No final requests yet."
+        const completedCounter =
+            document.querySelector(
+                ".loading-counter"
             );
 
-            return;
+        if (completedCounter) {
+
+            animateCounter(
+                completedCounter,
+                completedRequests
+            );
 
         }
 
 
         /*==================================
-        CALCULATE SUCCESS RATE
+        SATISFIED CLIENTS
         ==================================*/
 
-        const successRate =
-            Math.round(
-                (completed / finalRequests) * 100
+        const satisfiedCounter =
+            document.getElementById(
+                "satisfiedClientsCount"
             );
 
+        if (satisfiedCounter) {
 
-        counter.textContent =
-            `${successRate}%`;
+            animateCounter(
+                satisfiedCounter,
+                satisfiedClients
+            );
+
+        }
 
 
-        console.log(
-            "📊 Real success rate:",
-            successRate + "%"
-        );
+        /*==================================
+        SUCCESS RATE
+        ==================================*/
 
-        console.log(
-            "Completed:",
-            completed,
-            "Declined:",
-            declined
-        );
+        const successCounter =
+            document.getElementById(
+                "successRateCount"
+            );
+
+        if (successCounter) {
+
+            if (successRate === null) {
+
+                successCounter.textContent =
+                    "—";
+
+            }
+
+            else {
+
+                successCounter.textContent =
+                    `${successRate}%`;
+
+            }
+
+        }
 
     }
 
     catch (error) {
 
         console.error(
-            "❌ Success rate statistic error:",
+            "❌ Website statistics error:",
             error
         );
 
-        counter.textContent = "—";
+
+        const completedCounter =
+            document.querySelector(
+                ".loading-counter"
+            );
+
+        const satisfiedCounter =
+            document.getElementById(
+                "satisfiedClientsCount"
+            );
+
+        const successCounter =
+            document.getElementById(
+                "successRateCount"
+            );
+
+
+        if (completedCounter) {
+
+            completedCounter.textContent =
+                "0";
+
+        }
+
+        if (satisfiedCounter) {
+
+            satisfiedCounter.textContent =
+                "0";
+
+        }
+
+        if (successCounter) {
+
+            successCounter.textContent =
+                "—";
+
+        }
 
     }
 
@@ -410,12 +326,8 @@ authReady.then(async ({ user, data, role }) => {
     ==================================*/
 
     await loadUserRole(user);
-    
-    await loadCompletedRequestCount();
-
-await loadSatisfiedClientCount();
-
-await loadSuccessRate();
+   
+   await loadWebsiteStatistics();
 
 
     /*==================================
