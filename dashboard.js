@@ -11,15 +11,16 @@ protectStaffPage();
 let allRequests = [];
 let technicians = [];
 import {
-collection,
-onSnapshot,
-doc,
-updateDoc,
-deleteDoc,
-getDocs,
-getDoc,
-setDoc,
-serverTimestamp
+    collection,
+    onSnapshot,
+    doc,
+    updateDoc,
+    deleteDoc,
+    getDocs,
+    getDoc,
+    setDoc,
+    serverTimestamp,
+    increment
 }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 import {
@@ -408,6 +409,30 @@ document
     serverTimestamp()
                 }
             );
+            
+            /*==================================
+UPDATE PUBLIC COMPLETED STATISTICS
+==================================*/
+
+const statsRef = doc(
+    db,
+    "site-stats",
+    "overview"
+);
+
+await setDoc(
+    statsRef,
+    {
+        completedRequests: increment(1)
+    },
+    {
+        merge: true
+    }
+);
+
+console.log(
+    "✅ Completed request statistic updated."
+);
 
 
             console.log(
