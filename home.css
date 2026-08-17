@@ -552,15 +552,9 @@ MAIN HEADER
 
 .main {
 
-    position: relative;
+color: white;
 
-    overflow: visible;
-
-    color: white;
-
-    padding: 20px;
-
-    isolation: isolate;
+isolation: isolate;
 
 }
 
@@ -577,15 +571,7 @@ HEADER BACKGROUND
 
     inset: 0;
 
-    background:
-        linear-gradient(
-            135deg,
-            rgba(13,71,161,.94),
-            rgba(37,99,235,.82)
-        ),
-        url('con.jpg') center / cover no-repeat;
-
-    z-index: -2;
+z-index: -2;
 
     transform: scale(1.02);
 
@@ -624,19 +610,7 @@ HEADER CONTENT
 
 .head {
 
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 20px;
-
-    padding: 10px 0;
-
-    position: relative;
+position: relative;
 
     z-index: 2;
 
@@ -649,16 +623,6 @@ LOGO AREA
 
 .logo {
 
-    text-align: center;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
 }
 
 
@@ -668,31 +632,9 @@ LOGO IMAGE
 
 .logo1 img {
 
-    width: clamp(
-        70px,
-        15vw,
-        90px
-    );
+display: block;
 
-    height: clamp(
-        70px,
-        15vw,
-        90px
-    );
-
-    border-radius: 50%;
-
-    border: 3px solid white;
-
-    object-fit: cover;
-
-    display: block;
-
-    box-shadow:
-        0 10px 25px
-        rgba(0,0,0,.25);
-
-    transition:
+transition:
         transform .4s ease,
         box-shadow .4s ease;
 
@@ -724,13 +666,9 @@ BUSINESS NAME
 
     margin-bottom: 0;
 
-    font-size: 1.8rem;
+font-weight: 700;
 
-    font-weight: 700;
-
-    line-height: 1.2;
-
-    letter-spacing: .3px;
+letter-spacing: .3px;
 
 }
 
@@ -740,39 +678,6 @@ NAVIGATION
 ==================================*/
 
 .nav {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    justify-content: center;
-
-    align-items: center;
-
-    gap: 4px;
-
-    padding: 10px 5px;
-
-    width: 100%;
-
-    max-width: 900px;
-
-    background:
-        rgba(255,255,255,.08);
-
-    border:
-        1px solid
-        rgba(255,255,255,.12);
-
-    border-radius: 16px;
-
-    box-shadow:
-        0 10px 30px
-        rgba(0,0,0,.12);
-
-    backdrop-filter: blur(8px);
-
-    -webkit-backdrop-filter: blur(8px);
 
 }
 
@@ -785,23 +690,7 @@ NAV LINKS
 
     position: relative;
 
-    color: white;
-
-    text-decoration: none;
-
-    font-weight: 600;
-
-    padding: 9px 13px;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-
-    transition:
-        background .3s ease,
-        color .3s ease,
-        transform .3s ease,
-        box-shadow .3s ease;
+overflow: hidden;
 
 }
 
@@ -843,15 +732,7 @@ NAV HOVER
 
 .nav a:hover {
 
-    background:
-        rgba(255,255,255,.20);
-
-    color: white;
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
+box-shadow:
         0 8px 18px
         rgba(0,0,0,.12);
 
@@ -875,18 +756,10 @@ ACTIVE NAVIGATION
 
 .nav a.active {
 
-    border-bottom:
+border-left:
         3px solid white;
 
-    border-left:
-        3px solid white;
-
-    background:
-        rgba(0,0,0,.35);
-
-    color: white;
-
-    animation:
+animation:
         navActive .6s ease;
 
 }
@@ -1193,34 +1066,7 @@ LOGOUT BUTTON
 
 #logoutButton {
 
-    border: none;
-
-    outline: none;
-
-    cursor: pointer;
-
-    color: white;
-
-    background:
-        rgba(255,255,255,.12);
-
-    border:
-        1px solid
-        rgba(255,255,255,.20);
-
-    padding:
-        9px 15px;
-
-    border-radius: 10px;
-
-    font-size: .9rem;
-
-    font-weight: 600;
-
-    transition:
-        background .3s ease,
-        transform .3s ease,
-        box-shadow .3s ease;
+outline: none;
 
 }
 
@@ -1230,16 +1076,6 @@ LOGOUT HOVER
 ==================================*/
 
 #logoutButton:hover {
-
-    background:
-        rgba(220,38,38,.90);
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        0 7px 18px
-        rgba(0,0,0,.18);
 
 }
 
@@ -1518,38 +1354,9 @@ NOTIFICATION BUTTON
 
 .notification-btn {
 
-    position: relative;
+outline: none;
 
-    width: 50px;
-
-    height: 50px;
-
-    border: none;
-
-    outline: none;
-
-    border-radius: 50%;
-
-    background:
-        rgba(255,255,255,.95);
-
-    color: #2563eb;
-
-    cursor: pointer;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    transition:
-        background .3s ease,
-        color .3s ease,
-        transform .3s ease,
-        box-shadow .3s ease;
+flex-shrink: 0;
 
 }
 
@@ -1560,17 +1367,6 @@ NOTIFICATION BUTTON HOVER
 
 .notification-btn:hover {
 
-    background: #2563eb;
-
-    color: white;
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        0 8px 20px
-        rgba(0,0,0,.18);
-
 }
 
 
@@ -1579,8 +1375,6 @@ NOTIFICATION ICON
 ==================================*/
 
 .notification-btn ion-icon {
-
-    font-size: 24px;
 
 }
 
@@ -1591,45 +1385,7 @@ NOTIFICATION COUNT BADGE
 
 #notificationCount {
 
-    position: absolute;
-
-    top: -4px;
-
-    right: -4px;
-
-    min-width: 22px;
-
-    height: 22px;
-
-    padding:
-        0 6px;
-
-    border-radius: 50px;
-
-    background: #ef4444;
-
-    color: white;
-
-    font-size: 12px;
-
-    font-weight: 700;
-
-    line-height: 1;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border:
-        2px solid white;
-
-    box-shadow:
-        0 3px 8px
-        rgba(0,0,0,.18);
-
-    pointer-events: none;
+pointer-events: none;
 
     animation:
         notificationBadgeIn .25s ease;
@@ -1642,8 +1398,6 @@ HIDE EMPTY BADGE
 ==================================*/
 
 #notificationCount:empty {
-
-    display: none;
 
 }
 
@@ -1681,41 +1435,6 @@ NOTIFICATION DROPDOWN
 
 .notification-dropdown {
 
-    position: absolute;
-
-    top: 65px;
-
-    right: 0;
-
-    width: 350px;
-
-    max-width:
-        calc(100vw - 30px);
-
-    max-height: 450px;
-
-    overflow-y: auto;
-
-    background: white;
-
-    border-radius: 18px;
-
-    border:
-        1px solid
-        #e5e7eb;
-
-    box-shadow:
-        0 18px 45px
-        rgba(0,0,0,.18);
-
-    display: none;
-
-    z-index: 99999;
-
-    animation:
-        notificationDropdownIn
-        .25s ease;
-
 }
 
 
@@ -1724,8 +1443,6 @@ SHOW DROPDOWN
 ==================================*/
 
 .notification-dropdown.show {
-
-    display: block;
 
 }
 
@@ -1881,25 +1598,11 @@ NOTIFICATION CARD
 
 .notification-card {
 
-    display: flex;
-
-    align-items: flex-start;
-
-    gap: 14px;
-
-    padding: 16px;
-
-    background: white;
+background: white;
 
     border-bottom:
         1px solid
         #f1f5f9;
-
-    cursor: pointer;
-
-    transition:
-        background .25s ease,
-        transform .25s ease;
 
 }
 
@@ -1910,9 +1613,6 @@ NOTIFICATION CARD HOVER
 
 .notification-card:hover {
 
-    background:
-        #f8fafc;
-
 }
 
 
@@ -1921,13 +1621,6 @@ UNREAD NOTIFICATION
 ==================================*/
 
 .notification-card.unread {
-
-    background:
-        #eff6ff;
-
-    border-left:
-        4px solid
-        #2563eb;
 
 }
 
@@ -1950,24 +1643,6 @@ NOTIFICATION ICON BASE
 
 .notification-icon {
 
-    width: 45px;
-
-    height: 45px;
-
-    min-width: 45px;
-
-    border-radius: 50%;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 18px;
-
-    flex-shrink: 0;
-
 }
 
 
@@ -1977,12 +1652,6 @@ GREEN
 ==================================*/
 
 .notification-icon.request_submitted {
-
-    background:
-        #dcfce7;
-
-    color:
-        #16a34a;
 
 }
 
@@ -1994,12 +1663,6 @@ BLUE
 
 .notification-icon.request_accepted {
 
-    background:
-        #dbeafe;
-
-    color:
-        #2563eb;
-
 }
 
 
@@ -2009,12 +1672,6 @@ AMBER
 ==================================*/
 
 .notification-icon.technician_assigned {
-
-    background:
-        #fef3c7;
-
-    color:
-        #d97706;
 
 }
 
@@ -2026,12 +1683,6 @@ RED
 
 .notification-icon.request_declined {
 
-    background:
-        #fee2e2;
-
-    color:
-        #dc2626;
-
 }
 
 
@@ -2041,12 +1692,6 @@ PURPLE
 ==================================*/
 
 .notification-icon.request_completed {
-
-    background:
-        #ede9fe;
-
-    color:
-        #7c3aed;
 
 }
 
@@ -2058,12 +1703,6 @@ GREEN
 
 .notification-icon.welcome {
 
-    background:
-        #dcfce7;
-
-    color:
-        #16a34a;
-
 }
 
 
@@ -2072,12 +1711,6 @@ DEFAULT
 ==================================*/
 
 .notification-icon.default {
-
-    background:
-        #f1f5f9;
-
-    color:
-        #64748b;
 
 }
 
@@ -2354,9 +1987,7 @@ HERO CONTENT
 
     z-index: 2;
 
-    width: 100%;
-
-    max-width: 850px;
+max-width: 850px;
 
     margin: 0 auto;
 
@@ -3068,11 +2699,7 @@ VERY SMALL SCREENS
 
     background-color:#F5F7FA;
 
-    padding:80px 20px;
-
-    text-align:center;
-
-    position:relative;
+position:relative;
 
 }
 
@@ -3080,19 +2707,7 @@ VERY SMALL SCREENS
 /* Section Heading */
 .why-choose-us h2{
 
-    color:#0D47A1;
-
-    margin:0 auto 45px;
-
-    font-size:clamp(
-        1.8rem,
-        4vw,
-        2.5rem
-    );
-
-    font-weight:800;
-
-    position:relative;
+position:relative;
 
 }
 
@@ -3124,23 +2739,9 @@ VERY SMALL SCREENS
 /* Issues Grid */
 .reasons-container{
 
-    width:100%;
+max-width:1200px;
 
-    max-width:1200px;
-
-    margin:0 auto;
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(240px,1fr)
-        );
-
-    gap:25px;
-
-    align-items:stretch;
+align-items:stretch;
 
 }
 
@@ -3151,23 +2752,7 @@ VERY SMALL SCREENS
 
 .reason{
 
-    background:#ffffff;
-
-    padding:30px 25px;
-
-    border-radius:20px;
-
-    box-shadow:
-        0 12px 30px
-        rgba(15,23,42,.08);
-
-    transition:
-        transform .35s ease,
-        box-shadow .35s ease;
-
-    position:relative;
-
-    overflow:hidden;
+overflow:hidden;
 
     text-align:left;
 
@@ -3179,9 +2764,7 @@ VERY SMALL SCREENS
 /* Gold accent line */
 .reason::before{
 
-    content:"";
-
-    position:absolute;
+position:absolute;
 
     top:0;
 
@@ -3237,13 +2820,6 @@ VERY SMALL SCREENS
 /* Hover */
 .reason:hover{
 
-    transform:
-        translateY(-8px);
-
-    box-shadow:
-        0 22px 45px
-        rgba(37,99,235,.14);
-
 }
 
 
@@ -3270,17 +2846,7 @@ VERY SMALL SCREENS
 
 .reason h3{
 
-    color:#0D47A1;
-
-    margin:0 0 12px;
-
-    font-size:20px;
-
-    font-weight:700;
-
-    line-height:1.4;
-
-    display:flex;
+display:flex;
 
     align-items:center;
 
@@ -3331,14 +2897,6 @@ VERY SMALL SCREENS
 ==================================================*/
 
 .reason p{
-
-    color:#475569;
-
-    line-height:1.8;
-
-    margin:0;
-
-    font-size:15px;
 
 }
 
@@ -3417,13 +2975,7 @@ VERY SMALL SCREENS
 
 .how-it-works{
 
-    padding:80px 20px;
-
-    text-align:center;
-
-    background:#ffffff;
-
-    position:relative;
+position:relative;
 
 }
 
@@ -3431,19 +2983,7 @@ VERY SMALL SCREENS
 /* Section Heading */
 .how-it-works h2{
 
-    color:#0D47A1;
-
-    margin:0 auto 45px;
-
-    font-size:clamp(
-        1.8rem,
-        4vw,
-        2.5rem
-    );
-
-    font-weight:800;
-
-    position:relative;
+position:relative;
 
 }
 
@@ -3478,23 +3018,9 @@ VERY SMALL SCREENS
 
 .steps{
 
-    width:100%;
+max-width:1200px;
 
-    max-width:1200px;
-
-    margin:0 auto;
-
-    display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(230px,1fr)
-        );
-
-    gap:25px;
-
-    align-items:stretch;
+align-items:stretch;
 
 }
 
@@ -3505,23 +3031,7 @@ VERY SMALL SCREENS
 
 .step{
 
-    background:#ffffff;
-
-    padding:30px 25px;
-
-    border-radius:20px;
-
-    box-shadow:
-        0 15px 35px
-        rgba(15,23,42,.09);
-
-    transition:
-        transform .35s ease,
-        box-shadow .35s ease;
-
-    position:relative;
-
-    overflow:hidden;
+overflow:hidden;
 
     text-align:left;
 
@@ -3533,28 +3043,7 @@ VERY SMALL SCREENS
 /* Gold top accent */
 .step::before{
 
-    content:"";
-
-    position:absolute;
-
-    top:0;
-
-    left:0;
-
-    width:100%;
-
-    height:4px;
-
-    background:linear-gradient(
-        90deg,
-        #FFC107,
-        #0D47A1
-    );
-
-    transform:
-        scaleX(.25);
-
-    transform-origin:left;
+transform-origin:left;
 
     transition:
         transform .4s ease;
@@ -3593,13 +3082,6 @@ VERY SMALL SCREENS
 /* Hover */
 .step:hover{
 
-    transform:
-        translateY(-8px);
-
-    box-shadow:
-        0 25px 50px
-        rgba(13,71,161,.14);
-
 }
 
 
@@ -3627,17 +3109,7 @@ VERY SMALL SCREENS
 
 .step h3{
 
-    color:#0D47A1;
-
-    margin:0 0 15px;
-
-    font-size:20px;
-
-    font-weight:700;
-
-    line-height:1.4;
-
-    transition:
+transition:
         transform .3s ease;
 
 }
@@ -3657,14 +3129,6 @@ VERY SMALL SCREENS
 ==================================================*/
 
 .step p{
-
-    color:#475569;
-
-    line-height:1.8;
-
-    margin:0;
-
-    font-size:15px;
 
 }
 
@@ -3771,23 +3235,9 @@ VERY SMALL SCREENS
 
 .stat-item{
 
-    background:#ffffff;
-
-    padding:30px 20px;
-
-    border-radius:20px;
-
-    box-shadow:
-        0 12px 30px
-        rgba(15,23,42,.08);
-
-    position:relative;
+position:relative;
 
     overflow:hidden;
-
-    transition:
-        transform .35s ease,
-        box-shadow .35s ease;
 
 }
 
@@ -3845,13 +3295,6 @@ VERY SMALL SCREENS
 /* Hover */
 .stat-item:hover{
 
-    transform:
-        translateY(-7px);
-
-    box-shadow:
-        0 22px 45px
-        rgba(13,71,161,.14);
-
 }
 
 
@@ -3870,22 +3313,7 @@ VERY SMALL SCREENS
 
 .stat-item h2{
 
-    margin:0 0 8px;
-
-    color:#0D47A1;
-
-    font-size:
-        clamp(
-            2rem,
-            5vw,
-            2.8rem
-        );
-
-    font-weight:800;
-
-    line-height:1.2;
-
-    position:relative;
+position:relative;
 
     z-index:1;
 
@@ -3898,17 +3326,7 @@ VERY SMALL SCREENS
 
 .stat-item p{
 
-    margin:0;
-
-    color:#64748b;
-
-    font-size:15px;
-
-    font-weight:600;
-
-    line-height:1.5;
-
-    position:relative;
+position:relative;
 
     z-index:1;
 
@@ -4455,7 +3873,6 @@ MAIN HEADER
     position:relative;
     width:100%;
     overflow:visible;
-    padding:20px;
 }
 
 
@@ -4524,38 +3941,8 @@ TOP USER AREA
 
 .top-user-bar{
 
-    width:100%;
+margin:0 0 10px;
 
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    gap:15px;
-
-    padding:14px 18px;
-
-    margin:0 0 10px;
-
-    background:rgba(255,255,255,.96);
-
-    backdrop-filter:blur(16px);
-
-    -webkit-backdrop-filter:blur(16px);
-
-    border:1px solid rgba(255,255,255,.35);
-
-    border-radius:18px;
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,.12);
-
-    flex-wrap:nowrap;
-
-    position:relative;
-
-    z-index:10000;
 }
 
 
@@ -4565,63 +3952,24 @@ USER INFORMATION
 
 .user-info{
 
-    min-width:0;
-
-    flex:1;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
 }
 
 .user-info img{
 
-    width:55px;
-
-    height:55px;
-
-    min-width:55px;
-
-    border-radius:50%;
-
-    object-fit:cover;
-
-    border:3px solid #2563eb;
-
-    box-shadow:
-        0 5px 15px rgba(37,99,235,.2);
 }
 
 .user-info h4{
 
-    margin:0;
+font-weight:700;
 
-    color:#0f172a;
-
-    font-size:18px;
-
-    font-weight:700;
-
-    white-space:nowrap;
-
-    overflow:hidden;
+overflow:hidden;
 
     text-overflow:ellipsis;
 }
 
 .user-info small{
 
-    display:block;
-
-    color:#64748b;
-
-    font-size:13px;
-
-    white-space:nowrap;
-
-    overflow:hidden;
+overflow:hidden;
 
     text-overflow:ellipsis;
 }
@@ -4642,49 +3990,16 @@ NOTIFICATION BUTTON
 
 .notification-btn{
 
-    position:relative;
-
-    width:52px;
-
-    height:52px;
-
-    border:none;
-
-    border-radius:50%;
-
-    background:#f8fafc;
-
-    color:#2563eb;
-
-    cursor:pointer;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    box-shadow:
-        0 6px 18px rgba(0,0,0,.10);
-
-    transition:
-        transform .25s ease,
-        background .25s ease,
-        color .25s ease;
 }
 
 .notification-btn:hover{
 
-    background:#2563eb;
+color:#fff;
 
-    color:#fff;
-
-    transform:translateY(-2px);
 }
 
 .notification-btn ion-icon{
 
-    font-size:25px;
 }
 
 
@@ -4694,42 +4009,8 @@ NOTIFICATION NUMBER
 
 #notificationCount{
 
-    position:absolute;
+line-height:1;
 
-    top:-5px;
-
-    right:-5px;
-
-    min-width:22px;
-
-    height:22px;
-
-    padding:0 6px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border-radius:50px;
-
-    background:#ef4444;
-
-    color:#fff;
-
-    font-size:12px;
-
-    line-height:1;
-
-    font-weight:800;
-
-    border:2px solid #fff;
-
-    box-shadow:
-        0 4px 10px rgba(239,68,68,.35);
-
-    z-index:10;
 }
 
 #notificationCount:empty{
@@ -4746,23 +4027,7 @@ LOGOUT
 
     flex-shrink:0;
 
-    border:none;
-
-    padding:11px 20px;
-
-    border-radius:12px;
-
-    background:#ef4444;
-
-    color:#fff;
-
-    font-size:14px;
-
-    font-weight:700;
-
-    cursor:pointer;
-
-    transition:
+transition:
         transform .25s ease,
         background .25s ease,
         box-shadow .25s ease;
@@ -4770,11 +4035,7 @@ LOGOUT
 
 #logoutButton:hover{
 
-    background:#dc2626;
-
-    transform:translateY(-2px);
-
-    box-shadow:
+box-shadow:
         0 8px 18px rgba(220,38,38,.25);
 }
 
@@ -5024,17 +4285,11 @@ MOBILE HEADER
 
     .main{
 
-        padding:12px;
-
-    }
+}
 
     .head{
 
-        gap:14px;
-
-        padding:6px 0;
-
-    }
+}
 
     .logo1 img{
 
@@ -5046,11 +4301,7 @@ MOBILE HEADER
 
     .logo h2{
 
-        font-size:1.2rem;
-
-        margin-top:8px;
-
-        padding:0 5px;
+padding:0 5px;
 
     }
 
@@ -5063,41 +4314,25 @@ MOBILE HEADER
 
         grid-template-columns:1fr auto;
 
-        gap:12px;
-
-        padding:12px;
-
-        margin-bottom:8px;
+margin-bottom:8px;
 
     }
 
     .user-info{
 
-        min-width:0;
-
-    }
+}
 
     .user-info img{
 
-        width:48px;
-
-        height:48px;
-
-        min-width:48px;
-
-    }
+}
 
     .user-info h4{
 
-        font-size:16px;
-
-    }
+}
 
     .user-info small{
 
-        font-size:12px;
-
-    }
+}
 
 
     /* NOTIFICATION */
@@ -5112,11 +4347,7 @@ MOBILE HEADER
 
     .notification-btn{
 
-        width:48px;
-
-        height:48px;
-
-    }
+}
 
 
     /* LOGOUT */
@@ -5125,24 +4356,14 @@ MOBILE HEADER
 
         grid-column:1 / -1;
 
-        width:100%;
-
-        padding:11px;
-
-    }
+}
 
 
     /* NAVIGATION */
 
     .nav{
 
-        width:100%;
-
-        gap:5px;
-
-        padding:7px;
-
-        overflow-x:auto;
+overflow-x:auto;
 
         flex-wrap:nowrap;
 
@@ -5162,11 +4383,7 @@ MOBILE HEADER
 
         flex-shrink:0;
 
-        font-size:.88rem;
-
-        padding:9px 11px;
-
-    }
+}
 
 
     /* STATISTICS */
@@ -5214,59 +4431,35 @@ VERY SMALL PHONES
 
     .top-user-bar{
 
-        padding:10px;
-
-    }
+}
 
     .user-info{
 
-        gap:8px;
-
-    }
+}
 
     .user-info img{
 
-        width:42px;
-
-        height:42px;
-
-        min-width:42px;
-
-    }
+}
 
     .user-info h4{
 
-        font-size:14px;
-
-    }
+}
 
     .user-info small{
 
-        font-size:11px;
-
-    }
+}
 
     .notification-btn{
 
-        width:44px;
-
-        height:44px;
-
-    }
+}
 
     #logoutButton{
 
-        font-size:13px;
-
-    }
+}
 
     .nav a{
 
-        font-size:.82rem;
-
-        padding:8px 9px;
-
-    }
+}
 
     .stats-section{
 
@@ -5609,19 +4802,10 @@ MOBILE HERO
 
     .top-user-bar{
 
-        width:
-            100%;
-
-        padding:
-            16px;
-
-        margin:
+margin:
             0 0 20px;
 
-        border-radius:
-            22px;
-
-        background:
+background:
             rgba(255,255,255,.88);
 
         backdrop-filter:
@@ -5638,41 +4822,20 @@ MOBILE HERO
 
     .user-info{
 
-        width:
-            auto;
-
-        flex:
-            1;
-
-    }
+}
 
 
     .user-info img{
 
-        width:
-            55px;
-
-        height:
-            55px;
-
-    }
+}
 
 
     #logoutButton{
 
-        width:
-            100%;
-
-        margin-top:
+margin-top:
             12px;
 
-        min-height:
-            54px;
-
-        border-radius:
-            14px;
-
-    }
+}
 
 }
 
@@ -7091,13 +6254,7 @@ SERVICE AVAILABILITY HEADER
     margin:
         0 0 24px;
 
-    font-size:
-        1.37rem;
-
-    font-weight:
-        800;
-
-    color:
+color:
         black;
 
 }
@@ -7109,10 +6266,7 @@ SERVICE AVAILABILITY CONTENT
 
 .footer-hours p{
 
-    margin:
-        0 0 10px;
-
-    line-height:
+line-height:
         1.6;
 
 }
@@ -7124,18 +6278,6 @@ SEPARATE FOOTER BOTTOM
 
 .footer-bottom{
 
-    margin-top:
-        45px;
-
-    padding-top:
-        25px;
-
-    border-top:
-        1px solid rgba(15,23,42,.12);
-
-    text-align:
-        center;
-
 }
 
 
@@ -7145,10 +6287,7 @@ COPYRIGHT
 
 .footer-bottom p{
 
-    margin:
-        5px 0;
-
-    line-height:
+line-height:
         1.6;
 
 }

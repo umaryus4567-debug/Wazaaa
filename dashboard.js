@@ -74,45 +74,126 @@ onSnapshot(
         let declined = 0;
         let completed = 0;
 
-        snapshot.forEach((documentItem) => {
+snapshot.forEach((documentItem) => {
 
-            const data = documentItem.data();
+    const data = documentItem.data();
 
-            allRequests.push({
-                id: documentItem.id,
-                ...data
-            });
 
-            total++;
+    /*==================================
+      COUNT ALL NON-CANCELLED REQUESTS
+    ==================================*/
 
-            if (data.Status === "Pending") {
-                pending++;
-            }
+    if (data.Status !== "Cancelled") {
 
-            if (data.Status === "Accepted") {
-                accepted++;
-            }
+        total++;
 
-            if (data.Status === "Declined") {
-                declined++;
-            }
+    }
 
-            if (data.Status === "Completed ✅") {
-                completed++;
-            }
+
+    /*==================================
+      COUNT STATUS VALUES
+    ==================================*/
+
+    if (data.Status === "Pending") {
+
+        pending++;
+
+    }
+
+
+    if (data.Status === "Accepted") {
+
+        accepted++;
+
+    }
+
+
+    if (data.Status === "Declined") {
+
+        declined++;
+
+    }
+
+
+    if (data.Status === "Completed ✅") {
+
+        completed++;
+
+    }
+
+
+    /*==================================
+      ACTIVE DASHBOARD REQUESTS
+      ----------------------------------
+      Declined and Cancelled requests
+      are NOT added to allRequests.
+    ==================================*/
+
+    if (
+        data.Status !== "Cancelled" &&
+        data.Status !== "Declined"
+    ) {
+
+        allRequests.push({
+
+            id: documentItem.id,
+
+            ...data
 
         });
 
-        document.getElementById("totalCount").textContent = total;
-        document.getElementById("pendingCount").textContent = pending;
-        document.getElementById("acceptedCount").textContent = accepted;
-        document.getElementById("declinedCount").textContent = declined;
-        document.getElementById("completedCount").textContent = completed;
+    }
 
-        console.log("📦 SERVICE REQUESTS:", allRequests);
+});
+
+
+        /*
+        =========================================
+        UPDATE STAT COUNTERS
+        =========================================
+        */
+
+        document.getElementById(
+            "totalCount"
+        ).textContent = total;
+
+
+        document.getElementById(
+            "pendingCount"
+        ).textContent = pending;
+
+
+        document.getElementById(
+            "acceptedCount"
+        ).textContent = accepted;
+
+
+        document.getElementById(
+            "declinedCount"
+        ).textContent = declined;
+
+
+        document.getElementById(
+            "completedCount"
+        ).textContent = completed;
+
+
+        console.log(
+            "📦 ACTIVE SERVICE REQUESTS:",
+            allRequests
+        );
+
+
+        /*
+        =========================================
+        RENDER ONLY ACTIVE REQUESTS
+        =========================================
+        */
 
         renderRequests(allRequests);
+
     },
+
 
     (error) => {
 
@@ -225,6 +306,18 @@ async function updateWebsiteStatistics() {
 ========================== */
 
 function renderRequests(requests){
+
+    /*
+    =========================================
+    NEVER DISPLAY CANCELLED REQUESTS
+    =========================================
+    */
+
+    requests = requests.filter(
+        request =>
+            request.Status !== "Cancelled"
+    );
+
 
     container.innerHTML = "";
 
@@ -408,6 +501,15 @@ if (!requestSnap.exists()) {
 
 const requestData = requestSnap.data();
 
+if (requestData.Status === "Cancelled") {
+
+    alert(
+        "This request was cancelled by the customer and can no longer be modified."
+    );
+
+    return;
+
+}
 
 await updateDoc(
     requestRef,
@@ -415,6 +517,25 @@ await updateDoc(
         Status: "Accepted"
     }
 );
+
+
+/*==================================
+UPDATE DECLINED STATISTICS
+==================================*/
+
+await updateDoc(
+    doc(
+        db,
+        "site-stats",
+        "overview"
+    ),
+    {
+        declinedRequests:
+            increment(1)
+    }
+);
+
+await updateWebsiteStatistics();
 
 
 /*==================================
@@ -427,14 +548,14 @@ await createNotification({
 
     requestId: requestId,
 
-    title: "Request Accepted",
+    title: "Request Declined",
 
     message:
-        "Good news! Your electrical service request has been accepted by our maintenance team.",
+        "Your electrical service request has been reviewed and unfortunately could not be accepted at this time.",
 
-    type: "request_accepted",
+    type: "request_declined",
 
-    icon: "fa-circle-check",
+    icon: "fa-circle-xmark",
 
     sender: "staff",
 
@@ -774,12 +895,24 @@ if (!requestSnap.exists()) {
 }
 
 const requestData = requestSnap.data();
+if (requestData.Status === "Cancelled") {
+
+    alert(
+        "This request was cancelled by the customer and can no longer be modified."
+    );
+
+    return;
+
+}
 
 
 await updateDoc(
     requestRef,
     {
-        Status: "Declined"
+        Status: "Declined",
+
+        DeclinedAt:
+            serverTimestamp()
     }
 );
 /*==================================
@@ -801,7 +934,7 @@ await updateDoc(
 await updateWebsiteStatistics();
 
 /*==================================
-CUSTOMER NOTIFICATION
+CUSTOMER NOTIFIATION
 ==================================*/
 
 await createNotification({
@@ -852,6 +985,15 @@ if (!requestSnap.exists()) {
 }
 
 const requestData = requestSnap.data();
+if (requestData.Status === "Cancelled") {
+
+    alert(
+        "This request was cancelled by the customer and can no longer be modified."
+    );
+
+    return;
+
+}
 
 
 await updateDoc(

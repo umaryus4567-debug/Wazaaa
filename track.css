@@ -527,6 +527,579 @@ background:#218838;
 transform:translateY(-2px);
 
 }
+
+/* =========================================
+   CUSTOM MODAL
+========================================= */
+
+.custom-modal {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    backdrop-filter: blur(5px);
+
+    z-index: 99999;
+}
+
+
+.custom-modal.show {
+    display: flex;
+}
+
+
+/* =========================================
+   MODAL BOX
+========================================= */
+
+.modal-box {
+
+    position: relative;
+
+    width: 100%;
+    max-width: 520px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    border-radius: 20px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.3);
+
+    animation: modalAppear 0.25s ease;
+}
+
+
+@keyframes modalAppear {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(25px)
+            scale(0.96);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
+.modal-close {
+
+    position: absolute;
+
+    top: 12px;
+    right: 15px;
+
+    width: 35px;
+    height: 35px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f1f3f6;
+
+    color: #555;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.modal-close:hover {
+
+    background: #e4e7eb;
+
+    transform: rotate(90deg);
+
+}
+
+
+/* =========================================
+   EDIT MODAL
+========================================= */
+
+.edit-modal-title {
+
+    margin: 0 35px 5px 0;
+
+    color: #1554a6;
+
+    font-size: 24px;
+}
+
+
+.edit-modal-subtitle {
+
+    margin-bottom: 22px;
+
+    color: #777;
+
+    font-size: 14px;
+
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+.edit-form-group {
+
+    margin-bottom: 15px;
+}
+
+
+.edit-form-group label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-weight: 600;
+
+    color: #333;
+
+    font-size: 14px;
+}
+
+
+.edit-form-group input,
+.edit-form-group select,
+.edit-form-group textarea {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    border: 1px solid #d9dee7;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    font-size: 15px;
+
+    background: #f9fafc;
+
+    transition: 0.2s;
+}
+
+
+.edit-form-group input:focus,
+.edit-form-group select:focus,
+.edit-form-group textarea:focus {
+
+    border-color: #1554a6;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 3px rgba(21, 84, 166, 0.1);
+
+}
+
+
+.edit-form-group textarea {
+
+    min-height: 90px;
+
+    resize: vertical;
+
+}
+
+
+/* =========================================
+   MODAL ACTIONS
+========================================= */
+
+.modal-actions {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 22px;
+}
+
+
+.modal-btn {
+
+    flex: 1;
+
+    padding: 13px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.modal-cancel-btn {
+
+    background: #eef1f5;
+
+    color: #444;
+}
+
+
+.modal-cancel-btn:hover {
+
+    background: #e1e5eb;
+
+}
+
+
+.modal-save-btn {
+
+    background: #1554a6;
+
+    color: white;
+}
+
+
+.modal-save-btn:hover {
+
+    background: #0d4388;
+
+}
+
+
+.modal-save-btn:disabled {
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+}
+
+
+/* =========================================
+   CONFIRMATION MODAL
+========================================= */
+
+.confirm-icon {
+
+    width: 60px;
+    height: 60px;
+
+    margin: 0 auto 15px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #fff1f1;
+
+    font-size: 30px;
+}
+
+
+.confirm-title {
+
+    text-align: center;
+
+    margin: 0 0 10px;
+
+    color: #333;
+}
+
+
+.confirm-message {
+
+    text-align: center;
+
+    color: #777;
+
+    line-height: 1.6;
+
+    margin-bottom: 20px;
+}
+
+
+.danger-btn {
+
+    background: #dc3545;
+
+    color: white;
+}
+
+
+.danger-btn:hover {
+
+    background: #b92332;
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .custom-modal {
+
+        padding: 12px;
+
+        align-items: flex-end;
+
+    }
+
+
+    .modal-box {
+
+        max-height: 92vh;
+
+        border-radius: 20px 20px 0 0;
+
+        padding: 22px 18px;
+
+    }
+
+
+    .edit-modal-title {
+
+        font-size: 21px;
+
+    }
+
+
+    .modal-actions {
+
+        flex-direction: column;
+
+    }
+
+
+    .modal-btn {
+
+        width: 100%;
+
+    }
+
+}
+
+/* =========================================
+   CUSTOMER REQUEST ACTIONS
+========================================= */
+
+.customer-request-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+}
+
+
+/* =========================================
+   BASE ACTION BUTTON
+========================================= */
+
+.customer-request-actions button {
+    flex: 1;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+
+    min-height: 45px;
+}
+
+
+/* =========================================
+   EDIT REQUEST BUTTON
+========================================= */
+
+.edit-request-btn {
+    background: #1557b0;
+    color: white;
+
+    box-shadow:
+        0 4px 12px rgba(21, 87, 176, 0.20);
+}
+
+
+/* Edit hover */
+
+.edit-request-btn:hover {
+    background: #0d47a1;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 16px rgba(21, 87, 176, 0.28);
+}
+
+
+/* Edit pressed */
+
+.edit-request-btn:active {
+    transform: scale(0.97);
+
+    box-shadow:
+        0 3px 7px rgba(21, 87, 176, 0.20);
+}
+
+
+/* =========================================
+   CANCEL REQUEST BUTTON
+========================================= */
+
+.cancel-request-btn {
+    background: #fff1f2;
+    color: #dc2626;
+
+    border: 1px solid #fecaca !important;
+
+    box-shadow:
+        0 3px 10px rgba(220, 38, 38, 0.08);
+}
+
+
+/* Cancel hover */
+
+.cancel-request-btn:hover {
+    background: #dc2626;
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 16px rgba(220, 38, 38, 0.22);
+}
+
+
+/* Cancel pressed */
+
+.cancel-request-btn:active {
+    transform: scale(0.97);
+
+    box-shadow:
+        0 3px 7px rgba(220, 38, 38, 0.15);
+}
+
+
+/* =========================================
+   LOCKED REQUEST MESSAGE
+========================================= */
+
+.request-locked {
+    margin-top: 16px;
+
+    padding: 12px 14px;
+
+    border-radius: 10px;
+
+    background: #f3f4f6;
+
+    color: #6b7280;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    text-align: center;
+
+    border: 1px solid #e5e7eb;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 500px) {
+
+    .customer-request-actions {
+        gap: 10px;
+    }
+
+    .customer-request-actions button {
+        padding: 11px 10px;
+        min-height: 44px;
+
+        font-size: 13px;
+    }
+
+}
+
+
+/* =========================================
+   VERY SMALL PHONES
+========================================= */
+
+@media (max-width: 360px) {
+
+    .customer-request-actions {
+        flex-direction: column;
+    }
+
+    .customer-request-actions button {
+        width: 100%;
+    }
+
+}
 @media(max-width:480px){
 
 .logo{

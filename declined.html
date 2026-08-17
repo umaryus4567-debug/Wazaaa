@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>Declined Requests</title>
+
+<link rel="stylesheet" href="loader.css">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+
+    margin:0;
+
+    padding:20px;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    background:#f4f6f9;
+
+    color:#222;
+
+}
+
+
+/*==================================
+HEADER
+==================================*/
+
+.page-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin-bottom:10px;
+
+    flex-wrap:wrap;
+
+}
+
+.page-header h1{
+
+    margin:0;
+
+    color:#b02a37;
+
+}
+
+.back-btn{
+
+    text-decoration:none;
+
+    background:#0d47a1;
+
+    color:white;
+
+    padding:11px 16px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.back-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 5px 14px rgba(0,0,0,.12);
+
+}
+
+
+/*==================================
+SUBTITLE
+==================================*/
+
+.subtitle{
+
+    color:#666;
+
+    margin-bottom:25px;
+
+}
+
+
+/*==================================
+STAT
+==================================*/
+
+.declined-stat{
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:12px;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.08);
+
+    margin-bottom:25px;
+
+}
+
+.declined-stat h3{
+
+    margin:0 0 8px;
+
+    color:#b02a37;
+
+}
+
+.declined-stat span{
+
+    font-size:30px;
+
+    font-weight:bold;
+
+}
+
+
+/*==================================
+SEARCH
+==================================*/
+
+.search-box{
+
+    margin-bottom:25px;
+
+}
+
+.search-box input{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:white;
+
+    box-shadow:
+        0 2px 10px rgba(0,0,0,.08);
+
+    font-size:16px;
+
+    outline:none;
+
+    transition:.3s;
+
+}
+
+.search-box input:focus{
+
+    box-shadow:
+        0 0 0 2px rgba(13,71,161,.15),
+        0 4px 12px rgba(0,0,0,.08);
+
+}
+
+
+/*==================================
+REQUEST CARD
+==================================*/
+
+.declined-card{
+
+    background:white;
+
+    padding:20px;
+
+    margin-bottom:18px;
+
+    border-radius:14px;
+
+    border-left:
+        5px solid #dc3545;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.08);
+
+}
+
+.declined-card h2{
+
+    margin-top:0;
+
+    color:#333;
+
+}
+
+.declined-card p{
+
+    line-height:1.5;
+
+    margin:8px 0;
+
+}
+
+
+/*==================================
+STATUS
+==================================*/
+
+.declined-badge{
+
+    display:inline-block;
+
+    margin-top:12px;
+
+    padding:7px 13px;
+
+    border-radius:20px;
+
+    background:#f8d7da;
+
+    color:#842029;
+
+    font-weight:bold;
+
+}
+
+
+/*==================================
+DECLINED INFO
+==================================*/
+
+.declined-info{
+
+    margin-top:18px;
+
+    padding:14px;
+
+    background:#fff5f5;
+
+    border-radius:10px;
+
+    color:#842029;
+
+}
+
+
+/*==================================
+REQUEST ID
+==================================*/
+
+.request-id{
+
+    background:#f4f6f9;
+
+    padding:10px;
+
+    border-radius:8px;
+
+    margin:12px 0;
+
+    word-break:break-all;
+
+    font-size:14px;
+
+}
+
+
+/*==================================
+EMPTY STATE
+==================================*/
+
+.empty-state{
+
+    background:white;
+
+    padding:50px 20px;
+
+    text-align:center;
+
+    border-radius:14px;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.08);
+
+}
+
+.empty-state .icon{
+
+    font-size:45px;
+
+    margin-bottom:15px;
+
+}
+
+.empty-state h2{
+
+    margin-bottom:8px;
+
+}
+
+
+/*==================================
+MOBILE
+==================================*/
+
+@media(max-width:600px){
+
+    body{
+
+        padding:15px;
+
+    }
+
+    .page-header{
+
+        align-items:flex-start;
+
+        flex-direction:column;
+
+    }
+
+    .back-btn{
+
+        width:100%;
+
+        text-align:center;
+
+    }
+
+    .declined-card{
+
+        padding:16px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==================================
+     HEADER
+================================== -->
+
+<div class="page-header">
+
+    <h1>
+        🚫 Declined Requests
+    </h1>
+
+
+    <a
+        href="dashboard.html"
+        class="back-btn">
+
+        ← Back to Dashboard
+
+    </a>
+
+</div>
+
+
+<!-- ==================================
+     SUBTITLE
+================================== -->
+
+<p class="subtitle">
+
+    View service requests declined by staff.
+    Declined requests cannot be accepted,
+    assigned, or modified from this page.
+
+</p>
+
+
+<!-- ==================================
+     STAT
+================================== -->
+
+<div class="declined-stat">
+
+    <h3>
+        Total Declined Requests
+    </h3>
+
+    <span id="declinedCount">
+        0
+    </span>
+
+</div>
+
+
+<!-- ==================================
+     SEARCH
+================================== -->
+
+<div class="search-box">
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="🔍 Search declined requests...">
+
+</div>
+
+
+<!-- ==================================
+     REQUESTS
+================================== -->
+
+<div id="declinedContainer"></div>
+
+
+<!-- ==================================
+     JAVASCRIPT
+================================== -->
+
+<script
+    type="module"
+    src="declined.js">
+</script>
+
+
+</body>
+
+</html>

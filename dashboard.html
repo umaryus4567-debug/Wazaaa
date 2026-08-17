@@ -297,6 +297,42 @@ HOVER
 
 }
 
+/*==================================
+CANCELLED REQUESTS
+==================================*/
+
+.cancelled-action{
+
+    background:#dc3545;
+
+    color:white;
+
+}
+
+. cancelled-action:hover{
+
+    background:#b02a37;
+
+}
+
+/*==================================
+CANCELLED REQUESTS
+==================================*/
+
+.declined-action{
+
+    background:#dc3545;
+
+    color:white;
+
+}
+
+. declined-action:hover{
+
+    background:#b02a37;
+
+}
+
 
 /*--------------------------------
 LOGOUT
@@ -469,6 +505,16 @@ Manage incoming service requests and technician assignments.
         <i class="fa-solid fa-clock-rotate-left"></i>
         Service History
     </a>
+    
+    <a href="cancelled.html" class="dashboard-action cancelled-action">
+    <i class="fa-solid fa-ban"></i>
+    Cancelled Requests
+</a>
+
+   <a href="declined.html" class="dashboard-action declined-action">
+    <i class="fa-solid fa-ban"></i>
+    Declined Request 
+</a>
 
     <button
         class="dashboard-action technician-action"
