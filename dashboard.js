@@ -960,48 +960,122 @@ await createNotification({
         };
     });
 
-    document
-    .querySelectorAll(".complete")
-    .forEach(btn => {
+document
+.querySelectorAll(".complete")
+.forEach(btn => {
 
-        btn.onclick = async () => {
+    btn.onclick = async () => {
 
-      const requestId = btn.dataset.id;
+        const requestId = btn.dataset.id;
 
-const requestRef = doc(
-    db,
-    "service-request",
-    requestId
-);
+        const requestRef = doc(
+            db,
+            "service-request",
+            requestId
+        );
 
-const requestSnap = await getDoc(requestRef);
+        const requestSnap =
+            await getDoc(requestRef);
 
-if (!requestSnap.exists()) {
+        if (!requestSnap.exists()) {
 
-    alert("Request not found.");
+            alert("Request not found.");
 
-    return;
+            return;
 
-}
+        }
 
-const requestData = requestSnap.data();
-if (requestData.Status === "Cancelled") {
-
-    alert(
-        "This request was cancelled by the customer and can no longer be modified."
-    );
-
-    return;
-
-}
+        const requestData =
+            requestSnap.data();
 
 
-await updateDoc(
+        /*==================================
+        PREVENT REPEATED COMPLETION
+        ==================================*/
+
+        if (requestData.Status === "Completed ✅") {
+
+            console.log(
+                "⚠️ Request already completed:",
+                requestId
+            );
+
+            return;
+
+        }
+
+
+        /*==================================
+        PREVENT CANCELLED REQUEST
+        ==================================*/
+
+        if (requestData.Status === "Cancelled") {
+
+            alert(
+                "This request was cancelled by the customer and can no longer be modified."
+            );
+
+            return;
+
+        }
+
+
+        /*==================================
+        COMPLETE REQUEST
+        ==================================*/
+
+        await updateDoc(
+            requestRef,
+            {
+                Status: "Completed ✅"
+            }
+        );
+        
+        await updateDoc(
     requestRef,
     {
         Status: "Completed ✅"
     }
 );
+
+btn.disabled = true;
+btn.textContent = "Completed ✅";
+
+
+        /*==================================
+        CUSTOMER NOTIFICATION
+        ==================================*/
+
+        await createNotification({
+
+            uid: requestData.CustomerId,
+
+            requestId: requestId,
+
+            title: "Service Completed",
+
+            message:
+                "Your electrical service request has been completed. Thank you for choosing UY Power Solutions.",
+
+            type: "request_completed",
+
+            icon: "fa-circle-check",
+
+            sender: "staff",
+
+            link: ""
+
+        });
+
+
+        console.log(
+            "✅ Request completed and customer notified:",
+            requestId
+        );
+
+    };
+
+});
 
 
 /*==================================
