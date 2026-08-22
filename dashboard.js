@@ -20,7 +20,8 @@ import {
     getDoc,
     setDoc,
     serverTimestamp,
-    increment
+    increment,
+    runTransaction
 }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 import {
@@ -685,12 +686,10 @@ console.log(
             await deleteDoc(
                 requestRef
             );
-
-
             console.log(
-                "✅ Request removed from service-request:",
-                id
-            );
+    "✅ Request removed from service-request:",
+    id
+);
 
 
             alert(
@@ -974,136 +973,174 @@ document
             requestId
         );
 
-        const requestSnap =
-            await getDoc(requestRef);
+        try {
 
-        if (!requestSnap.exists()) {
+            /*==================================
+            ATOMIC COMPLETION CHECK
+            ==================================*/
 
-            alert("Request not found.");
+            const result = await runTransaction(
+                db,
+                async (transaction) => {
 
-            return;
+                    const requestSnap =
+                        await transaction.get(requestRef);
 
-        }
+                    if (!requestSnap.exists()) {
 
-        const requestData =
-            requestSnap.data();
+                        throw new Error(
+                            "Request not found."
+                        );
+
+                    }
+
+                    const requestData =
+                        requestSnap.data();
 
 
-        /*==================================
-        PREVENT REPEATED COMPLETION
-        ==================================*/
+                    /*==================================
+                    ALREADY COMPLETED
+                    ==================================*/
 
-        if (requestData.Status === "Completed ✅") {
+                    if (
+                        requestData.Status ===
+                        "Completed ✅"
+                    ) {
+
+                        return {
+                            completed: false,
+                            requestData
+                        };
+
+                    }
+
+
+                    /*==================================
+                    CANCELLED REQUEST
+                    ==================================*/
+
+                    if (
+                        requestData.Status ===
+                        "Cancelled"
+                    ) {
+
+                        throw new Error(
+                            "This request was cancelled by the customer and can no longer be modified."
+                        );
+
+                    }
+
+
+                    /*==================================
+                    COMPLETE REQUEST
+                    ==================================*/
+
+                    transaction.update(
+                        requestRef,
+                        {
+                            Status: "Completed ✅"
+                        }
+                    );
+
+
+                    return {
+                        completed: true,
+                        requestData
+                    };
+
+                }
+            );
+
+
+            /*==================================
+            REQUEST WAS ALREADY COMPLETED
+            ==================================*/
+
+            if (!result.completed) {
+
+                console.log(
+                    "⚠️ Request already completed. No duplicate notification:",
+                    requestId
+                );
+
+                btn.disabled = true;
+
+                btn.textContent =
+                    "Completed ✅";
+
+                return;
+
+            }
+
+
+            /*==================================
+            DISABLE BUTTON
+            ==================================*/
+
+            btn.disabled = true;
+
+            btn.textContent =
+                "Completed ✅";
+
+
+            /*==================================
+            CUSTOMER NOTIFICATION
+            ==================================*/
+
+            await createNotification({
+
+                uid:
+                    result.requestData.CustomerId,
+
+                requestId:
+                    requestId,
+
+                title:
+                    "Service Completed",
+
+                message:
+                    "Your electrical service request has been completed. Thank you for choosing UY Power Solutions.",
+
+                type:
+                    "request_completed",
+
+                icon:
+                    "fa-circle-check",
+
+                sender:
+                    "staff",
+
+                link:
+                    ""
+
+            });
+
 
             console.log(
-                "⚠️ Request already completed:",
+                "✅ Request completed and customer notified:",
                 requestId
             );
 
-            return;
-
         }
 
+        catch (error) {
 
-        /*==================================
-        PREVENT CANCELLED REQUEST
-        ==================================*/
-
-        if (requestData.Status === "Cancelled") {
-
-            alert(
-                "This request was cancelled by the customer and can no longer be modified."
+            console.error(
+                "❌ Complete request error:",
+                error
             );
 
-            return;
+            alert(
+                error.message ||
+                "Failed to complete request."
+            );
 
         }
-
-
-        /*==================================
-        COMPLETE REQUEST
-        ==================================*/
-
-        await updateDoc(
-            requestRef,
-            {
-                Status: "Completed ✅"
-            }
-        );
-        
-        await updateDoc(
-    requestRef,
-    {
-        Status: "Completed ✅"
-    }
-);
-
-btn.disabled = true;
-btn.textContent = "Completed ✅";
-
-
-        /*==================================
-        CUSTOMER NOTIFICATION
-        ==================================*/
-
-        await createNotification({
-
-            uid: requestData.CustomerId,
-
-            requestId: requestId,
-
-            title: "Service Completed",
-
-            message:
-                "Your electrical service request has been completed. Thank you for choosing UY Power Solutions.",
-
-            type: "request_completed",
-
-            icon: "fa-circle-check",
-
-            sender: "staff",
-
-            link: ""
-
-        });
-
-
-        console.log(
-            "✅ Request completed and customer notified:",
-            requestId
-        );
 
     };
 
 });
 
-
-/*==================================
-CUSTOMER NOTIFICATION
-==================================*/
-
-await createNotification({
-
-    uid: requestData.CustomerId,
-
-    requestId: requestId,
-
-    title: "Service Completed",
-
-    message:
-        "Your electrical service request has been completed. Thank you for choosing UY Power Solutions.",
-
-    type: "request_completed",
-
-    icon: "fa-circle-check",
-
-    sender: "staff",
-
-    link: ""
-
-});
-        };
-    });
 }
 
 /* ==========================
