@@ -256,88 +256,55 @@ await createNotification({
 });
 
 /*==================================
-NOTIFY ALL STAFF
+  NOTIFY STAFF
 ==================================*/
 
 try {
 
-    const staffQuery = query(
-        collection(db, "users"),
-        where("role", "==", "staff")
-    );
+    const staffNotificationData = {
 
-    const staffSnapshot =
-        await getDocs(staffQuery);
+        uid: "staff",
+
+        requestId: requestRef.id,
+
+        title: "🔔 New Service Request",
+
+        message:
+            `${customerName} submitted a new electrical service request.`,
+
+        type: "new_service_request",
+
+        icon: "fa-file-circle-plus",
+
+        sender: "customer",
+
+        link: "dashboard.html"
+
+    };
 
     console.log(
-        "👨‍🔧 Staff members found:",
-        staffSnapshot.size
-    );
-
-    const staffNotificationPromises = [];
-
-    staffSnapshot.forEach((staffDoc) => {
-
-        const staffData =
-            staffDoc.data();
-
-        const staffUid =
-            staffData.uid || staffDoc.id;
-
-        console.log(
-            "👤 STAFF ACCOUNT FOUND:",
-            {
-                documentId: staffDoc.id,
-                uid: staffData.uid,
-                role: staffData.role,
-                name: staffData.fullName
-            }
-        );
-
-        console.log(
-            "🔐 STAFF NOTIFICATION SECURITY CHECK:",
-            {
-                staffUid: staffUid,
-                requestId: requestRef.id,
-                customerUid: user.uid,
-                sender: "customer",
-                type: "new_service_request"
-            }
-        );
-
-        staffNotificationPromises.push(
-
-            createNotification({
-
-                uid: staffUid,
-
-                requestId: requestRef.id,
-
-                title: "🔔 New Service Request",
-
-                message:
-                    `${customerName} submitted a new electrical service request.`,
-
-                type: "new_service_request",
-
-                icon: "fa-file-circle-plus",
-
-                sender: "customer",
-
-                link: "dashboard.html"
-
-            })
-
-        );
-
-    });
-
-    await Promise.all(
-        staffNotificationPromises
+        "👨‍🔧 STAFF NOTIFICATION DATA:",
+        staffNotificationData
     );
 
     console.log(
-        "✅ Staff notifications sent successfully."
+        "🔐 CURRENT AUTH UID:",
+        auth.currentUser?.uid
+    );
+
+    console.log(
+        "📦 REQUEST ID:",
+        requestRef.id
+    );
+
+    const staffNotificationId =
+        await createNotification(
+            staffNotificationData
+        );
+
+    console.log(
+        "✅ STAFF NOTIFICATION CREATED:",
+        staffNotificationId
     );
 
 }
@@ -345,7 +312,7 @@ try {
 catch (staffNotificationError) {
 
     console.error(
-        "❌ Failed to notify staff:",
+        "❌ FAILED TO NOTIFY STAFF:",
         staffNotificationError
     );
 

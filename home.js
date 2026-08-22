@@ -334,7 +334,7 @@ authReady.then(async ({ user, data, role }) => {
     NOTIFICATIONS
     ==================================*/
 
-    startNotificationListener(user);
+    startNotificationListener(user, role)
 
 })
 .catch((error) => {
@@ -427,15 +427,42 @@ async function loadUserRole(user) {
 NOTIFICATION LISTENER
 ==================================*/
 
-function startNotificationListener(user) {
+function startNotificationListener(user, role) {
 
     if (!notificationList) return;
 
+
+    /*==================================
+    DETERMINE NOTIFICATION INBOX
+    ==================================*/
+
+    const notificationUid =
+        role === "staff"
+            ? "staff"
+            : user.uid;
+
+
+    console.log(
+        "🔔 NOTIFICATION INBOX:",
+        notificationUid
+    );
+
+    console.log(
+        "👤 USER ROLE:",
+        role
+    );
+
+
+    /*==================================
+    LISTEN FOR NOTIFICATIONS
+    ==================================*/
+
     listenForNotifications(
-        user.uid,
+        notificationUid,
         (notifications) => {
 
             notificationList.innerHTML = "";
+
 
             /*==================================
             NO NOTIFICATIONS
@@ -444,7 +471,9 @@ function startNotificationListener(user) {
             if (notifications.length === 0) {
 
                 if (notificationCount) {
+
                     notificationCount.textContent = "";
+
                 }
 
                 notificationList.innerHTML = `
@@ -458,6 +487,7 @@ function startNotificationListener(user) {
                 `;
 
                 return;
+
             }
 
 
@@ -467,7 +497,8 @@ function startNotificationListener(user) {
 
             const unread =
                 notifications.filter(
-                    notification => !notification.read
+                    notification =>
+                        !notification.read
                 ).length;
 
 
@@ -485,105 +516,154 @@ function startNotificationListener(user) {
             DISPLAY NOTIFICATIONS
             ==================================*/
 
-            notifications.forEach((notification) => {
+            notifications.forEach(
+                (notification) => {
 
-                const card =
-                    document.createElement("div");
-
-
-                card.className =
-                    `notification-card ${
-                        notification.read
-                            ? ""
-                            : "unread"
-                    }`;
+                    const card =
+                        document.createElement("div");
 
 
-                card.dataset.id =
-                    notification.id;
+                    card.className =
+                        `notification-card ${
+                            notification.read
+                                ? ""
+                                : "unread"
+                        }`;
 
 
-                const notificationType =
-                    notification.type || "default";
+                    card.dataset.id =
+                        notification.id;
 
 
-                card.innerHTML = `
-
-                    <div class="notification-icon ${notificationType}">
-
-                        <i class="fa-solid ${
-                            notification.icon || "fa-bell"
-                        }"></i>
-
-                    </div>
+                    const notificationType =
+                        notification.type ||
+                        "default";
 
 
-                    <div class="notification-content">
+                    card.innerHTML = `
 
-                        <div class="notification-title">
+                        <div class="notification-icon ${notificationType}">
 
-                            ${notification.title}
+                            <i class="fa-solid ${
+                                notification.icon ||
+                                "fa-bell"
+                            }"></i>
 
                         </div>
 
 
-                        <div class="notification-message">
+                        <div class="notification-content">
 
-                            ${notification.message}
+                            <div class="notification-title">
+
+                                ${notification.title}
+
+                            </div>
+
+
+                            <div class="notification-message">
+
+                                ${notification.message}
+
+                            </div>
+
+
+                            ${
+                                notification.createdAt
+                                    ? `
+
+                                        <div class="notification-time">
+
+                                            ${formatNotificationTime(
+                                                notification.createdAt
+                                            )}
+
+                                        </div>
+
+                                    `
+                                    : ""
+                            }
 
                         </div>
 
+                    `;
 
-                        ${
-                            notification.createdAt
-                                ? `
-                                    <div class="notification-time">
 
-                                        ${formatNotificationTime(
-                                            notification.createdAt
-                                        )}
+                    notificationList.appendChild(
+                        card
+                    );
 
-                                    </div>
-                                `
-                                : ""
+
+                    /*==================================
+                    CLICK NOTIFICATION
+                    ==================================*/
+
+                    card.addEventListener(
+                        "click",
+                        async () => {
+
+                            try {
+
+                                /*------------------------------
+                                MARK AS READ
+                                ------------------------------*/
+
+                                if (
+                                    !notification.read
+                                ) {
+
+                                    await markNotificationAsRead(
+                                        notification.id
+                                    );
+
+                                }
+
+
+                                /*------------------------------
+                                STAFF NEW REQUEST
+                                ------------------------------*/
+
+                                if (
+                                    role === "staff" &&
+                                    notification.type ===
+                                        "new_service_request"
+                                ) {
+
+                                    window.location.href =
+                                        "dashboard.html";
+
+                                }
+
+
+                                /*------------------------------
+                                OTHER NOTIFICATION LINKS
+                                ------------------------------*/
+
+                                else if (
+                                    notification.link
+                                ) {
+
+                                    window.location.href =
+                                        notification.link;
+
+                                }
+
+                            }
+
+                            catch (error) {
+
+                                console.error(
+                                    "❌ Notification click error:",
+                                    error
+                                );
+
+                            }
+
                         }
+                    );
 
-                    </div>
-
-                `;
-
-
-                notificationList.appendChild(card);
-                
-                card.addEventListener("click", async () => {
-
-    if (notification.read) return;
-
-    try {
-
-        await markNotificationAsRead(
-            notification.id
-        );
-
-        console.log(
-            "✅ Notification marked as read:",
-            notification.id
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "❌ Failed to mark notification as read:",
-            error
-        );
-
-    }
-
-});
-
-            });
+                }
+            );
 
         }
     );
@@ -666,9 +746,47 @@ if (clearNotifications) {
 
             try {
 
-                await markAllNotificationsAsRead(
-                    user.uid
+                const userDoc =
+                    await getDoc(
+                        doc(
+                            db,
+                            "users",
+                            user.uid
+                        )
+                    );
+
+
+                if (!userDoc.exists()) {
+
+                    console.warn(
+                        "⚠️ User profile not found."
+                    );
+
+                    return;
+
+                }
+
+
+                const userData =
+                    userDoc.data();
+
+
+                const notificationUid =
+                    userData.role === "staff"
+                        ? "staff"
+                        : user.uid;
+
+
+                console.log(
+                    "🔔 MARK ALL AS READ UID:",
+                    notificationUid
                 );
+
+
+                await markAllNotificationsAsRead(
+                    notificationUid
+                );
+
 
                 console.log(
                     "✅ All notifications marked as read."
