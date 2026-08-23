@@ -521,25 +521,6 @@ await updateDoc(
 
 
 /*==================================
-UPDATE DECLINED STATISTICS
-==================================*/
-
-await updateDoc(
-    doc(
-        db,
-        "site-stats",
-        "overview"
-    ),
-    {
-        declinedRequests:
-            increment(1)
-    }
-);
-
-await updateWebsiteStatistics();
-
-
-/*==================================
 CUSTOMER NOTIFICATION
 ==================================*/
 
