@@ -492,77 +492,140 @@ function addButtonEvents(){
                     requestId
                 );
 
-            const requestSnap =
-                await getDoc(requestRef);
+            try {
 
-            if (!requestSnap.exists()) {
+                const requestSnap =
+                    await getDoc(requestRef);
 
-                alert("Request not found.");
+                if (!requestSnap.exists()) {
 
-                return;
+                    alert("Request not found.");
 
-            }
+                    return;
 
-            const requestData =
-                requestSnap.data();
+                }
 
-            if (requestData.Status === "Cancelled") {
+                const requestData =
+                    requestSnap.data();
 
-                alert(
-                    "This request was cancelled by the customer and can no longer be modified."
+
+                /*==================================
+                PREVENT REPEATED ACCEPT
+                ==================================*/
+
+                if (
+                    requestData.Status ===
+                    "Accepted"
+                ) {
+
+                    console.log(
+                        "⚠️ Request already accepted. No duplicate notification:",
+                        requestId
+                    );
+
+                    btn.disabled = true;
+
+                    btn.textContent =
+                        "Accepted ✅";
+
+                    return;
+
+                }
+
+
+                /*==================================
+                PREVENT CANCELLED REQUEST
+                ==================================*/
+
+                if (
+                    requestData.Status ===
+                    "Cancelled"
+                ) {
+
+                    alert(
+                        "This request was cancelled by the customer and can no longer be modified."
+                    );
+
+                    return;
+
+                }
+
+
+                /*==================================
+                ACCEPT REQUEST
+                ==================================*/
+
+                await updateDoc(
+                    requestRef,
+                    {
+                        Status: "Accepted"
+                    }
                 );
 
-                return;
+
+                /*==================================
+                DISABLE BUTTON
+                ==================================*/
+
+                btn.disabled = true;
+
+                btn.textContent =
+                    "Accepted ✅";
+
+
+                /*==================================
+                CUSTOMER NOTIFICATION
+                ==================================*/
+
+                await createNotification({
+
+                    uid:
+                        requestData.CustomerId,
+
+                    requestId:
+                        requestId,
+
+                    title:
+                        "Request Accepted",
+
+                    message:
+                        "Your electrical service request has been accepted. Our team will proceed with your service.",
+
+                    type:
+                        "request_accepted",
+
+                    icon:
+                        "fa-circle-check",
+
+                    sender:
+                        "staff",
+
+                    link:
+                        ""
+
+                });
+
+
+                console.log(
+                    "✅ Request accepted and customer notified:",
+                    requestId
+                );
 
             }
 
-            /*==================================
-            ACCEPT REQUEST
-            ==================================*/
+            catch (error) {
 
-            await updateDoc(
-                requestRef,
-                {
-                    Status: "Accepted"
-                }
-            );
+                console.error(
+                    "❌ Accept request error:",
+                    error
+                );
 
-            /*==================================
-            CUSTOMER NOTIFICATION
-            ==================================*/
+                alert(
+                    error.message ||
+                    "Failed to accept request."
+                );
 
-            await createNotification({
-
-                uid:
-                    requestData.CustomerId,
-
-                requestId:
-                    requestId,
-
-                title:
-                    "Request Accepted",
-
-                message:
-                    "Your electrical service request has been accepted. Our team will proceed with your service.",
-
-                type:
-                    "request_accepted",
-
-                icon:
-                    "fa-circle-check",
-
-                sender:
-                    "staff",
-
-                link:
-                    ""
-
-            });
-
-            console.log(
-                "✅ Request accepted and customer notified:",
-                requestId
-            );
+            }
 
         };
 
