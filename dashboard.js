@@ -482,71 +482,91 @@ function addButtonEvents(){
 
         btn.onclick = async () => {
 
-     const requestId = btn.dataset.id;
+            const requestId =
+                btn.dataset.id;
 
-const requestRef = doc(
-    db,
-    "service-request",
-    requestId
-);
+            const requestRef =
+                doc(
+                    db,
+                    "service-request",
+                    requestId
+                );
 
-const requestSnap = await getDoc(requestRef);
+            const requestSnap =
+                await getDoc(requestRef);
 
-if (!requestSnap.exists()) {
+            if (!requestSnap.exists()) {
 
-    alert("Request not found.");
+                alert("Request not found.");
 
-    return;
+                return;
 
-}
+            }
 
-const requestData = requestSnap.data();
+            const requestData =
+                requestSnap.data();
 
-if (requestData.Status === "Cancelled") {
+            if (requestData.Status === "Cancelled") {
 
-    alert(
-        "This request was cancelled by the customer and can no longer be modified."
-    );
+                alert(
+                    "This request was cancelled by the customer and can no longer be modified."
+                );
 
-    return;
+                return;
 
-}
+            }
 
-await updateDoc(
-    requestRef,
-    {
-        Status: "Accepted"
-    }
-);
+            /*==================================
+            ACCEPT REQUEST
+            ==================================*/
 
+            await updateDoc(
+                requestRef,
+                {
+                    Status: "Accepted"
+                }
+            );
 
-/*==================================
-CUSTOMER NOTIFICATION
-==================================*/
+            /*==================================
+            CUSTOMER NOTIFICATION
+            ==================================*/
 
-await createNotification({
+            await createNotification({
 
-    uid: requestData.CustomerId,
+                uid:
+                    requestData.CustomerId,
 
-    requestId: requestId,
+                requestId:
+                    requestId,
 
-    title: "Request Declined",
+                title:
+                    "Request Accepted",
 
-    message:
-        "Your electrical service request has been reviewed and unfortunately could not be accepted at this time.",
+                message:
+                    "Your electrical service request has been accepted. Our team will proceed with your service.",
 
-    type: "request_declined",
+                type:
+                    "request_accepted",
 
-    icon: "fa-circle-xmark",
+                icon:
+                    "fa-circle-check",
 
-    sender: "staff",
+                sender:
+                    "staff",
 
-    link: ""
+                link:
+                    ""
 
-});
+            });
+
+            console.log(
+                "✅ Request accepted and customer notified:",
+                requestId
+            );
+
         };
+
     });
-    
 document
 .querySelectorAll(".Archive")
 .forEach(button => {
