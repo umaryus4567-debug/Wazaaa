@@ -494,77 +494,146 @@ function addButtonEvents(){
 
             try {
 
-                const requestSnap =
-                    await getDoc(requestRef);
+                /*==================================
+                ATOMIC ACCEPT CHECK
+                ==================================*/
 
-                if (!requestSnap.exists()) {
+                const result =
+                    await runTransaction(
+                        db,
+                        async (transaction) => {
 
-                    alert("Request not found.");
+                            const requestSnap =
+                                await transaction.get(
+                                    requestRef
+                                );
 
-                    return;
+                            if (!requestSnap.exists()) {
 
-                }
+                                throw new Error(
+                                    "Request not found."
+                                );
 
-                const requestData =
-                    requestSnap.data();
+                            }
+
+                            const requestData =
+                                requestSnap.data();
+
+
+                            /*==================================
+                            ONLY PENDING REQUESTS CAN BE ACCEPTED
+                            ==================================*/
+
+                            if (
+                                requestData.Status !==
+                                "Pending"
+                            ) {
+
+                                return {
+
+                                    accepted: false,
+
+                                    status:
+                                        requestData.Status,
+
+                                    requestData:
+                                        requestData
+
+                                };
+
+                            }
+
+
+                            /*==================================
+                            ACCEPT REQUEST
+                            ==================================*/
+
+                            transaction.update(
+                                requestRef,
+                                {
+                                    Status:
+                                        "Accepted"
+                                }
+                            );
+
+
+                            return {
+
+                                accepted: true,
+
+                                status:
+                                    "Accepted",
+
+                                requestData:
+                                    requestData
+
+                            };
+
+                        }
+                    );
 
 
                 /*==================================
-                PREVENT REPEATED ACCEPT
+                REQUEST WAS ALREADY PROCESSED
                 ==================================*/
 
-                if (
-                    requestData.Status ===
-                    "Accepted"
-                ) {
+                if (!result.accepted) {
 
                     console.log(
-                        "⚠️ Request already accepted. No duplicate notification:",
+                        "⚠️ Request cannot be accepted. Current status:",
+                        result.status,
                         requestId
                     );
 
                     btn.disabled = true;
 
-                    btn.textContent =
-                        "Accepted ✅";
+                    if (
+                        result.status ===
+                        "Accepted"
+                    ) {
 
-                    return;
+                        btn.textContent =
+                            "Accepted ✅";
 
-                }
-
-
-                /*==================================
-                PREVENT CANCELLED REQUEST
-                ==================================*/
-
-                if (
-                    requestData.Status ===
-                    "Cancelled"
-                ) {
-
-                    alert(
-                        "This request was cancelled by the customer and can no longer be modified."
-                    );
-
-                    return;
-
-                }
-
-
-                /*==================================
-                ACCEPT REQUEST
-                ==================================*/
-
-                await updateDoc(
-                    requestRef,
-                    {
-                        Status: "Accepted"
                     }
-                );
+
+                    else if (
+                        result.status ===
+                        "Completed ✅"
+                    ) {
+
+                        btn.textContent =
+                            "Completed 🔒";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Declined"
+                    ) {
+
+                        btn.textContent =
+                            "Declined 🔒";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Cancelled"
+                    ) {
+
+                        btn.textContent =
+                            "Cancelled 🔒";
+
+                    }
+
+                    return;
+
+                }
 
 
                 /*==================================
-                DISABLE BUTTON
+                DISABLE BUTTON IMMEDIATELY
                 ==================================*/
 
                 btn.disabled = true;
@@ -580,7 +649,7 @@ function addButtonEvents(){
                 await createNotification({
 
                     uid:
-                        requestData.CustomerId,
+                        result.requestData.CustomerId,
 
                     requestId:
                         requestId,
