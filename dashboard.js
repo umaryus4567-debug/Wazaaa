@@ -324,14 +324,26 @@ function renderRequests(requests){
 
     requests.forEach((data) => {
 
-        const card =
-        document.createElement("div");
+       const card =
+    document.createElement("div");
 
-       card.className =
+card.className =
     "request-card";
+
+const isPending =
+    data.Status === "Pending";
+
+const isAccepted =
+    data.Status === "Accepted";
 
 const isCompleted =
     data.Status === "Completed ✅";
+
+const isDeclined =
+    data.Status === "Declined";
+
+const isCancelled =
+    data.Status === "Cancelled";
 
 card.innerHTML = `
 
@@ -352,7 +364,7 @@ Assign Technician
 <select
 class="technician-select"
 data-id="${data.id}"
-${isCompleted ? "disabled" : ""}>
+${!isAccepted ? "disabled" : ""}>
 
 <option value="">
 Select Technician
@@ -388,24 +400,34 @@ ${data.Status || "Pending"}
 <button
 class="accept"
 data-id="${data.id}"
-${isCompleted ? "disabled" : ""}>
-${isCompleted ? "🔒 Locked" : "Accept"}
+${!isPending ? "disabled" : ""}>
+${isPending ? "Accept" :
+  isAccepted ? "Accepted ✅" :
+  isCompleted ? "🔒 Locked" :
+  isDeclined ? "Declined 🔒" :
+  "🔒 Locked"}
 </button>
 
 <button
 class="decline"
 data-id="${data.id}"
-${isCompleted ? "disabled" : ""}>
-${isCompleted ? "🔒 Locked" : "Decline"}
+${!isPending ? "disabled" : ""}>
+${isPending ? "Decline" :
+  isAccepted ? "🔒 Locked" :
+  isCompleted ? "🔒 Locked" :
+  isDeclined ? "Declined 🔒" :
+  "🔒 Locked"}
 </button>
 
 <button
 class="complete"
 data-id="${data.id}"
-${isCompleted ? "disabled" : ""}>
-${isCompleted ? "Completed ✅" : "Complete"}
+${!isAccepted ? "disabled" : ""}>
+${isAccepted ? "Complete" :
+  isCompleted ? "Completed ✅" :
+  isDeclined ? "Declined 🔒" :
+  "🔒 Locked"}
 </button>
-
 
 <button
 class="whatsapp"
@@ -723,30 +745,6 @@ document
                     id
                 );
 
-
-            const requestSnap =
-                await getDoc(requestRef);
-
-
-            if (!requestSnap.exists()) {
-
-                alert(
-                    "Request not found."
-                );
-
-                return;
-
-            }
-
-
-            const requestData =
-                requestSnap.data();
-
-
-            /*==================================
-            SAVE TO SERVICE HISTORY
-            ==================================*/
-
             const historyRef =
                 doc(
                     db,
@@ -754,82 +752,183 @@ document
                     id
                 );
 
+            const statsRef =
+                doc(
+                    db,
+                    "site-stats",
+                    "overview"
+                );
 
-            await setDoc(
-                historyRef,
-                {
-                    ...requestData,
 
-                    Status: "Completed ✅",
-    
-    ArchivedAt:
-    serverTimestamp()
+            await runTransaction(
+                db,
+                async (transaction) => {
+
+                    /*==================================
+                    READ REQUEST
+                    ==================================*/
+
+                    const requestSnap =
+                        await transaction.get(
+                            requestRef
+                        );
+
+
+                    if (!requestSnap.exists()) {
+
+                        throw new Error(
+                            "Request not found."
+                        );
+
+                    }
+
+
+                    const requestData =
+                        requestSnap.data();
+
+
+                    /*==================================
+                    ARCHIVE PROTECTION
+                    ==================================
+
+                    Only Completed requests can
+                    be archived.
+                    ==================================*/
+
+                    if (
+                        requestData.Status !==
+                        "Completed ✅"
+                    ) {
+
+                        throw new Error(
+                            "Only completed requests can be archived."
+                        );
+
+                    }
+
+
+                    /*==================================
+                    READ STATISTICS
+                    ==================================*/
+
+                    const statsSnap =
+                        await transaction.get(
+                            statsRef
+                        );
+
+
+                    let completedRequests = 0;
+                    let satisfiedClients = 0;
+                    let declinedRequests = 0;
+
+
+                    if (statsSnap.exists()) {
+
+                        const stats =
+                            statsSnap.data();
+
+                        completedRequests =
+                            Number(
+                                stats.completedRequests || 0
+                            );
+
+                        satisfiedClients =
+                            Number(
+                                stats.satisfiedClients || 0
+                            );
+
+                        declinedRequests =
+                            Number(
+                                stats.declinedRequests || 0
+                            );
+
+                    }
+
+
+                    /*==================================
+                    CALCULATE NEW STATISTICS
+                    ==================================*/
+
+                    completedRequests += 1;
+
+                    satisfiedClients += 1;
+
+
+                    const totalFinal =
+                        completedRequests +
+                        declinedRequests;
+
+
+                    const successRate =
+                        totalFinal > 0
+                            ? Math.round(
+                                (
+                                    completedRequests /
+                                    totalFinal
+                                ) * 100
+                            )
+                            : 0;
+
+
+                    /*==================================
+                    CREATE SERVICE HISTORY
+                    ==================================*/
+
+                    transaction.set(
+                        historyRef,
+                        {
+                            ...requestData,
+
+                            Status:
+                                "Completed ✅",
+
+                            ArchivedAt:
+                                serverTimestamp()
+                        }
+                    );
+
+
+                    /*==================================
+                    UPDATE STATISTICS
+                    ==================================*/
+
+                    transaction.set(
+                        statsRef,
+                        {
+                            completedRequests:
+                                completedRequests,
+
+                            satisfiedClients:
+                                satisfiedClients,
+
+                            declinedRequests:
+                                declinedRequests,
+
+                            successRate:
+                                successRate
+                        },
+                        {
+                            merge: true
+                        }
+                    );
+
+
+                    /*==================================
+                    REMOVE ACTIVE REQUEST
+                    ==================================*/
+
+                    transaction.delete(
+                        requestRef
+                    );
+
                 }
             );
-            
-            /*==================================
-UPDATE PUBLIC STATISTICS
-==================================*/
-
-await updateDoc(
-    doc(
-        db,
-        "site-stats",
-        "overview"
-    ),
-    {
-        completedRequests:
-            increment(1),
-
-        satisfiedClients:
-            increment(1)
-    }
-);
-
-await updateWebsiteStatistics();
-            
-            /*==================================
-UPDATE PUBLIC COMPLETED STATISTICS
-==================================*/
-
-const statsRef = doc(
-    db,
-    "site-stats",
-    "overview"
-);
-
-await setDoc(
-    statsRef,
-    {
-        completedRequests: increment(1)
-    },
-    {
-        merge: true
-    }
-);
-
-console.log(
-    "✅ Completed request statistic updated."
-);
 
 
             console.log(
-                "✅ Request saved to service-history:",
+                "✅ Request archived atomically:",
                 id
             );
-
-
-            /*==================================
-            REMOVE FROM ACTIVE REQUESTS
-            ==================================*/
-
-            await deleteDoc(
-                requestRef
-            );
-            console.log(
-    "✅ Request removed from service-request:",
-    id
-);
 
 
             alert(
@@ -848,7 +947,8 @@ console.log(
 
 
             alert(
-                "Failed to archive request. Check the console."
+                error.message ||
+                "Failed to archive request."
             );
 
         }
@@ -1010,19 +1110,13 @@ document
                                     ) || "";
 
 
-                                transaction.update(
-                                    requestRef,
-                                    {
-                                        Technician:
-                                            technician,
-
-                                        TechnicianPhone:
-                                            technicianPhone,
-
-                                        Status:
-                                            "Accepted"
-                                    }
-                                );
+transaction.update(
+    requestRef,
+    {
+        Technician: technician,
+        TechnicianPhone: technicianPhone
+    }
+);
 
 
                                 return {
@@ -1189,7 +1283,7 @@ Service Team`;
 
 });
 
-    document
+ document
     .querySelectorAll(".decline")
     .forEach(btn => {
 
@@ -1204,6 +1298,10 @@ Service Team`;
             );
 
             try {
+
+                /*==================================
+                ATOMIC DECLINE CHECK
+                ==================================*/
 
                 const result = await runTransaction(
                     db,
@@ -1223,11 +1321,10 @@ Service Team`;
                         const requestData =
                             requestSnap.data();
 
-                        /*
-                        ==================================
+
+                        /*==================================
                         ONLY PENDING REQUESTS CAN BE DECLINED
-                        ==================================
-                        */
+                        ==================================*/
 
                         if (
                             requestData.Status !==
@@ -1235,40 +1332,55 @@ Service Team`;
                         ) {
 
                             return {
+
                                 declined: false,
+
                                 status:
                                     requestData.Status,
+
                                 requestData:
                                     requestData
+
                             };
 
                         }
 
+
+                        /*==================================
+                        DECLINE REQUEST
+                        ==================================*/
+
                         transaction.update(
                             requestRef,
                             {
-                                Status: "Declined",
+                                Status:
+                                    "Declined",
+
                                 DeclinedAt:
                                     serverTimestamp()
                             }
                         );
 
+
                         return {
+
                             declined: true,
-                            status: "Declined",
+
+                            status:
+                                "Declined",
+
                             requestData:
                                 requestData
+
                         };
 
                     }
                 );
 
 
-                /*
-                ==================================
+                /*==================================
                 REQUEST ALREADY PROCESSED
-                ==================================
-                */
+                ==================================*/
 
                 if (!result.declined) {
 
@@ -1280,15 +1392,54 @@ Service Team`;
 
                     btn.disabled = true;
 
-                    btn.textContent =
-                        result.status === "Completed ✅"
-                            ? "Completed 🔒"
-                            : `${result.status} 🔒`;
+                    if (
+                        result.status ===
+                        "Accepted"
+                    ) {
+
+                        btn.textContent =
+                            "Accepted 🔒";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Completed ✅"
+                    ) {
+
+                        btn.textContent =
+                            "Completed 🔒";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Declined"
+                    ) {
+
+                        btn.textContent =
+                            "Declined 🔒";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Cancelled"
+                    ) {
+
+                        btn.textContent =
+                            "Cancelled 🔒";
+
+                    }
 
                     return;
 
                 }
 
+
+                /*==================================
+                DISABLE BUTTON IMMEDIATELY
+                ==================================*/
 
                 btn.disabled = true;
 
@@ -1296,11 +1447,9 @@ Service Team`;
                     "Declined 🔒";
 
 
-                /*
-                ==================================
+                /*==================================
                 UPDATE DECLINED STATISTICS
-                ==================================
-                */
+                ==================================*/
 
                 await updateDoc(
                     doc(
@@ -1314,14 +1463,13 @@ Service Team`;
                     }
                 );
 
+
                 await updateWebsiteStatistics();
 
 
-                /*
-                ==================================
+                /*==================================
                 CUSTOMER NOTIFICATION
-                ==================================
-                */
+                ==================================*/
 
                 await createNotification({
 
@@ -1350,6 +1498,12 @@ Service Team`;
                         ""
 
                 });
+
+
+                console.log(
+                    "✅ Request declined and customer notified:",
+                    requestId
+                );
 
             }
 
@@ -1425,13 +1579,8 @@ document
                         };
 
                     }
-
-
-                    /*==================================
-                    CANCELLED REQUEST
-                    ==================================*/
-
-                    if (
+                    
+                                        if (
                         requestData.Status ===
                         "Cancelled"
                     ) {
@@ -1441,6 +1590,21 @@ document
                         );
 
                     }
+                    
+                    if (
+    requestData.Status !==
+    "Accepted"
+) {
+
+    return {
+        completed: false,
+        requestData
+    };
+
+}
+
+
+            
 
 
                     /*==================================
