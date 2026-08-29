@@ -60,18 +60,13 @@ onAuthStateChanged(
 
         if (!user) {
 
-            console.log(
-                "❌ Staff authentication required."
-            );
+            
 
             return;
 
         }
 
-        console.log(
-            "✅ Cancelled Requests page authenticated:",
-            user.uid
-        );
+        
 
         loadCancelledRequests();
 
@@ -152,10 +147,7 @@ const dateB =
                 cancelledRequests.length;
 
 
-            console.log(
-                "🚫 CANCELLED REQUESTS:",
-                cancelledRequests
-            );
+            
 
 
             renderCancelledRequests(

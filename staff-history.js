@@ -45,10 +45,6 @@ onAuthStateChanged(auth, async (user) => {
 
     }
 
-    console.log(
-        "✅ Staff authenticated:",
-        user.uid
-    );
 
     await loadStaffHistory();
 
@@ -91,11 +87,7 @@ async function loadStaffHistory() {
         });
 
 
-        console.log(
-            "📦 STAFF SERVICE HISTORY:",
-            allHistory
-        );
-
+        
 
         renderHistory(allHistory);
 
@@ -217,7 +209,7 @@ function renderHistory(history) {
         `;
 
 
-        historyList.appendChild(card);
+        historyList.appendChild(card); 
 
     });
 

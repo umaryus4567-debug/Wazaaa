@@ -38,7 +38,6 @@ async function loadTechnicians(){
 
     snapshot.forEach(doc => {
 
-        console.log(doc.data());
 
         technicians.push({
             name: doc.data().Name,
@@ -47,7 +46,6 @@ async function loadTechnicians(){
 
     });
 
-    console.log("Technicians Array:", technicians);
 }
 
 const container =
@@ -179,11 +177,6 @@ snapshot.forEach((documentItem) => {
         ).textContent = completed;
 
 
-        console.log(
-            "📦 ACTIVE SERVICE REQUESTS:",
-            allRequests
-        );
-
 
         /*
         =========================================
@@ -206,7 +199,7 @@ snapshot.forEach((documentItem) => {
     }
 );
 
-console.log("Technicians Array:", technicians);
+
 
 /*==================================
 UPDATE WEBSITE STATISTICS
@@ -270,23 +263,6 @@ async function updateWebsiteStatistics() {
             statsRef,
             {
                 successRate: successRate
-            }
-        );
-
-        console.log(
-            "📊 Website statistics updated:",
-            {
-                completedRequests:
-                    completed,
-
-                satisfiedClients:
-                    stats.satisfiedClients,
-
-                declinedRequests:
-                    declined,
-
-                successRate:
-                    successRate
             }
         );
 
@@ -608,12 +584,6 @@ function addButtonEvents(){
 
                 if (!result.accepted) {
 
-                    console.log(
-                        "⚠️ Request cannot be accepted. Current status:",
-                        result.status,
-                        requestId
-                    );
-
                     btn.disabled = true;
 
                     if (
@@ -702,12 +672,6 @@ function addButtonEvents(){
                         ""
 
                 });
-
-
-                console.log(
-                    "✅ Request accepted and customer notified:",
-                    requestId
-                );
 
             }
 
@@ -924,11 +888,6 @@ document
                 }
             );
 
-
-            console.log(
-                "✅ Request archived atomically:",
-                id
-            );
 
 
             alert(
@@ -1383,13 +1342,6 @@ Service Team`;
                 ==================================*/
 
                 if (!result.declined) {
-
-                    console.log(
-                        "⚠️ Request cannot be declined. Current status:",
-                        result.status,
-                        requestId
-                    );
-
                     btn.disabled = true;
 
                     if (
@@ -1498,12 +1450,6 @@ Service Team`;
                         ""
 
                 });
-
-
-                console.log(
-                    "✅ Request declined and customer notified:",
-                    requestId
-                );
 
             }
 
@@ -1634,11 +1580,6 @@ document
 
             if (!result.completed) {
 
-                console.log(
-                    "⚠️ Request already completed. No duplicate notification:",
-                    requestId
-                );
-
                 btn.disabled = true;
 
                 btn.textContent =
@@ -1691,11 +1632,6 @@ document
 
             });
 
-
-            console.log(
-                "✅ Request completed and customer notified:",
-                requestId
-            );
 
         }
 

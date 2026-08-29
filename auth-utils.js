@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-console.log("🔥 AUTH-UTILS.JS LOADED - VERSION TEST");
+
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -18,7 +18,7 @@ import {
     updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-console.log("🔥 FIREBASE AUTH UTILS ACTIVE");
+
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -31,10 +31,7 @@ async function saveUserData(user, data = {}) {
 
     try {
 
-        console.log(
-            "Preparing user profile:",
-            user.uid
-        );
+        
 
         const snapshot = await getDoc(userRef);
 
@@ -94,30 +91,14 @@ async function saveUserData(user, data = {}) {
 
         };
 
-        console.log(
-            "Saving user document:",
-            user.uid
-        );
+        
 
         await setDoc(
             userRef,
             userData
         );
 
-        console.log(
-            "✅ USER PROFILE SAVED"
-        );
-
-        console.log(
-            "UID:",
-            user.uid
-        );
-
-        console.log(
-            "PATH:",
-            `users/${user.uid}`
-        );
-
+        
         return userData;
 
     }
@@ -142,7 +123,7 @@ export async function registerUser(fullName, email, password, phone) {
 
     try {
 
-        console.log("Creating authentication account...");
+
 
         const credential =
         await createUserWithEmailAndPassword(
@@ -153,13 +134,13 @@ export async function registerUser(fullName, email, password, phone) {
 
         const user = credential.user;
 
-        console.log("Authentication account created.");
+        
 
         await updateProfile(user, {
             displayName: fullName
         });
 
-        console.log("Saving user to Firestore...");
+        
 
         const savedData = await saveUserData(user, {
 
@@ -171,10 +152,6 @@ export async function registerUser(fullName, email, password, phone) {
 
 });
 
-console.log("✅ USER PROFILE CREATED:", savedData);
-console.log("✅ USER PROFILE PATH:", `users/${user.uid}`);
-
-        console.log("User successfully saved.");
 
         return user;
 
@@ -198,7 +175,7 @@ export async function loginUser(email, password) {
 
     try {
 
-        console.log("🔐 Attempting Firebase Authentication login...");
+        
 
         const credential =
             await signInWithEmailAndPassword(
@@ -209,10 +186,7 @@ export async function loginUser(email, password) {
 
         const user = credential.user;
 
-        console.log(
-            "✅ FIREBASE AUTHENTICATION SUCCESS:",
-            user.uid
-        );
+        
 
         return user;
 
@@ -236,7 +210,7 @@ export async function googleLogin() {
 
     try {
 
-        console.log("Opening Google popup...");
+
 
         const result =
         await signInWithPopup(
@@ -246,7 +220,7 @@ export async function googleLogin() {
 
         const user = result.user;
 
-        console.log("Google account:", user.uid);
+;
 
         await saveUserData(user, {
 
@@ -259,7 +233,7 @@ export async function googleLogin() {
 
         });
 
-        console.log("Google login successful.");
+        
 
         return user;
 
@@ -285,13 +259,13 @@ export async function logoutUser() {
 
         await signOut(auth);
 
-        console.log("User signed out.");
+        
 
     }
 
     catch(error){
 
-        console.error("LOGOUT ERROR:", error);
+
 
         throw error;
 
@@ -312,7 +286,7 @@ export function protectPage() {
 
             if (!user) {
 
-                console.log("No user found. Redirecting to login.");
+
 
                 window.location.replace("login.html");
 
@@ -320,7 +294,7 @@ export function protectPage() {
 
             }
 
-            console.log("Authenticated:", user.uid);
+            
 
             resolve(user);
 
@@ -404,7 +378,7 @@ export function guestOnly() {
 
             if (user) {
 
-                console.log("User already logged in.");
+                
 
                 window.location.replace("home.html");
 
@@ -486,16 +460,14 @@ export async function resetPassword(email) {
 
     try {
 
-        console.log("Sending password reset email...");
+        
 
         await sendPasswordResetEmail(
             auth,
             email.trim().toLowerCase()
         );
 
-        console.log(
-            "Password reset email sent successfully."
-        );
+        
 
     }
 

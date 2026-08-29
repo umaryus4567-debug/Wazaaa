@@ -9,8 +9,6 @@ import {
     googleLogin,
     resetPassword
 } from "./auth-utils.js";
-console.log("🔥 AUTH.JS LOADED");
-console.log("🔥 loginUser function:", loginUser);
 
 /*==================================
 GUEST ONLY
@@ -64,7 +62,7 @@ document.getElementById("toastMessage");
 const toastIcon =
 document.getElementById("toastIcon");
 
-console.log("Login Page Loaded");
+
 
 /*==================================================
 PART 2
@@ -247,7 +245,6 @@ const user = await loginUser(
     passwordValue
 );
 
-console.log("✅ AUTHENTICATION LOGIN SUCCESS:", user.uid);
 
 hideLoading();
 
@@ -364,43 +361,6 @@ hideLoading();
 
 });
 
-/*==================================================
-FORGOT PASSWORD
-==================================================*/
-
-forgotPassword.addEventListener("click", async (e) => {
-
-    e.preventDefault();
-
-    const emailValue = email.value.trim();
-
-    if (!emailValue) {
-
-        showToast("Enter your email first.", "error");
-
-        email.focus();
-
-        return;
-
-    }
-
-    try {
-
-        await resetPassword(emailValue);
-
-        showToast("Password reset email sent.");
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        showToast(error.message, "error");
-
-    }
-
-});
 
 /*==================================================
 PART 5
@@ -409,17 +369,7 @@ STARTUP
 
 window.addEventListener("load", () => {
 
-    console.log("====================================");
-
-    console.log("UY POWER SOLUTIONS");
-
-    console.log("Login System Ready");
-
-    console.log("Firebase Connected");
-
-    console.log("Google Authentication Ready");
-
-    console.log("====================================");
+    
 
 });
 

@@ -60,18 +60,13 @@ onAuthStateChanged(
 
         if (!user) {
 
-            console.log(
-                "❌ Staff authentication required."
-            );
+            
 
             return;
 
         }
 
-        console.log(
-            "✅ Declined Requests page authenticated:",
-            user.uid
-        );
+        
 
         loadDeclinedRequests();
 
@@ -154,10 +149,7 @@ function loadDeclinedRequests(){
                 declinedRequests.length;
 
 
-            console.log(
-                "🚫 DECLINED REQUESTS:",
-                declinedRequests
-            );
+            
 
 
             renderDeclinedRequests(

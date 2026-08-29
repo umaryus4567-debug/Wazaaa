@@ -26,10 +26,7 @@ export const authReady = new Promise((resolve, reject) => {
 
     onAuthStateChanged(auth, async (user) => {
 
-        console.log("================================");
-        console.log("🔐 AUTH GUARD STARTED");
-        console.log("================================");
-
+    
 
         /*==================================
         NO USER
@@ -37,9 +34,6 @@ export const authReady = new Promise((resolve, reject) => {
 
         if (!user) {
 
-            console.log(
-                "❌ NO AUTHENTICATED USER"
-            );
 
             window.location.replace(
                 "login.html"
@@ -48,11 +42,6 @@ export const authReady = new Promise((resolve, reject) => {
             return;
         }
 
-
-        console.log(
-            "✅ AUTH USER FOUND:",
-            user.uid
-        );
 
 
         try {
@@ -69,12 +58,7 @@ export const authReady = new Promise((resolve, reject) => {
                 );
 
 
-            console.log(
-                "📄 Reading Firestore:",
-                `users/${user.uid}`
-            );
-
-
+            
             const snapshot =
                 await getDoc(userRef);
 
@@ -99,11 +83,7 @@ export const authReady = new Promise((resolve, reject) => {
             }
 
 
-            console.log(
-                "✅ FIRESTORE DOCUMENT EXISTS"
-            );
-
-
+            
             /*==================================
             USER DATA
             ==================================*/
@@ -112,12 +92,7 @@ export const authReady = new Promise((resolve, reject) => {
                 snapshot.data();
 
 
-            console.log(
-                "👤 USER DATA:",
-                data
-            );
-
-
+            
             const role =
                 data.role || "customer";
 
@@ -130,16 +105,8 @@ export const authReady = new Promise((resolve, reject) => {
                 .toLowerCase();
 
 
-            console.log(
-                "👤 ROLE:",
-                role
-            );
 
 
-            console.log(
-                "🔐 ACCOUNT STATUS:",
-                accountStatus
-            );
 
 
             /*==================================
@@ -209,18 +176,6 @@ export const authReady = new Promise((resolve, reject) => {
             }
 
 
-            /*==================================
-            ACTIVE
-            ==================================*/
-
-            console.log(
-                "✅ ACCOUNT ACTIVE"
-            );
-
-            console.log(
-                "🔓 ACCESS GRANTED"
-            );
-
 
             /*==================================
             RELEASE HOME PAGE
@@ -232,11 +187,6 @@ export const authReady = new Promise((resolve, reject) => {
                 role,
                 accountStatus
             });
-
-
-            console.log(
-                "================================"
-            );
 
         }
 

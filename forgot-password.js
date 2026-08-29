@@ -20,7 +20,6 @@ INITIALIZE FIREBASE
 
 const auth = getAuth(app);
 
-console.log("Forgot Password Loaded Successfully");
 
 /*==============================
 DOM ELEMENTS

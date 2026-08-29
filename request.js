@@ -38,11 +38,7 @@ onAuthStateChanged(auth, (user) => {
 
     }
 
-    console.log(
-        "✅ Request page authenticated:",
-        user.uid
-    );
-
+    
 });
 
 
@@ -73,11 +69,6 @@ form.addEventListener("submit", async (e) => {
 
     }
 
-
-    console.log(
-        "👤 Customer UID:",
-        user.uid
-    );
 
 
     /*==================================
@@ -215,11 +206,6 @@ form.addEventListener("submit", async (e) => {
         };
 
 
-        console.log(
-            "📦 Preparing service request:",
-            requestData
-        );
-
 
         const requestRef =
             await addDoc(
@@ -282,39 +268,17 @@ try {
 
     };
 
-    console.log(
-        "👨‍🔧 STAFF NOTIFICATION DATA:",
-        staffNotificationData
-    );
-
-    console.log(
-        "🔐 CURRENT AUTH UID:",
-        auth.currentUser?.uid
-    );
-
-    console.log(
-        "📦 REQUEST ID:",
-        requestRef.id
-    );
 
     const staffNotificationId =
         await createNotification(
             staffNotificationData
         );
 
-    console.log(
-        "✅ STAFF NOTIFICATION CREATED:",
-        staffNotificationId
-    );
-
 }
 
 catch (staffNotificationError) {
 
-    console.error(
-        "❌ FAILED TO NOTIFY STAFF:",
-        staffNotificationError
-    );
+    
 
 }
 
@@ -326,17 +290,6 @@ catch (staffNotificationError) {
         console.log(
             "✅ SERVICE REQUEST CREATED"
         );
-
-        console.log(
-            "Request ID:",
-            requestRef.id
-        );
-
-        console.log(
-            "Customer ID:",
-            user.uid
-        );
-
 
         document.getElementById(
             "successMessage"

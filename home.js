@@ -106,15 +106,6 @@ async function loadWebsiteStatistics() {
         }
 
 
-        console.log(
-            "📊 Website Statistics:",
-            {
-                completedRequests,
-                satisfiedClients,
-                successRate
-            }
-        );
-
 
         /*==================================
         REQUESTS COMPLETED
@@ -308,10 +299,7 @@ WAIT FOR AUTH GUARD
 
 authReady.then(async ({ user, data, role }) => {
 
-    console.log(
-        "✅ HOME RELEASED BY AUTH GUARD:",
-        user.uid
-    );
+    
 
 
     /*==================================
@@ -377,10 +365,6 @@ async function loadUserRole(user) {
             snapshot.data();
 
 
-        console.log(
-            "User role:",
-            data.role
-        );
 
 
         /*==================================
@@ -442,15 +426,7 @@ function startNotificationListener(user, role) {
             : user.uid;
 
 
-    console.log(
-        "🔔 NOTIFICATION INBOX:",
-        notificationUid
-    );
-
-    console.log(
-        "👤 USER ROLE:",
-        role
-    );
+    
 
 
     /*==================================
@@ -777,10 +753,7 @@ if (clearNotifications) {
                         : user.uid;
 
 
-                console.log(
-                    "🔔 MARK ALL AS READ UID:",
-                    notificationUid
-                );
+                
 
 
                 await markAllNotificationsAsRead(
@@ -788,9 +761,7 @@ if (clearNotifications) {
                 );
 
 
-                console.log(
-                    "✅ All notifications marked as read."
-                );
+                
 
             }
 
@@ -894,7 +865,7 @@ PAGE LOADER
 
 window.addEventListener("load", () => {
 
-    console.log("⏳ HOME LOADER STARTED");
+    
 
     const loader =
         document.getElementById("loader");
@@ -909,9 +880,7 @@ window.addEventListener("load", () => {
 
     }
 
-    console.log(
-        "✅ Loader element found."
-    );
+    
 
 
     setTimeout(() => {
@@ -928,13 +897,7 @@ window.addEventListener("load", () => {
         );
 
 
-        console.log(
-            "✅ HOME LOADER HIDDEN"
-        );
-
-        console.log(
-            "🎬 HERO ANIMATION STARTED"
-        );
+        
 
 
     }, 2000);
@@ -946,30 +909,9 @@ window.addEventListener("load", () => {
 HOME READY
 ==================================*/
 
-console.log(
-    "================================"
-);
+
 
 console.log(
     "UY POWER SOLUTIONS"
 );
 
-console.log(
-    "Home System Ready"
-);
-
-console.log(
-    "User System Ready"
-);
-
-console.log(
-    "Notification System Ready"
-);
-
-console.log(
-    "Staff Access System Ready"
-);
-
-console.log(
-    "================================"
-);

@@ -29,10 +29,7 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
 
-    console.log(
-        "✅ Customer authenticated:",
-        user.uid
-    );
+    
 
     await loadHistory(user.uid);
 

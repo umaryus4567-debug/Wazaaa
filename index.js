@@ -76,7 +76,7 @@ document.getElementById("toastIcon");
 const successModal =
 document.getElementById("successModal");
 
-console.log("Registration Page Ready");
+
 
 /*==================================
 SHOW LOADING
@@ -359,7 +359,7 @@ registerForm.addEventListener("submit", async (e) => {
 
         );
 
-        console.log("User created:", user.uid);
+        
 
 await createNotification({
 
@@ -391,8 +391,7 @@ await createNotification({
 
         setTimeout(() => {
 
-    console.log("Registration test complete.");
-    console.log("User should now exist in Firestore.");
+    
 
 }, 2000);
 
@@ -511,15 +510,7 @@ STARTUP
 
 window.addEventListener("load", () => {
 
-    console.log("====================================");
-
-    console.log("UY POWER SOLUTIONS");
-
-    console.log("Registration System Ready");
-
-    console.log("Firebase Connected");
-
-    console.log("====================================");
+    
 
 });
 
