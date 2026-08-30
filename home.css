@@ -6409,3 +6409,29 @@ MOBILE FOOTER
     }
 
 }
+/*==================================
+  DESKTOP NOTIFICATION LAYER FIX
+==================================*/
+
+@media (min-width: 768px) {
+
+    .top-user-bar {
+        position: relative;
+        z-index: 100000;
+    }
+
+    .notification-container {
+        position: relative;
+        z-index: 100001;
+    }
+
+    .notification-dropdown {
+        z-index: 100002 !important;
+    }
+
+    .hero {
+        position: relative;
+        z-index: 1;
+    }
+
+}
