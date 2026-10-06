@@ -489,20 +489,47 @@ function buildCard(data, id) {
 
             <p>
 
-                <b>Location:</b>
+    <b>Location:</b>
 
-                ${data.Location || ""}
+    ${data.Location || ""}
 
-            </p>
+</p>
 
 
-            <p>
+<p>
 
-                <b>Description:</b>
+    <b>Area:</b>
 
-                ${data.Description || ""}
+    ${data.Area || ""}
 
-            </p>
+</p>
+
+
+<p>
+
+    <b>Bus Stop:</b>
+
+    ${data.BusStop || ""}
+
+</p>
+
+
+<p>
+
+    <b>Address:</b>
+
+    ${data.Address || ""}
+
+</p>
+
+
+<p>
+
+    <b>Description:</b>
+
+    ${data.Description || ""}
+
+</p>
 
 
             <p>
