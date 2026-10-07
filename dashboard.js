@@ -1,13 +1,154 @@
-import { auth, db } from "./firebase-config.js";
+import { auth, db, app } from "./firebase-config.js";
 
 import { onAuthStateChanged }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
 import {
+    getMessaging,
+    getToken,
+    onMessage
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-messaging.js";
+import {
     protectStaffPage
 } from "./auth-utils.js";
 
+
+/* ==========================
+   FIREBASE CLOUD MESSAGING
+========================== */
+
+const messaging = getMessaging(app);
+
+const VAPID_KEY =
+    "BAxHpS3C7IuPylCNjZaWyFfixyb7Gt5SvoD_zAaFV2Gvc5VmsXcy6y4d7EmrqIxbDeIT1ON3YuBN1PR5aBC9Kd0";
+
+
+async function setupPushNotifications() {
+
+    try {
+
+        if (
+            !("Notification" in window)
+        ) {
+
+            console.warn(
+                "❌ This browser does not support notifications."
+            );
+
+            return;
+
+        }
+
+        if (
+            !("serviceWorker" in navigator)
+        ) {
+
+            console.warn(
+                "❌ Service workers are not supported."
+            );
+
+            return;
+
+        }
+
+        const permission =
+            await Notification.requestPermission();
+
+        if (permission !== "granted") {
+
+            console.warn(
+                "🔕 Notification permission was not granted."
+            );
+
+            return;
+
+        }
+
+        const registration =
+            await navigator.serviceWorker.register(
+                "/Wazaaa/firebase-messaging-sw.js"
+            );
+
+        console.log(
+            "✅ Firebase messaging service worker registered."
+        );
+
+        const token =
+            await getToken(
+                messaging,
+                {
+                    vapidKey: VAPID_KEY,
+                    serviceWorkerRegistration:
+                        registration
+                }
+            );
+
+        if (!token) {
+
+            console.warn(
+                "⚠️ No FCM registration token received."
+            );
+
+            return;
+
+        }
+
+        console.log(
+            "✅ FCM DEVICE TOKEN:",
+            token
+        );
+
+        console.log(
+            "📱 This device is ready for push notifications."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ PUSH NOTIFICATION SETUP ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ==========================
+   FOREGROUND MESSAGES
+========================== */
+
+onMessage(
+    messaging,
+    (payload) => {
+
+        console.log(
+            "📩 Foreground notification received:",
+            payload
+        );
+
+        const title =
+            payload.notification?.title ||
+            "UY Power Solutions";
+
+        const message =
+            payload.notification?.body ||
+            "You have a new notification.";
+
+        alert(
+            `${title}\n\n${message}`
+        );
+
+    }
+);
+
+
 protectStaffPage();
+
+setupPushNotifications();
+
 let allRequests = [];
 let technicians = [];
 import {

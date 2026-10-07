@@ -53,7 +53,7 @@ export async function createNotification(data) {
 
         );
 
-        console.log("Notification created:", docRef.id);
+        
 
         return docRef.id;
 
@@ -61,7 +61,7 @@ export async function createNotification(data) {
 
     catch (error) {
 
-        console.error("Notification Error:", error);
+        
 
         throw error;
 
@@ -167,10 +167,6 @@ export async function markNotificationAsRead(notificationId) {
 
         );
 
-        console.log(
-            "Notification marked as read:",
-            notificationId
-        );
 
     }
 
@@ -206,7 +202,7 @@ export async function markAllNotificationsAsRead(uid) {
 
         if (snapshot.empty) {
 
-            console.log("No notifications found.");
+            
 
             return;
 
@@ -244,21 +240,11 @@ export async function markAllNotificationsAsRead(uid) {
 
         await Promise.all(promises);
 
-        console.log(
-            "All unread notifications marked as read."
-        );
+        
 
     }
 
     catch (error) {
-
-        console.error(
-
-            "Mark Notifications Error:",
-
-            error
-
-        );
 
         throw error;
 
@@ -280,13 +266,6 @@ export async function deleteNotification(notificationId) {
 
         );
 
-        console.log(
-
-            "Notification deleted:",
-
-            notificationId
-
-        );
 
     }
 
@@ -325,7 +304,6 @@ export async function clearAllNotifications(uid) {
 
         if (snapshot.empty) {
 
-            console.log("No notifications to delete.");
 
             return;
 
@@ -348,8 +326,6 @@ export async function clearAllNotifications(uid) {
         });
 
         await Promise.all(promises);
-
-        console.log("All notifications cleared.");
 
     }
 
