@@ -23,55 +23,84 @@ const VAPID_KEY =
     "BAxHpS3C7IuPylCNjZaWyFfixyb7Gt5SvoD_zAaFV2Gvc5VmsXcy6y4d7EmrqIxbDeIT1ON3YuBN1PR5aBC9Kd0";
 
 
-async function setupPushNotifications() {
+    async function setupPushNotifications() {
+
+    const statusBox =
+        document.getElementById("pushStatus");
+
+    function showStatus(message, success = true) {
+
+        if (!statusBox) return;
+
+        statusBox.textContent = message;
+
+        statusBox.style.background =
+            success ? "#e8f5e9" : "#ffebee";
+
+        statusBox.style.color =
+            success ? "#1b5e20" : "#b71c1c";
+    }
+
 
     try {
 
-        if (
-            !("Notification" in window)
-        ) {
+        showStatus(
+            "🔄 Checking notification permission..."
+        );
 
-            console.warn(
-                "❌ This browser does not support notifications."
+
+        if (!("Notification" in window)) {
+
+            showStatus(
+                "❌ This browser does not support notifications.",
+                false
             );
 
             return;
-
         }
 
-        if (
-            !("serviceWorker" in navigator)
-        ) {
 
-            console.warn(
-                "❌ Service workers are not supported."
+        if (!("serviceWorker" in navigator)) {
+
+            showStatus(
+                "❌ Service workers are not supported.",
+                false
             );
 
             return;
-
         }
+
 
         const permission =
             await Notification.requestPermission();
 
+
         if (permission !== "granted") {
 
-            console.warn(
-                "🔕 Notification permission was not granted."
+            showStatus(
+                "🔕 Notification permission was not granted.",
+                false
             );
 
             return;
-
         }
+
+
+        showStatus(
+            "✅ Notification permission granted. Registering Firebase service worker..."
+        );
+
 
         const registration =
             await navigator.serviceWorker.register(
                 "/Wazaaa/firebase-messaging-sw.js"
             );
 
-        console.log(
-            "✅ Firebase messaging service worker registered."
+
+        showStatus(
+            "✅ Service worker registered. Getting FCM device token..."
         );
+
 
         const token =
             await getToken(
@@ -83,24 +112,28 @@ async function setupPushNotifications() {
                 }
             );
 
+
         if (!token) {
 
-            console.warn(
-                "⚠️ No FCM registration token received."
+            showStatus(
+                "⚠️ Firebase did not return an FCM device token.",
+                false
             );
 
             return;
-
         }
+
 
         console.log(
             "✅ FCM DEVICE TOKEN:",
             token
         );
 
-        console.log(
-            "📱 This device is ready for push notifications."
+
+        showStatus(
+            "📱 Push notifications are successfully registered on this device. ✅"
         );
+
 
     }
 
@@ -111,9 +144,16 @@ async function setupPushNotifications() {
             error
         );
 
+
+        showStatus(
+            "❌ Push notification setup failed: " +
+            (error.message || error),
+            false
+        );
+
     }
 
-}
+    }
 
 
 /* ==========================

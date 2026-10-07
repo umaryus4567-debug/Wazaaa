@@ -210,205 +210,93 @@ color:white;
 .delete:hover{
     background:#000;
 }
+.history-btn{
 
-/*==================================
-DASHBOARD ACTIONS
-==================================*/
+background:#28a745;
+color:white;
+padding:10px 15px;
+border-radius:8px;
+text-decoration:none;
+font-weight:bold;
 
-.dashboard-actions{
+}
+.histor-btn{
 
-    display:flex;
-
-    flex-wrap:wrap;
-
-    align-items:center;
-
-    gap:12px;
-
-    margin-top:25px;
-
-    padding-top:20px;
-
-    border-top:
-        1px solid rgba(0,0,0,.08);
+background:#28a7;
+color:white;
+padding:10px 15px;
+border-radius:8px;
+text-decoration:none;
+font-weight:bold;
+margin-right: 20px;
+border: none;
+margin-left: 20px;
 
 }
 
 
-/*--------------------------------
-COMMON ACTION STYLE
---------------------------------*/
+/*==================================
+SERVICE HISTORY NAVIGATION
+==================================*/
 
-.dashboard-action{
+a[href="staff-history.html"]{
 
-    display:inline-flex;
+    display:flex;
 
     align-items:center;
 
-    justify-content:center;
+    gap:10px;
 
-    gap:8px;
+    width:100%;
 
-    min-height:44px;
+    padding:12px 16px;
 
-    padding:10px 16px;
+    margin-top:6px;
 
-    border:none;
-
-    border-radius:10px;
-
-    font-size:14px;
-
-    font-weight:600;
+    color:inherit;
 
     text-decoration:none;
 
-    cursor:pointer;
-
-    box-sizing:border-box;
+    border-radius:10px;
 
     transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        background .2s ease;
+        background .25s ease,
+        transform .25s ease;
 
 }
 
 
 /* ICON */
 
-.dashboard-action i{
+a[href="staff-history.html"] i{
 
-    font-size:15px;
+    font-size:17px;
 
-}
+    min-width:20px;
 
-
-/*--------------------------------
-HOVER
---------------------------------*/
-
-.dashboard-action:hover{
-
-    transform:translateY(-2px);
-
-    box-shadow:
-        0 5px 14px rgba(0,0,0,.10);
-
-}
-
-/*==================================
-CANCELLED REQUESTS
-==================================*/
-
-.cancelled-action{
-
-    background:#dc3545;
-
-    color:white;
-
-}
-
-. cancelled-action:hover{
-
-    background:#b02a37;
-
-}
-
-/*==================================
-CANCELLED REQUESTS
-==================================*/
-
-.declined-action{
-
-    background:#dc3545;
-
-    color:white;
-
-}
-
-. declined-action:hover{
-
-    background:#b02a37;
+    text-align:center;
 
 }
 
 
-/*--------------------------------
-LOGOUT
---------------------------------*/
+/* HOVER */
 
-.logout-action{
+a[href="staff-history.html"]:hover{
 
-    background:#333;
+    background:rgba(13,71,161,.10);
 
-    color:white;
+    transform:translateX(3px);
 
 }
 
 
-/*--------------------------------
-VIEW HISTORY
---------------------------------*/
+/* ACTIVE / CURRENT PAGE */
 
-.history-action{
+a[href="staff-history.html"].active{
 
-    background:#28a745;
-
-    color:white;
+    background:rgba(13,71,161,.15);
 
 }
-
-
-/*--------------------------------
-SERVICE HISTORY
---------------------------------*/
-
-.service-history-action{
-
-    background:#0d47a1;
-
-    color:white;
-
-}
-
-
-/*--------------------------------
-MANAGE TECHNICIANS
---------------------------------*/
-
-.technician-action{
-
-    background:#6f42c1;
-
-    color:white;
-
-}
-
-
-/*--------------------------------
-MOBILE
---------------------------------*/
-
-@media(max-width:600px){
-
-    .dashboard-actions{
-
-        flex-direction:column;
-
-        align-items:stretch;
-
-    }
-
-
-    .dashboard-action{
-
-        width:100%;
-
-    }
-
-}
-
 
 
 /* MOBILE */
@@ -448,6 +336,16 @@ MOBILE
 </head>
 
 <body>
+  <div id="pushStatus"
+     style="
+        margin:15px;
+        padding:12px;
+        border-radius:8px;
+        background:#f5f5f5;
+        font-size:14px;
+     ">
+    🔄 Checking push notification status...
+  </div>
 <div class="dashboard-header">
     <h1> <ion-icon name="flash"></ion-icon>service Requests Dashboard</h1>
 
@@ -489,43 +387,28 @@ Manage incoming service requests and technician assignments.
 
 </div>
 <div id="requestsContainer"></div>
-<div class="dashboard-actions">
-
-    <a href="home.html" class="dashboard-action logout-action">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        Logout
-    </a>
-
-    <a href="history.html" class="dashboard-action history-action">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        View History
-    </a>
-
-    <a href="staff-history.html" class="dashboard-action service-history-action">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-        Service History
-    </a>
-    
-    <a href="cancelled.html" class="dashboard-action cancelled-action">
-    <i class="fa-solid fa-ban"></i>
-    Cancelled Requests
+<a href="home.html"
+class="histor-btn">
+Logout
 </a>
+<a
+href="history.html"
+class="history-btn">
 
-   <a href="declined.html" class="dashboard-action declined-action">
-    <i class="fa-solid fa-ban"></i>
-    Declined Request 
+View History
+
 </a>
+<a href="staff-history.html">
+    <i class="fa-solid fa-clock-rotate-left"></i>
+    Service History
+</a>
+<button
+class="histor-btn" 
+onclick="location.href='technician.html'">
 
-    <button
-        class="dashboard-action technician-action"
-        onclick="location.href='technician.html'">
+Manage Technicians
 
-        <i class="fa-solid fa-user-gear"></i>
-        Manage Technicians
-
-    </button>
-
-</div>
+</button>
     <script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js"></script>
 <script type="module" src="dashboard.js"></script>
