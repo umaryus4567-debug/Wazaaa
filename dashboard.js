@@ -128,6 +128,11 @@ const VAPID_KEY =
             "✅ FCM DEVICE TOKEN:",
             token
         );
+      const tokenBox = document.getElementById("fcmToken");
+
+if (tokenBox) {
+    tokenBox.value = token;
+}
 
 
         showStatus(
