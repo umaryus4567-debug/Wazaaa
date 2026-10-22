@@ -1729,7 +1729,9 @@ window.addEventListener("load", () => {
 async function setupPushNotifications(user) {
     try {
         if (!("Notification" in window)) {
-            console.warn("This browser does not support notifications.");
+            console.log("Notification API available:", "Notification" in window);
+console.log("Service Worker available:", "serviceWorker" in navigator);
+console.log("Secure context:", window.isSecureContext);
             return;
         }
 
