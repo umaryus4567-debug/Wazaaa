@@ -1,164 +1,21 @@
-import { auth, db, app } from "./firebase-config.js";
 
-import { onAuthStateChanged }
-from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { auth, db, app } from "./firebase-config.js";
 
 import {
     getMessaging,
     getToken,
     onMessage
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-messaging.js";
+
+const messaging = getMessaging(app);
+const VAPID_KEY = "BAxHpS3C7IuPylCNjZaWyFfixyb7Gt5SvoD_zAaFV2Gvc5VmsXcy6y4d7EmrqIxbDeIT1ON3YuBN1PR5aBC9Kd0";
+
+import { onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
 import {
     protectStaffPage
 } from "./auth-utils.js";
-
-
-/* ==========================
-   FIREBASE CLOUD MESSAGING
-========================== */
-
-const messaging = getMessaging(app);
-
-const VAPID_KEY =
-    "BAxHpS3C7IuPylCNjZaWyFfixyb7Gt5SvoD_zAaFV2Gvc5VmsXcy6y4d7EmrqIxbDeIT1ON3YuBN1PR5aBC9Kd0";
-
-
-    async function setupPushNotifications() {
-
-    const statusBox =
-        document.getElementById("pushStatus");
-
-    function showStatus(message, success = true) {
-
-        if (!statusBox) return;
-
-        statusBox.textContent = message;
-
-        statusBox.style.background =
-            success ? "#e8f5e9" : "#ffebee";
-
-        statusBox.style.color =
-            success ? "#1b5e20" : "#b71c1c";
-    }
-
-
-    try {
-
-        showStatus(
-            "🔄 Checking notification permission..."
-        );
-
-
-        if (!("Notification" in window)) {
-
-            showStatus(
-                "❌ This browser does not support notifications.",
-                false
-            );
-
-            return;
-        }
-
-
-        if (!("serviceWorker" in navigator)) {
-
-            showStatus(
-                "❌ Service workers are not supported.",
-                false
-            );
-
-            return;
-        }
-
-
-        const permission =
-            await Notification.requestPermission();
-
-
-        if (permission !== "granted") {
-
-            showStatus(
-                "🔕 Notification permission was not granted.",
-                false
-            );
-
-            return;
-        }
-
-
-        showStatus(
-            "✅ Notification permission granted. Registering Firebase service worker..."
-        );
-
-
-        const registration =
-            await navigator.serviceWorker.register(
-                "/Wazaaa/firebase-messaging-sw.js"
-            );
-
-
-        showStatus(
-            "✅ Service worker registered. Getting FCM device token..."
-        );
-
-
-        const token =
-            await getToken(
-                messaging,
-                {
-                    vapidKey: VAPID_KEY,
-                    serviceWorkerRegistration:
-                        registration
-                }
-            );
-
-
-        if (!token) {
-
-            showStatus(
-                "⚠️ Firebase did not return an FCM device token.",
-                false
-            );
-
-            return;
-        }
-
-
-        console.log(
-            "✅ FCM DEVICE TOKEN:",
-            token
-        );
-      const tokenBox = document.getElementById("fcmToken");
-
-if (tokenBox) {
-    tokenBox.value = token;
-}
-
-
-        showStatus(
-            "📱 Push notifications are successfully registered on this device. ✅"
-        );
-
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "❌ PUSH NOTIFICATION SETUP ERROR:",
-            error
-        );
-
-
-        showStatus(
-            "❌ Push notification setup failed: " +
-            (error.message || error),
-            false
-        );
-
-    }
-
-    }
 
 
 /* ==========================
@@ -188,24 +45,21 @@ onMessage(
 
     }
 );
-
-
 protectStaffPage();
-
-setupPushNotifications();
-
 let allRequests = [];
 let technicians = [];
 import {
-collection,
-onSnapshot,
-doc,
-updateDoc,
-deleteDoc,
-getDocs,
-getDoc,
-setDoc,
-serverTimestamp
+    collection,
+    onSnapshot,
+    doc,
+    updateDoc,
+    deleteDoc,
+    getDocs,
+    getDoc,
+    setDoc,
+    serverTimestamp,
+    increment,
+    runTransaction
 }
 from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 import {
@@ -222,7 +76,6 @@ async function loadTechnicians(){
 
     snapshot.forEach(doc => {
 
-        console.log(doc.data());
 
         technicians.push({
             name: doc.data().Name,
@@ -231,7 +84,6 @@ async function loadTechnicians(){
 
     });
 
-    console.log("Technicians Array:", technicians);
 }
 
 const container =
@@ -259,45 +111,121 @@ onSnapshot(
         let declined = 0;
         let completed = 0;
 
-        snapshot.forEach((documentItem) => {
+snapshot.forEach((documentItem) => {
 
-            const data = documentItem.data();
+    const data = documentItem.data();
 
-            allRequests.push({
-                id: documentItem.id,
-                ...data
-            });
 
-            total++;
+    /*==================================
+      COUNT ALL NON-CANCELLED REQUESTS
+    ==================================*/
 
-            if (data.Status === "Pending") {
-                pending++;
-            }
+    if (data.Status !== "Cancelled") {
 
-            if (data.Status === "Accepted") {
-                accepted++;
-            }
+        total++;
 
-            if (data.Status === "Declined") {
-                declined++;
-            }
+    }
 
-            if (data.Status === "Completed ✅") {
-                completed++;
-            }
+
+    /*==================================
+      COUNT STATUS VALUES
+    ==================================*/
+
+    if (data.Status === "Pending") {
+
+        pending++;
+
+    }
+
+
+    if (data.Status === "Accepted") {
+
+        accepted++;
+
+    }
+
+
+    if (data.Status === "Declined") {
+
+        declined++;
+
+    }
+
+
+    if (data.Status === "Completed ✅") {
+
+        completed++;
+
+    }
+
+
+    /*==================================
+      ACTIVE DASHBOARD REQUESTS
+      ----------------------------------
+      Declined and Cancelled requests
+      are NOT added to allRequests.
+    ==================================*/
+
+    if (
+        data.Status !== "Cancelled" &&
+        data.Status !== "Declined"
+    ) {
+
+        allRequests.push({
+
+            id: documentItem.id,
+
+            ...data
 
         });
 
-        document.getElementById("totalCount").textContent = total;
-        document.getElementById("pendingCount").textContent = pending;
-        document.getElementById("acceptedCount").textContent = accepted;
-        document.getElementById("declinedCount").textContent = declined;
-        document.getElementById("completedCount").textContent = completed;
+    }
 
-        console.log("📦 SERVICE REQUESTS:", allRequests);
+});
+
+
+        /*
+        =========================================
+        UPDATE STAT COUNTERS
+        =========================================
+        */
+
+        document.getElementById(
+            "totalCount"
+        ).textContent = total;
+
+
+        document.getElementById(
+            "pendingCount"
+        ).textContent = pending;
+
+
+        document.getElementById(
+            "acceptedCount"
+        ).textContent = accepted;
+
+
+        document.getElementById(
+            "declinedCount"
+        ).textContent = declined;
+
+
+        document.getElementById(
+            "completedCount"
+        ).textContent = completed;
+
+
+
+        /*
+        =========================================
+        RENDER ONLY ACTIVE REQUESTS
+        =========================================
+        */
 
         renderRequests(allRequests);
+
     },
+
 
     (error) => {
 
@@ -309,22 +237,127 @@ onSnapshot(
     }
 );
 
-console.log("Technicians Array:", technicians);
+
+
+/*==================================
+UPDATE WEBSITE STATISTICS
+==================================*/
+
+async function updateWebsiteStatistics() {
+
+    try {
+
+        const statsRef =
+            doc(
+                db,
+                "site-stats",
+                "overview"
+            );
+
+        const statsSnap =
+            await getDoc(statsRef);
+
+        if (!statsSnap.exists()) {
+
+            await setDoc(
+                statsRef,
+                {
+                    completedRequests: 0,
+                    satisfiedClients: 0,
+                    declinedRequests: 0,
+                    successRate: 0
+                }
+            );
+
+        }
+
+        const updatedSnap =
+            await getDoc(statsRef);
+
+        const stats =
+            updatedSnap.data();
+
+        const completed =
+            Number(
+                stats.completedRequests || 0
+            );
+
+        const declined =
+            Number(
+                stats.declinedRequests || 0
+            );
+
+        const totalFinal =
+            completed + declined;
+
+        const successRate =
+            totalFinal > 0
+                ? Math.round(
+                    (completed / totalFinal) * 100
+                )
+                : 0;
+
+        await updateDoc(
+            statsRef,
+            {
+                successRate: successRate
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ Website statistics update error:",
+            error
+        );
+
+    }
+
+}
 /* ==========================
    RENDER REQUESTS
 ========================== */
 
 function renderRequests(requests){
 
+    /*
+    =========================================
+    NEVER DISPLAY CANCELLED REQUESTS
+    =========================================
+    */
+
+    requests = requests.filter(
+        request =>
+            request.Status !== "Cancelled"
+    );
+
+
     container.innerHTML = "";
 
     requests.forEach((data) => {
 
-        const card =
-        document.createElement("div");
+       const card =
+    document.createElement("div");
 
-        card.className =
-        "request-card";
+card.className =
+    "request-card";
+
+const isPending =
+    data.Status === "Pending";
+
+const isAccepted =
+    data.Status === "Accepted";
+
+const isCompleted =
+    data.Status === "Completed ✅";
+
+const isDeclined =
+    data.Status === "Declined";
+
+const isCancelled =
+    data.Status === "Cancelled";
 
 card.innerHTML = `
 
@@ -334,22 +367,18 @@ card.innerHTML = `
 
 <p><b>Location:</b> ${data.Location || ""}</p>
 
-<p><b>Area:</b> ${data.Area || ""}</p>
-
-<p><b>Bus Stop:</b> ${data.BusStop || ""}</p>
-
-<p><b>Address:</b> ${data.Address || ""}</p>
-
 <p><b>Description:</b> ${data.Description || ""}</p>
 
 <p><b>Urgency:</b> ${data.Urgency || ""}</p>
+
 <label class="technician-label">
 Assign Technician
 </label>
 
 <select
 class="technician-select"
-data-id="${data.id}">
+data-id="${data.id}"
+${!isAccepted ? "disabled" : ""}>
 
 <option value="">
 Select Technician
@@ -384,22 +413,35 @@ ${data.Status || "Pending"}
 
 <button
 class="accept"
-data-id="${data.id}">
-Accept
+data-id="${data.id}"
+${!isPending ? "disabled" : ""}>
+${isPending ? "Accept" :
+  isAccepted ? "Accepted ✅" :
+  isCompleted ? "🔒 Locked" :
+  isDeclined ? "Declined 🔒" :
+  "🔒 Locked"}
 </button>
 
 <button
 class="decline"
-data-id="${data.id}">
-Decline
+data-id="${data.id}"
+${!isPending ? "disabled" : ""}>
+${isPending ? "Decline" :
+  isAccepted ? "🔒 Locked" :
+  isCompleted ? "🔒 Locked" :
+  isDeclined ? "Declined 🔒" :
+  "🔒 Locked"}
 </button>
 
 <button
 class="complete"
-data-id="${data.id}">
-Complete
+data-id="${data.id}"
+${!isAccepted ? "disabled" : ""}>
+${isAccepted ? "Complete" :
+  isCompleted ? "Completed ✅" :
+  isDeclined ? "Declined 🔒" :
+  "🔒 Locked"}
 </button>
-
 
 <button
 class="whatsapp"
@@ -483,62 +525,211 @@ function addButtonEvents(){
 
         btn.onclick = async () => {
 
-     const requestId = btn.dataset.id;
+            const requestId =
+                btn.dataset.id;
 
-const requestRef = doc(
-    db,
-    "service-request",
-    requestId
-);
+            const requestRef =
+                doc(
+                    db,
+                    "service-request",
+                    requestId
+                );
 
-const requestSnap = await getDoc(requestRef);
+            try {
 
-if (!requestSnap.exists()) {
+                /*==================================
+                ATOMIC ACCEPT CHECK
+                ==================================*/
 
-    alert("Request not found.");
+                const result =
+                    await runTransaction(
+                        db,
+                        async (transaction) => {
 
-    return;
+                            const requestSnap =
+                                await transaction.get(
+                                    requestRef
+                                );
 
-}
+                            if (!requestSnap.exists()) {
 
-const requestData = requestSnap.data();
+                                throw new Error(
+                                    "Request not found."
+                                );
+
+                            }
+
+                            const requestData =
+                                requestSnap.data();
 
 
-await updateDoc(
-    requestRef,
-    {
-        Status: "Accepted"
-    }
-);
+                            /*==================================
+                            ONLY PENDING REQUESTS CAN BE ACCEPTED
+                            ==================================*/
+
+                            if (
+                                requestData.Status !==
+                                "Pending"
+                            ) {
+
+                                return {
+
+                                    accepted: false,
+
+                                    status:
+                                        requestData.Status,
+
+                                    requestData:
+                                        requestData
+
+                                };
+
+                            }
 
 
-/*==================================
-CUSTOMER NOTIFICATION
-==================================*/
+                            /*==================================
+                            ACCEPT REQUEST
+                            ==================================*/
 
-await createNotification({
+                            transaction.update(
+                                requestRef,
+                                {
+                                    Status:
+                                        "Accepted"
+                                }
+                            );
 
-    uid: requestData.CustomerId,
 
-    requestId: requestId,
+                            return {
 
-    title: "Request Accepted",
+                                accepted: true,
 
-    message:
-        "Good news! Your electrical service request has been accepted by our maintenance team.",
+                                status:
+                                    "Accepted",
 
-    type: "request_accepted",
+                                requestData:
+                                    requestData
 
-    icon: "fa-circle-check",
+                            };
 
-    sender: "staff",
+                        }
+                    );
 
-    link: ""
 
-});
+                /*==================================
+                REQUEST WAS ALREADY PROCESSED
+                ==================================*/
+
+                if (!result.accepted) {
+
+                    btn.disabled = true;
+
+                    if (
+                        result.status ===
+                        "Accepted"
+                    ) {
+
+                        btn.textContent =
+                            "Accepted ✅";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Completed ✅"
+                    ) {
+
+                        btn.textContent =
+                            "Completed 🔒";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Declined"
+                    ) {
+
+                        btn.textContent =
+                            "Declined 🔒";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Cancelled"
+                    ) {
+
+                        btn.textContent =
+                            "Cancelled 🔒";
+
+                    }
+
+                    return;
+
+                }
+
+
+                /*==================================
+                DISABLE BUTTON IMMEDIATELY
+                ==================================*/
+
+                btn.disabled = true;
+
+                btn.textContent =
+                    "Accepted ✅";
+
+
+                /*==================================
+                CUSTOMER NOTIFICATION
+                ==================================*/
+
+                await createNotification({
+
+                    uid:
+                        result.requestData.CustomerId,
+
+                    requestId:
+                        requestId,
+
+                    title:
+                        "Request Accepted",
+
+                    message:
+                        "Your electrical service request has been accepted. Our team will proceed with your service.",
+
+                    type:
+                        "request_accepted",
+
+                    icon:
+                        "fa-circle-check",
+
+                    sender:
+                        "staff",
+
+                    link:
+                        ""
+
+                });
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "❌ Accept request error:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Failed to accept request."
+                );
+
+            }
+
         };
+
     });
-    
 document
 .querySelectorAll(".Archive")
 .forEach(button => {
@@ -556,30 +747,6 @@ document
                     id
                 );
 
-
-            const requestSnap =
-                await getDoc(requestRef);
-
-
-            if (!requestSnap.exists()) {
-
-                alert(
-                    "Request not found."
-                );
-
-                return;
-
-            }
-
-
-            const requestData =
-                requestSnap.data();
-
-
-            /*==================================
-            SAVE TO SERVICE HISTORY
-            ==================================*/
-
             const historyRef =
                 doc(
                     db,
@@ -587,39 +754,178 @@ document
                     id
                 );
 
+            const statsRef =
+                doc(
+                    db,
+                    "site-stats",
+                    "overview"
+                );
 
-            await setDoc(
-                historyRef,
-                {
-                    ...requestData,
 
-                    Status: "Completed ✅",
-    
-    ArchivedAt:
-    serverTimestamp()
+            await runTransaction(
+                db,
+                async (transaction) => {
+
+                    /*==================================
+                    READ REQUEST
+                    ==================================*/
+
+                    const requestSnap =
+                        await transaction.get(
+                            requestRef
+                        );
+
+
+                    if (!requestSnap.exists()) {
+
+                        throw new Error(
+                            "Request not found."
+                        );
+
+                    }
+
+
+                    const requestData =
+                        requestSnap.data();
+
+
+                    /*==================================
+                    ARCHIVE PROTECTION
+                    ==================================
+
+                    Only Completed requests can
+                    be archived.
+                    ==================================*/
+
+                    if (
+                        requestData.Status !==
+                        "Completed ✅"
+                    ) {
+
+                        throw new Error(
+                            "Only completed requests can be archived."
+                        );
+
+                    }
+
+
+                    /*==================================
+                    READ STATISTICS
+                    ==================================*/
+
+                    const statsSnap =
+                        await transaction.get(
+                            statsRef
+                        );
+
+
+                    let completedRequests = 0;
+                    let satisfiedClients = 0;
+                    let declinedRequests = 0;
+
+
+                    if (statsSnap.exists()) {
+
+                        const stats =
+                            statsSnap.data();
+
+                        completedRequests =
+                            Number(
+                                stats.completedRequests || 0
+                            );
+
+                        satisfiedClients =
+                            Number(
+                                stats.satisfiedClients || 0
+                            );
+
+                        declinedRequests =
+                            Number(
+                                stats.declinedRequests || 0
+                            );
+
+                    }
+
+
+                    /*==================================
+                    CALCULATE NEW STATISTICS
+                    ==================================*/
+
+                    completedRequests += 1;
+
+                    satisfiedClients += 1;
+
+
+                    const totalFinal =
+                        completedRequests +
+                        declinedRequests;
+
+
+                    const successRate =
+                        totalFinal > 0
+                            ? Math.round(
+                                (
+                                    completedRequests /
+                                    totalFinal
+                                ) * 100
+                            )
+                            : 0;
+
+
+                    /*==================================
+                    CREATE SERVICE HISTORY
+                    ==================================*/
+
+                    transaction.set(
+                        historyRef,
+                        {
+                            ...requestData,
+
+                            Status:
+                                "Completed ✅",
+
+                            ArchivedAt:
+                                serverTimestamp()
+                        }
+                    );
+
+
+                    /*==================================
+                    UPDATE STATISTICS
+                    ==================================*/
+
+                    transaction.set(
+                        statsRef,
+                        {
+                            completedRequests:
+                                completedRequests,
+
+                            satisfiedClients:
+                                satisfiedClients,
+
+                            declinedRequests:
+                                declinedRequests,
+
+                            successRate:
+                                successRate
+                        },
+                        {
+                            merge: true
+                        }
+                    );
+
+
+                    /*==================================
+                    REMOVE ACTIVE REQUEST
+                    ==================================*/
+
+                    transaction.delete(
+                        requestRef
+                    );
+
                 }
             );
 
-
-            console.log(
-                "✅ Request saved to service-history:",
-                id
-            );
-
-
-            /*==================================
-            REMOVE FROM ACTIVE REQUESTS
-            ==================================*/
-
-            await deleteDoc(
-                requestRef
-            );
-
-
-            console.log(
-                "✅ Request removed from service-request:",
-                id
-            );
 
 
             alert(
@@ -638,7 +944,8 @@ document
 
 
             alert(
-                "Failed to archive request. Check the console."
+                error.message ||
+                "Failed to archive request."
             );
 
         }
@@ -681,51 +988,206 @@ document
 });
 
 document
-.querySelectorAll(".technician-select")
-.forEach(select => {
+    .querySelectorAll(".technician-select")
+    .forEach(select => {
 
-    select.addEventListener("change", async () => {
+        select.addEventListener(
+            "change",
+            async () => {
 
-        const technician = select.value;
+                const technician =
+                    select.value;
 
-        if (!technician) return;
+                if (!technician) return;
 
-        const technicianPhone =
-            select.options[select.selectedIndex]
-            .getAttribute("data-phone") || "";
+                const requestId =
+                    select.dataset.id;
 
-        const requestId = select.dataset.id;
+                const requestRef =
+                    doc(
+                        db,
+                        "service-request",
+                        requestId
+                    );
 
-        console.log("Technician:", technician);
-        console.log("Phone:", technicianPhone);
+                try {
 
-        await updateDoc(
-            doc(db, "service-request", requestId),
-            {
-                Technician: technician,
-                TechnicianPhone: technicianPhone,
-                Status: "Accepted"
-            }
-        );
+                    const result =
+                        await runTransaction(
+                            db,
+                            async (transaction) => {
 
-        const card =
-            select.closest(".request-card");
+                                const requestSnap =
+                                    await transaction.get(
+                                        requestRef
+                                    );
 
-        const customerPhone =
-            card.querySelector(".whatsapp").dataset.phone;
+                                if (
+                                    !requestSnap.exists()
+                                ) {
 
-        const customerName =
-            card.querySelector(".whatsapp").dataset.name;
+                                    throw new Error(
+                                        "Request not found."
+                                    );
 
-        let formattedPhone =
-            customerPhone.replace(/\D/g, "");
+                                }
 
-        if(formattedPhone.startsWith("0")){
-            formattedPhone =
-                "234" + formattedPhone.substring(1);
-        }
+                                const requestData =
+                                    requestSnap.data();
 
-        const message =
+
+                                /*
+                                ==================================
+                                COMPLETED REQUESTS ARE LOCKED
+                                ==================================
+                                */
+
+                                if (
+                                    requestData.Status ===
+                                    "Completed ✅"
+                                ) {
+
+                                    return {
+                                        assigned: false,
+                                        status:
+                                            "Completed ✅"
+                                    };
+
+                                }
+
+
+                                /*
+                                ==================================
+                                CANCELLED REQUESTS ARE LOCKED
+                                ==================================
+                                */
+
+                                if (
+                                    requestData.Status ===
+                                    "Cancelled"
+                                ) {
+
+                                    return {
+                                        assigned: false,
+                                        status:
+                                            "Cancelled"
+                                    };
+
+                                }
+
+
+                                /*
+                                ==================================
+                                ONLY PENDING OR ACCEPTED
+                                REQUESTS CAN BE ASSIGNED
+                                ==================================
+                                */
+
+                                if (
+                                    requestData.Status !==
+                                        "Pending" &&
+                                    requestData.Status !==
+                                        "Accepted"
+                                ) {
+
+                                    return {
+                                        assigned: false,
+                                        status:
+                                            requestData.Status
+                                    };
+
+                                }
+
+                                const technicianPhone =
+                                    select.options[
+                                        select.selectedIndex
+                                    ]
+                                    .getAttribute(
+                                        "data-phone"
+                                    ) || "";
+
+
+transaction.update(
+    requestRef,
+    {
+        Technician: technician,
+        TechnicianPhone: technicianPhone
+    }
+);
+
+
+                                return {
+                                    assigned: true,
+                                    technicianPhone:
+                                        technicianPhone
+                                };
+
+                            }
+                        );
+
+
+                    /*
+                    ==================================
+                    REQUEST IS LOCKED
+                    ==================================
+                    */
+
+                    if (!result.assigned) {
+
+                        alert(
+                            `This request is already ${result.status} and can no longer be changed.`
+                        );
+
+                        return;
+
+                    }
+
+
+                    /*
+                    ==================================
+                    WHATSAPP MESSAGE
+                    ==================================
+                    */
+
+                    const card =
+                        select.closest(
+                            ".request-card"
+                        );
+
+                    const customerPhone =
+                        card
+                        .querySelector(
+                            ".whatsapp"
+                        )
+                        .dataset.phone;
+
+                    const customerName =
+                        card
+                        .querySelector(
+                            ".whatsapp"
+                        )
+                        .dataset.name;
+
+
+                    let formattedPhone =
+                        customerPhone.replace(
+                            /\D/g,
+                            ""
+                        );
+
+
+                    if (
+                        formattedPhone.startsWith("0")
+                    ) {
+
+                        formattedPhone =
+                            "234" +
+                            formattedPhone.substring(1);
+
+                    }
+
+
+                    const message =
 `Hello ${customerName},
 
 ✅ Your electrical service request has been assigned.
@@ -734,7 +1196,7 @@ document
 ${technician}
 
 📞 Technician Phone:
-${technicianPhone}
+${result.technicianPhone}
 
 The technician will contact you shortly.
 
@@ -742,14 +1204,33 @@ Thank you for choosing UY Power Solutions.
 
 UY Power Solutions Support Team`;
 
-        window.open(
-            `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`,
-            "_blank"
+
+                    window.open(
+                        `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`,
+                        "_blank"
+                    );
+
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "❌ Technician assignment error:",
+                        error
+                    );
+
+                    alert(
+                        error.message ||
+                        "Failed to assign technician."
+                    );
+
+                }
+
+            }
         );
 
     });
-
-});
 document
 .querySelectorAll(".whatsapp")
 .forEach(btn => {
@@ -799,129 +1280,417 @@ Service Team`;
 
 });
 
-    document
+ document
     .querySelectorAll(".decline")
     .forEach(btn => {
 
         btn.onclick = async () => {
 
+            const requestId = btn.dataset.id;
+
+            const requestRef = doc(
+                db,
+                "service-request",
+                requestId
+            );
+
+            try {
+
+                /*==================================
+                ATOMIC DECLINE CHECK
+                ==================================*/
+
+                const result = await runTransaction(
+                    db,
+                    async (transaction) => {
+
+                        const requestSnap =
+                            await transaction.get(requestRef);
+
+                        if (!requestSnap.exists()) {
+
+                            throw new Error(
+                                "Request not found."
+                            );
+
+                        }
+
+                        const requestData =
+                            requestSnap.data();
+
+
+                        /*==================================
+                        ONLY PENDING REQUESTS CAN BE DECLINED
+                        ==================================*/
+
+                        if (
+                            requestData.Status !==
+                            "Pending"
+                        ) {
+
+                            return {
+
+                                declined: false,
+
+                                status:
+                                    requestData.Status,
+
+                                requestData:
+                                    requestData
+
+                            };
+
+                        }
+
+
+                        /*==================================
+                        DECLINE REQUEST
+                        ==================================*/
+
+                        transaction.update(
+                            requestRef,
+                            {
+                                Status:
+                                    "Declined",
+
+                                DeclinedAt:
+                                    serverTimestamp()
+                            }
+                        );
+
+
+                        return {
+
+                            declined: true,
+
+                            status:
+                                "Declined",
+
+                            requestData:
+                                requestData
+
+                        };
+
+                    }
+                );
+
+
+                /*==================================
+                REQUEST ALREADY PROCESSED
+                ==================================*/
+
+                if (!result.declined) {
+                    btn.disabled = true;
+
+                    if (
+                        result.status ===
+                        "Accepted"
+                    ) {
+
+                        btn.textContent =
+                            "Accepted 🔒";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Completed ✅"
+                    ) {
+
+                        btn.textContent =
+                            "Completed 🔒";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Declined"
+                    ) {
+
+                        btn.textContent =
+                            "Declined 🔒";
+
+                    }
+
+                    else if (
+                        result.status ===
+                        "Cancelled"
+                    ) {
+
+                        btn.textContent =
+                            "Cancelled 🔒";
+
+                    }
+
+                    return;
+
+                }
+
+
+                /*==================================
+                DISABLE BUTTON IMMEDIATELY
+                ==================================*/
+
+                btn.disabled = true;
+
+                btn.textContent =
+                    "Declined 🔒";
+
+
+                /*==================================
+                UPDATE DECLINED STATISTICS
+                ==================================*/
+
+                await updateDoc(
+                    doc(
+                        db,
+                        "site-stats",
+                        "overview"
+                    ),
+                    {
+                        declinedRequests:
+                            increment(1)
+                    }
+                );
+
+
+                await updateWebsiteStatistics();
+
+
+                /*==================================
+                CUSTOMER NOTIFICATION
+                ==================================*/
+
+                await createNotification({
+
+                    uid:
+                        result.requestData.CustomerId,
+
+                    requestId:
+                        requestId,
+
+                    title:
+                        "Request Declined",
+
+                    message:
+                        "Your electrical service request has been reviewed and unfortunately could not be accepted at this time.",
+
+                    type:
+                        "request_declined",
+
+                    icon:
+                        "fa-circle-xmark",
+
+                    sender:
+                        "staff",
+
+                    link:
+                        ""
+
+                });
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "❌ Decline request error:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "Failed to decline request."
+                );
+
+            }
+
+        };
+
+    });
+
+document
+.querySelectorAll(".complete")
+.forEach(btn => {
+
+    btn.onclick = async () => {
+
         const requestId = btn.dataset.id;
 
-const requestRef = doc(
-    db,
-    "service-request",
-    requestId
-);
+        const requestRef = doc(
+            db,
+            "service-request",
+            requestId
+        );
 
-const requestSnap = await getDoc(requestRef);
+        try {
 
-if (!requestSnap.exists()) {
+            /*==================================
+            ATOMIC COMPLETION CHECK
+            ==================================*/
 
-    alert("Request not found.");
+            const result = await runTransaction(
+                db,
+                async (transaction) => {
 
-    return;
+                    const requestSnap =
+                        await transaction.get(requestRef);
 
-}
+                    if (!requestSnap.exists()) {
 
-const requestData = requestSnap.data();
+                        throw new Error(
+                            "Request not found."
+                        );
+
+                    }
+
+                    const requestData =
+                        requestSnap.data();
 
 
-await updateDoc(
-    requestRef,
-    {
-        Status: "Declined"
-    }
-);
+                    /*==================================
+                    ALREADY COMPLETED
+                    ==================================*/
 
+                    if (
+                        requestData.Status ===
+                        "Completed ✅"
+                    ) {
 
-/*==================================
-CUSTOMER NOTIFICATION
-==================================*/
+                        return {
+                            completed: false,
+                            requestData
+                        };
 
-await createNotification({
+                    }
+                    
+                                        if (
+                        requestData.Status ===
+                        "Cancelled"
+                    ) {
 
-    uid: requestData.CustomerId,
+                        throw new Error(
+                            "This request was cancelled by the customer and can no longer be modified."
+                        );
 
-    requestId: requestId,
+                    }
+                    
+                    if (
+    requestData.Status !==
+    "Accepted"
+) {
 
-    title: "Request Declined",
-
-    message:
-        "Your electrical service request has been reviewed and unfortunately could not be accepted at this time.",
-
-    type: "request_declined",
-
-    icon: "fa-circle-xmark",
-
-    sender: "staff",
-
-    link: ""
-
-});
-        };
-    });
-
-    document
-    .querySelectorAll(".complete")
-    .forEach(btn => {
-
-        btn.onclick = async () => {
-
-      const requestId = btn.dataset.id;
-
-const requestRef = doc(
-    db,
-    "service-request",
-    requestId
-);
-
-const requestSnap = await getDoc(requestRef);
-
-if (!requestSnap.exists()) {
-
-    alert("Request not found.");
-
-    return;
+    return {
+        completed: false,
+        requestData
+    };
 
 }
 
-const requestData = requestSnap.data();
+
+            
 
 
-await updateDoc(
-    requestRef,
-    {
-        Status: "Completed ✅"
-    }
-);
+                    /*==================================
+                    COMPLETE REQUEST
+                    ==================================*/
+
+                    transaction.update(
+                        requestRef,
+                        {
+                            Status: "Completed ✅"
+                        }
+                    );
 
 
-/*==================================
-CUSTOMER NOTIFICATION
-==================================*/
+                    return {
+                        completed: true,
+                        requestData
+                    };
 
-await createNotification({
+                }
+            );
 
-    uid: requestData.CustomerId,
 
-    requestId: requestId,
+            /*==================================
+            REQUEST WAS ALREADY COMPLETED
+            ==================================*/
 
-    title: "Service Completed",
+            if (!result.completed) {
 
-    message:
-        "Your electrical service request has been completed. Thank you for choosing UY Power Solutions.",
+                btn.disabled = true;
 
-    type: "request_completed",
+                btn.textContent =
+                    "Completed ✅";
 
-    icon: "fa-circle-check",
+                return;
 
-    sender: "staff",
+            }
 
-    link: ""
+
+            /*==================================
+            DISABLE BUTTON
+            ==================================*/
+
+            btn.disabled = true;
+
+            btn.textContent =
+                "Completed ✅";
+
+
+            /*==================================
+            CUSTOMER NOTIFICATION
+            ==================================*/
+
+            await createNotification({
+
+                uid:
+                    result.requestData.CustomerId,
+
+                requestId:
+                    requestId,
+
+                title:
+                    "Service Completed",
+
+                message:
+                    "Your electrical service request has been completed. Thank you for choosing UY Power Solutions.",
+
+                type:
+                    "request_completed",
+
+                icon:
+                    "fa-circle-check",
+
+                sender:
+                    "staff",
+
+                link:
+                    ""
+
+            });
+
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "❌ Complete request error:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "Failed to complete request."
+            );
+
+        }
+
+    };
 
 });
-        };
-    });
+
 }
 
 /* ==========================
@@ -955,4 +1724,61 @@ window.addEventListener("load", () => {
 
     }, 700);
 
+});
+
+
+async function setupPushNotifications(user) {
+    try {
+        if (!("Notification" in window)) {
+            console.warn("This browser does not support notifications.");
+            return;
+        }
+
+        if (!user) {
+            console.warn("No signed-in user found.");
+            return;
+        }
+
+        const permission = await Notification.requestPermission();
+
+        if (permission !== "granted") {
+            console.warn("Notification permission was not granted.");
+            return;
+        }
+
+        const registration = await navigator.serviceWorker.register(
+            "/Wazaaa/firebase-messaging-sw.js"
+        );
+
+        const token = await getToken(messaging, {
+            vapidKey: VAPID_KEY,
+            serviceWorkerRegistration: registration
+        });
+
+        if (!token) {
+            console.warn("No FCM token was generated.");
+            return;
+        }
+
+        const tokenBox = document.getElementById("fcmToken");
+        if (tokenBox) {
+            tokenBox.value = token;
+        }
+
+        await setDoc(doc(db, "fcmTokens", user.uid), {
+            token: token,
+            uid: user.uid,
+            updatedAt: serverTimestamp()
+        });
+
+        console.log("Push token saved successfully.");
+    } catch (error) {
+        console.error("Push notification setup failed:", error);
+    }
+}
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        setupPushNotifications(user);
+    }
 });
