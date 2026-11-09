@@ -116,6 +116,143 @@ async function loadStaffHistory() {
 
 }
 
+/*==================================
+SAFE HTML DISPLAY
+==================================*/
+
+function escapeHTML(value) {
+
+    return String(value ?? "").replace(
+        /[&<>"']/g,
+        character => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        })[character]
+    );
+
+}
+
+
+/*==================================
+FORMAT FIRESTORE DATES
+==================================*/
+
+function formatDate(value) {
+
+    if (!value) return "Not available";
+
+    if (typeof value.toDate === "function") {
+
+        return value.toDate().toLocaleString();
+
+    }
+
+    return escapeHTML(value);
+
+}
+
+
+/*==================================
+SERVICE LOCATION DETAILS
+==================================*/
+
+function getLocationDetails(data) {
+
+    const line = (label, value) => {
+
+        if (!value) return "";
+
+        return `
+            <p>
+                <b>${label}:</b>
+                ${escapeHTML(value)}
+            </p>
+        `;
+
+    };
+
+    const placeType =
+        data.PlaceType || data.LocationType || "";
+
+    let details = "";
+
+    details += line("Location", data.Location);
+
+    if (data.Location === "On Campus") {
+
+        details += line("Campus", data.Campus);
+
+        details += line("Category", placeType);
+
+        if (placeType === "School") {
+
+            details += line("School", data.School);
+
+            details += line("School Code", data.SchoolCode);
+
+        }
+
+        details += line(
+            "Building / Specific Location",
+            data.Building || data.SpecificLocation
+        );
+
+        if (placeType === "Hostel") {
+
+            details += line("Block", data.Block);
+
+            details += line("Room", data.Room);
+
+        }
+
+    }
+
+    else if (data.Location === "Off Campus") {
+
+        details += line("Area", data.Area);
+
+        details += line("Nearest Bus Stop", data.BusStop);
+
+        details += line("Residential Address", data.Address);
+
+        details += line("Nearest Landmark", data.Landmark);
+
+    }
+
+    else {
+
+        // Support older archived requests.
+
+        details += line("Area", data.Area);
+
+        details += line("Bus Stop", data.BusStop);
+
+        details += line("Address", data.Address);
+
+        details += line("Landmark", data.Landmark);
+
+    }
+
+    details += line(
+        "Additional Directions",
+        data.Directions
+    );
+
+    return `
+        <div class="history-location-details">
+
+            <h4>📍 Service Location Details</h4>
+
+            ${details || "<p>No location details available.</p>"}
+
+        </div>
+    `;
+
+}
+
 
 /*==================================
 RENDER HISTORY
@@ -124,7 +261,6 @@ RENDER HISTORY
 function renderHistory(history) {
 
     historyList.innerHTML = "";
-
 
     if (history.length === 0) {
 
@@ -142,74 +278,84 @@ function renderHistory(history) {
 
     }
 
-
     history.forEach((data) => {
 
         const card =
             document.createElement("div");
 
+        card.className = "history-card";
 
-        card.className =
-            "history-card";
-
+        const locationDetails =
+            getLocationDetails(data);
 
         card.innerHTML = `
 
             <h3>
-                ${data.Customername || ""}
+                ${escapeHTML(data.Customername || "Unknown Customer")}
             </h3>
 
+            <p>
+                <b>Request ID:</b>
+                ${escapeHTML(data.id)}
+            </p>
 
             <p>
                 <b>Phone:</b>
-                ${data.Phone || ""}
+                ${escapeHTML(data.Phone || "Not provided")}
             </p>
 
+            ${locationDetails}
 
-            <p>
-                <b>Location:</b>
-                ${data.Location || ""}
-            </p>
+            <hr>
 
-
-            <p>
-                <b>Area:</b>
-                ${data.Area || ""}
-            </p>
-
-
-            <p>
-                <b>Address:</b>
-                ${data.Address || ""}
-            </p>
-
+            <h4>⚡ Service Information</h4>
 
             <p>
                 <b>Description:</b>
-                ${data.Description || ""}
+                ${escapeHTML(data.Description || "Not provided")}
             </p>
-
 
             <p>
                 <b>Urgency:</b>
-                ${data.Urgency || ""}
+                ${escapeHTML(data.Urgency || "Not specified")}
             </p>
 
-
-            <p class="tech">
-                👨‍🔧 Technician:
-                ${data.Technician || "Not Assigned"}
+            <p>
+                <b>Date Submitted:</b>
+                ${formatDate(data.CreatedAt)}
             </p>
 
+            <hr>
 
-            <p class="status">
-                ✅ Completed
+            <h4>👨‍🔧 Technician Information</h4>
+
+            <p>
+                <b>Technician:</b>
+                ${escapeHTML(data.Technician || "Not Assigned")}
+            </p>
+
+            <p>
+                <b>Technician Phone:</b>
+                ${escapeHTML(data.TechnicianPhone || "Not provided")}
+            </p>
+
+            <hr>
+
+            <h4>📋 Completion Information</h4>
+
+            <p>
+                <b>Status:</b>
+                ${escapeHTML(data.Status || "Completed")}
+            </p>
+
+            <p>
+                <b>Archived On:</b>
+                ${formatDate(data.ArchivedAt)}
             </p>
 
         `;
 
-
-        historyList.appendChild(card); 
+        historyList.appendChild(card);
 
     });
 
@@ -226,53 +372,56 @@ historySearch.addEventListener(
 
         const keyword =
             historySearch.value
-            .toLowerCase()
-            .trim();
-
+                .toLowerCase()
+                .trim();
 
         const filtered =
             allHistory.filter((request) => {
 
-                return (
+                const searchableFields = [
 
-                    (request.Customername || "")
-                    .toLowerCase()
-                    .includes(keyword)
+                    request.id,
+                    request.Customername,
+                    request.Phone,
+                    request.Location,
 
-                    ||
+                    request.Campus,
+                    request.PlaceType,
+                    request.LocationType,
 
-                    (request.Phone || "")
-                    .toLowerCase()
-                    .includes(keyword)
+                    request.School,
+                    request.SchoolCode,
 
-                    ||
+                    request.Building,
+                    request.SpecificLocation,
 
-                    (request.Location || "")
-                    .toLowerCase()
-                    .includes(keyword)
+                    request.Block,
+                    request.Room,
 
-                    ||
+                    request.Area,
+                    request.BusStop,
+                    request.Address,
+                    request.Landmark,
+                    request.Directions,
 
-                    (request.Address || "")
-                    .toLowerCase()
-                    .includes(keyword)
+                    request.Description,
+                    request.Urgency,
 
-                    ||
+                    request.Technician,
+                    request.TechnicianPhone,
+                    request.Status
 
-                    (request.Description || "")
-                    .toLowerCase()
-                    .includes(keyword)
+                ];
 
-                    ||
+                return searchableFields.some(value =>
 
-                    (request.Technician || "")
-                    .toLowerCase()
-                    .includes(keyword)
+                    String(value || "")
+                        .toLowerCase()
+                        .includes(keyword)
 
                 );
 
             });
-
 
         renderHistory(filtered);
 
