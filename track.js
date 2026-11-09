@@ -420,6 +420,96 @@ searchBtn.addEventListener(
     }
 );
 
+/* =========================================
+   CUSTOMER LOCATION DETAILS
+========================================= */
+
+function buildLocationDetails(data) {
+
+    const line = (label, value) => {
+
+        if (!value) return "";
+
+        return `
+            <p>
+                <b>${label}:</b>
+                ${escapeHTML(value)}
+            </p>
+        `;
+
+    };
+
+    const placeType =
+        data.PlaceType || data.LocationType || "";
+
+    let details = "";
+
+    details += line("Location", data.Location);
+
+    if (data.Location === "On Campus") {
+
+        details += line("Campus", data.Campus);
+
+        details += line("Category", placeType);
+
+        if (placeType === "School") {
+
+            details += line("School", data.School);
+
+            details += line("School Code", data.SchoolCode);
+
+        }
+
+        details += line(
+            "Building / Specific Location",
+            data.Building || data.SpecificLocation
+        );
+
+        if (placeType === "Hostel") {
+
+            details += line("Block", data.Block);
+
+            details += line("Room", data.Room);
+
+        }
+
+    } else if (data.Location === "Off Campus") {
+
+        details += line("Area", data.Area);
+
+        details += line("Nearest Bus Stop", data.BusStop);
+
+        details += line("Residential Address", data.Address);
+
+        details += line("Nearest Landmark", data.Landmark);
+
+    } else {
+
+        // Compatibility with older requests
+        details += line("Area", data.Area);
+        details += line("Bus Stop", data.BusStop);
+        details += line("Address", data.Address);
+        details += line("Landmark", data.Landmark);
+
+    }
+
+    details += line(
+        "Additional Directions",
+        data.Directions
+    );
+
+    return `
+        <div class="customer-location-details">
+
+            <h4>📍 Service Location Details</h4>
+
+            ${details}
+
+        </div>
+    `;
+
+}
+
 
 /* =========================================
    BUILD REQUEST CARD
@@ -492,29 +582,8 @@ function buildCard(data, id) {
             </p>
 
 
-            <p>
-                <b>Location:</b>
-                ${data.Location || ""}
-            </p>
-
-
-            <p>
-                <b>Area:</b>
-                ${data.Area || ""}
-            </p>
-
-
-            <p>
-                <b>Bus Stop:</b>
-                ${data.BusStop || ""}
-            </p>
-
-
-            <p>
-                <b>Address:</b>
-                ${data.Address || ""}
-            </p>
-
+            
+${buildLocationDetails(data)}
 
             <p>
                 <b>Description:</b>
@@ -1050,6 +1119,42 @@ modalOverlay.addEventListener(
 
 function showEditModal(data, requestId) {
 
+    const currentPlaceType =
+        data.PlaceType || data.LocationType || "";
+
+    const schoolOptions = [
+
+        ["SAMET", "School of Agricultural Management and Extension Technology"],
+        ["SAFT", "School of Agronomy and Forestry Technology"],
+        ["SAT", "School of Architectural Technology"],
+        ["SFAT", "School of Food Science and Agricultural Technology"],
+        ["SEET", "School of Electrical Engineering and Technology"],
+        ["SET", "School of Environmental Technology"],
+        ["SIT", "School of Innovative Technology"],
+        ["SICT", "School of Information and Communication Technology"],
+        ["SLS", "School of Life Sciences"],
+        ["SPS", "School of Physical Sciences"],
+        ["SSTE", "School of Science and Technology Education"],
+        ["SBMS", "School of Basic Medical Sciences"],
+        ["SAHS", "School of Allied Health Sciences"],
+        ["USPHS", "School of Pharmaceutical Sciences"],
+        ["SIPET", "School of Infrastructure, Process Engineering and Technology"],
+        ["PGS", "Postgraduate School"],
+        ["Other", "Other / Not Listed"]
+
+    ];
+
+    const schoolOptionsHTML = schoolOptions.map(
+        ([code, name]) => `
+            <option
+                value="${code}"
+                ${data.SchoolCode === code ? "selected" : ""}>
+                ${name}
+            </option>
+        `
+    ).join("");
+
+
     openModal(`
 
         <h2 class="edit-modal-title">
@@ -1061,14 +1166,11 @@ function showEditModal(data, requestId) {
             the request is still pending.
         </p>
 
-
         <form id="editRequestForm">
 
             <div class="edit-form-group">
 
-                <label>
-                    Customer Name
-                </label>
+                <label>Customer Name</label>
 
                 <input
                     type="text"
@@ -1081,9 +1183,7 @@ function showEditModal(data, requestId) {
 
             <div class="edit-form-group">
 
-                <label>
-                    Phone Number
-                </label>
+                <label>Phone Number</label>
 
                 <input
                     type="tel"
@@ -1092,274 +1192,607 @@ function showEditModal(data, requestId) {
                     required>
 
             </div>
-            <div class="edit-form-group">  <label>  
-                Location  
-            </label>  
 
-            <input  
-                type="text"  
-                id="editLocation"  
-                value="${escapeHTML(data.Location || "")}"  
-                required>  
 
-        </div>  
+            <!-- SERVICE LOCATION -->
 
+            <h3>📍 Service Location</h3>
 
-        <div class="edit-form-group">  
 
-            <label>  
-                Area  
-            </label>  
+            <div class="edit-form-group">
 
-            <input  
-                type="text"  
-                id="editArea"  
-                value="${escapeHTML(data.Area || "")}">  
+                <label>Location Type</label>
 
-        </div>  
+                <select id="editLocation" required>
 
+                    <option value="">
+                        Select Location
+                    </option>
 
-        <div class="edit-form-group">  
+                    <option
+                        value="On Campus"
+                        ${data.Location === "On Campus" ? "selected" : ""}>
+                        On Campus
+                    </option>
 
-            <label>  
-                Local Bus Stop  
-            </label>  
+                    <option
+                        value="Off Campus"
+                        ${data.Location === "Off Campus" ? "selected" : ""}>
+                        Off Campus
+                    </option>
 
-            <input  
-                type="text"  
-                id="editBusStop"  
-                value="${escapeHTML(data.BusStop || "")}">  
+                </select>
 
-        </div>  
+            </div>
 
 
-        <div class="edit-form-group">  
+            <!-- ON CAMPUS -->
 
-            <label>  
-                Residential Address  
-            </label>  
+            <div
+                class="edit-form-group"
+                id="editCampusGroup">
 
-            <input  
-                type="text"  
-                id="editAddress"  
-                value="${escapeHTML(data.Address || "")}">  
+                <label>Campus</label>
 
-        </div>  
+                <select id="editCampus">
 
+                    <option value="">
+                        Select Campus
+                    </option>
 
-        <div class="edit-form-group">  
+                    <option
+                        value="Bosso Campus"
+                        ${data.Campus === "Bosso Campus" ? "selected" : ""}>
+                        Bosso Campus
+                    </option>
 
-            <label>  
-                Description  
-            </label>  
+                    <option
+                        value="Gidan-Kwano Campus"
+                        ${data.Campus === "Gidan-Kwano Campus" ? "selected" : ""}>
+                        Gidan-Kwano Campus
+                    </option>
 
-            <textarea  
-                id="editDescription"  
-                required>${escapeHTML(data.Description || "")}</textarea>  
+                </select>
 
-        </div>  
+            </div>
 
 
-        <div class="edit-form-group">  
+            <div
+                class="edit-form-group"
+                id="editPlaceTypeGroup">
 
-            <label>  
-                Urgency  
-            </label>  
+                <label>Location Category</label>
 
-            <select id="editUrgency">  
+                <select id="editPlaceType">
 
-                <option value="Low"  
-                    ${data.Urgency === "Low" ? "selected" : ""}>  
-                    Low  
-                </option>  
+                    <option value="">
+                        Select Category
+                    </option>
 
-                <option value="Medium"  
-                    ${data.Urgency === "Medium" ? "selected" : ""}>  
-                    Medium  
-                </option>  
+                    <option
+                        value="Hostel"
+                        ${currentPlaceType === "Hostel" ? "selected" : ""}>
+                        Hostel
+                    </option>
 
-                <option value="High"  
-                    ${data.Urgency === "High" ? "selected" : ""}>  
-                    High  
-                </option>  
+                    <option
+                        value="School"
+                        ${currentPlaceType === "School" ? "selected" : ""}>
+                        School
+                    </option>
 
-            </select>  
+                    <option
+                        value="Lecture Hall"
+                        ${currentPlaceType === "Lecture Hall" ? "selected" : ""}>
+                        Lecture Hall
+                    </option>
 
-        </div>  
+                    <option
+                        value="Other"
+                        ${currentPlaceType === "Other" ? "selected" : ""}>
+                        Other
+                    </option>
 
+                </select>
 
-        <div class="modal-actions">  
+            </div>
 
-            <button  
-                type="button"  
-                class="modal-btn modal-cancel-btn"  
-                id="editCancelBtn">  
 
-                Cancel  
+            <div
+                class="edit-form-group"
+                id="editSchoolGroup">
 
-            </button>  
+                <label>School</label>
 
+                <select id="editSchool">
 
-            <button  
-                type="submit"  
-                class="modal-btn modal-save-btn"  
-                id="saveEditBtn">  
+                    <option value="">
+                        Select School
+                    </option>
 
-                💾 Save Changes  
+                    ${schoolOptionsHTML}
 
-            </button>  
+                </select>
 
-        </div>  
+            </div>
 
-    </form>  
 
-`);  
+            <div
+                class="edit-form-group"
+                id="editSpecificLocationGroup">
 
+                <label>Building / Specific Location</label>
 
-document  
-    .getElementById("editCancelBtn")  
-    .onclick = closeModal;  
+                <input
+                    type="text"
+                    id="editSpecificLocation"
+                    value="${escapeHTML(data.Building || data.SpecificLocation || "")}"
+                    placeholder="Enter building or location">
 
+            </div>
 
-document  
-    .getElementById("editRequestForm")  
-    .addEventListener(  
-        "submit",  
-        async (e) => {  
 
-            e.preventDefault();  
+            <div
+                class="edit-form-group"
+                id="editBlockGroup">
 
-            const saveBtn =  
-                document.getElementById(  
-                    "saveEditBtn"  
-                );  
+                <label>Block</label>
 
+                <input
+                    type="text"
+                    id="editBlock"
+                    value="${escapeHTML(data.Block || "")}">
 
-            saveBtn.disabled = true;  
+            </div>
 
-            saveBtn.textContent =  
-                "Saving...";  
 
+            <div
+                class="edit-form-group"
+                id="editRoomGroup">
 
-            try {  
+                <label>Room Number</label>
 
-                const requestRef =  
-                    doc(  
-                        db,  
-                        "service-request",  
-                        requestId  
-                    );  
+                <input
+                    type="text"
+                    id="editRoom"
+                    value="${escapeHTML(data.Room || "")}">
 
+            </div>
 
-                await updateDoc(  
-                    requestRef,  
-                    {  
 
-                        Customername:  
-                            document  
-                                .getElementById(  
-                                    "editName"  
-                                )  
-                                .value  
-                                .trim(),  
+            <!-- OFF CAMPUS -->
 
-                        Phone:  
-                            document  
-                                .getElementById(  
-                                    "editPhone"  
-                                )  
-                                .value  
-                                .trim(),  
+            <div
+                class="edit-form-group"
+                id="editAreaGroup">
 
-                        Location:  
-                            document  
-                                .getElementById(  
-                                    "editLocation"  
-                                )  
-                                .value  
-                                .trim(),  
+                <label>Area</label>
 
-                        Area:  
-                            document  
-                                .getElementById(  
-                                    "editArea"  
-                                )  
-                                .value  
-                                .trim(),  
+                <input
+                    type="text"
+                    id="editArea"
+                    value="${escapeHTML(data.Area || "")}">
 
-                        BusStop:  
-                            document  
-                                .getElementById(  
-                                    "editBusStop"  
-                                )  
-                                .value  
-                                .trim(),  
+            </div>
 
-                        Address:  
-                            document  
-                                .getElementById(  
-                                    "editAddress"  
-                                )  
-                                .value  
-                                .trim(),  
 
-                        Description:  
-                            document  
-                                .getElementById(  
-                                    "editDescription"  
-                                )  
-                                .value  
-                                .trim(),  
+            <div
+                class="edit-form-group"
+                id="editBusStopGroup">
 
-                        Urgency:  
-                            document  
-                                .getElementById(  
-                                    "editUrgency"  
-                                )  
-                                .value  
+                <label>Nearest Bus Stop</label>
 
-                    }  
-                );  
+                <input
+                    type="text"
+                    id="editBusStop"
+                    value="${escapeHTML(data.BusStop || "")}">
 
+            </div>
 
-                closeModal();  
 
+            <div
+                class="edit-form-group"
+                id="editAddressGroup">
 
-                showSuccessMessage(  
-                    "Request updated successfully.",  
-                    "✏️"  
-                );  
+                <label>Residential Address</label>
 
+                <input
+                    type="text"
+                    id="editAddress"
+                    value="${escapeHTML(data.Address || "")}">
 
-                searchBtn.click();  
+            </div>
 
-            }  
 
-            catch (error) {  
+            <div
+                class="edit-form-group"
+                id="editLandmarkGroup">
 
-                console.error(  
-                    "❌ EDIT REQUEST ERROR:",  
-                    error  
-                );  
+                <label>Nearest Landmark</label>
 
+                <input
+                    type="text"
+                    id="editLandmark"
+                    value="${escapeHTML(data.Landmark || "")}">
 
-                saveBtn.disabled = false;  
+            </div>
 
-                saveBtn.textContent =  
-                    "💾 Save Changes";  
 
+            <div
+                class="edit-form-group"
+                id="editDirectionsGroup">
 
-                showErrorMessage(  
-                    "We couldn't update your request. Please try again."  
-                );  
+                <label>Additional Directions</label>
 
-            }  
+                <textarea
+                    id="editDirections"
+                    placeholder="Add directions to help the technician find you">${escapeHTML(data.Directions || "")}</textarea>
 
-        }  
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="edit-form-group">
+
+                <label>Description</label>
+
+                <textarea
+                    id="editDescription"
+                    required>${escapeHTML(data.Description || "")}</textarea>
+
+            </div>
+
+
+            <!-- URGENCY -->
+
+            <div class="edit-form-group">
+
+                <label>Urgency</label>
+
+                <select id="editUrgency">
+
+                    <option value="Low"
+                        ${data.Urgency === "Low" ? "selected" : ""}>
+                        Low
+                    </option>
+
+                    <option value="Medium"
+                        ${data.Urgency === "Medium" ? "selected" : ""}>
+                        Medium
+                    </option>
+
+                    <option value="High"
+                        ${data.Urgency === "High" ? "selected" : ""}>
+                        High
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="modal-btn modal-cancel-btn"
+                    id="editCancelBtn">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="modal-btn modal-save-btn"
+                    id="saveEditBtn">
+                    💾 Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    `);
+
+
+    /* =========================================
+       LOCATION FIELD VISIBILITY
+    ========================================= */
+
+    const getEditField = id =>
+        document.getElementById(id);
+
+    const locationSelect =
+        getEditField("editLocation");
+
+    const placeTypeSelect =
+        getEditField("editPlaceType");
+
+
+    function updateEditLocationFields() {
+
+        const onCampus =
+            locationSelect.value === "On Campus";
+
+        const offCampus =
+            locationSelect.value === "Off Campus";
+
+        const isSchool =
+            onCampus && placeTypeSelect.value === "School";
+
+        const isHostel =
+            onCampus && placeTypeSelect.value === "Hostel";
+
+
+        const visibility = {
+
+            editCampusGroup: onCampus,
+
+            editPlaceTypeGroup: onCampus,
+
+            editSchoolGroup: isSchool,
+
+            editSpecificLocationGroup: onCampus,
+
+            editBlockGroup: isHostel,
+
+            editRoomGroup: isHostel,
+
+            editAreaGroup: offCampus,
+
+            editBusStopGroup: offCampus,
+
+            editAddressGroup: offCampus,
+
+            editLandmarkGroup: offCampus,
+
+            editDirectionsGroup: onCampus || offCampus
+
+        };
+
+
+        Object.entries(visibility).forEach(
+            ([id, visible]) => {
+
+                getEditField(id).style.display =
+                    visible ? "" : "none";
+
+            }
+        );
+
+
+        getEditField("editCampus").required =
+            onCampus;
+
+        placeTypeSelect.required =
+            onCampus;
+
+        getEditField("editSchool").required =
+            isSchool;
+
+    }
+
+
+    locationSelect.addEventListener(
+        "change",
+        updateEditLocationFields
+    );
+
+    placeTypeSelect.addEventListener(
+        "change",
+        updateEditLocationFields
+    );
+
+    updateEditLocationFields();
+
+
+    /* =========================================
+       CANCEL EDIT
+    ========================================= */
+
+    getEditField("editCancelBtn").onclick =
+        closeModal;
+
+
+    /* =========================================
+       SAVE EDIT
+    ========================================= */
+
+    getEditField("editRequestForm").addEventListener(
+        "submit",
+        async (e) => {
+
+            e.preventDefault();
+
+            const saveBtn =
+                getEditField("saveEditBtn");
+
+            saveBtn.disabled = true;
+
+            saveBtn.textContent = "Saving...";
+
+
+            try {
+
+                const requestRef = doc(
+                    db,
+                    "service-request",
+                    requestId
+                );
+
+
+                // Recheck ownership and status before saving.
+                const latestSnap =
+                    await getDoc(requestRef);
+
+
+                if (!latestSnap.exists()) {
+
+                    throw new Error(
+                        "This request no longer exists."
+                    );
+
+                }
+
+
+                const latestData =
+                    latestSnap.data();
+
+
+                if (
+                    latestData.CustomerId !== currentUser.uid
+                    ||
+                    latestData.Status !== "Pending"
+                ) {
+
+                    throw new Error(
+                        "This request can no longer be edited."
+                    );
+
+                }
+
+
+                const location =
+                    locationSelect.value;
+
+                const placeType =
+                    placeTypeSelect.value;
+
+
+                const schoolSelect =
+                    getEditField("editSchool");
+
+                const schoolCode =
+                    location === "On Campus" && placeType === "School"
+                        ? schoolSelect.value
+                        : "";
+
+                const schoolName =
+                    schoolCode
+                        ? schoolSelect.options[
+                            schoolSelect.selectedIndex
+                        ].textContent.trim()
+                        : "";
+
+
+                const specificLocation =
+                    location === "On Campus"
+                        ? getEditField("editSpecificLocation").value.trim()
+                        : "";
+
+
+                await updateDoc(
+                    requestRef,
+                    {
+
+                        Customername:
+                            getEditField("editName").value.trim(),
+
+                        Phone:
+                            getEditField("editPhone").value.trim(),
+
+                        Location: location,
+
+                        Campus:
+                            location === "On Campus"
+                                ? getEditField("editCampus").value
+                                : "",
+
+                        PlaceType:
+                            location === "On Campus"
+                                ? placeType
+                                : "",
+
+                        LocationType:
+                            location === "On Campus"
+                                ? placeType
+                                : "",
+
+                        School: schoolName,
+
+                        SchoolCode: schoolCode,
+
+                        SpecificLocation: specificLocation,
+
+                        Building: specificLocation,
+
+                        Block:
+                            location === "On Campus" && placeType === "Hostel"
+                                ? getEditField("editBlock").value.trim()
+                                : "",
+
+                        Room:
+                            location === "On Campus" && placeType === "Hostel"
+                                ? getEditField("editRoom").value.trim()
+                                : "",
+
+                        Area:
+                            location === "Off Campus"
+                                ? getEditField("editArea").value.trim()
+                                : "",
+
+                        BusStop:
+                            location === "Off Campus"
+                                ? getEditField("editBusStop").value.trim()
+                                : "",
+
+                        Address:
+                            location === "Off Campus"
+                                ? getEditField("editAddress").value.trim()
+                                : "",
+
+                        Landmark:
+                            location === "Off Campus"
+                                ? getEditField("editLandmark").value.trim()
+                                : "",
+
+                        Directions:
+                            getEditField("editDirections").value.trim(),
+
+                        Description:
+                            getEditField("editDescription").value.trim(),
+
+                        Urgency:
+                            getEditField("editUrgency").value
+
+                    }
+                );
+
+
+                closeModal();
+
+                showSuccessMessage(
+                    "Request updated successfully.",
+                    "✏️"
+                );
+
+                searchBtn.click();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "❌ EDIT REQUEST ERROR:",
+                    error
+                );
+
+                saveBtn.disabled = false;
+
+                saveBtn.textContent =
+                    "💾 Save Changes";
+
+                showErrorMessage(
+                    error.message ||
+                    "We couldn't update your request. Please try again."
+                );
+
+            }
+
+        }
     );
 
 }
-
 /* =========================================
 CONFIRM CANCEL MODAL
 ========================================= */
