@@ -1,10 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0d47a1">
+
     <title>Campus Electrical Support Portal</title>
+
     <link rel="stylesheet" href="req.css">
     <link rel="stylesheet" href="loader.css">
 </head>
@@ -13,7 +16,7 @@
 
 <section class="req">
 
-    <h1> UY Electrical Service Request</h1>
+    <h1>UY Electrical Service Request</h1>
 
     <p class="subtitle">
         Report electrical faults and maintenance issues on campus and off-campus.
@@ -21,115 +24,281 @@
 
     <form id="serviceRequestForm">
 
+        <!-- CUSTOMER DETAILS -->
+
         <div class="Name">
-            <label>
-                Name:
-                <input type="text" id="customerName" placeholder="Name" required>
-            </label>
+            <label for="customerName">Full Name:</label>
+            <input
+                type="text"
+                id="customerName"
+                name="customerName"
+                placeholder="Enter your full name"
+                required>
         </div>
 
         <div class="Name">
-            <label>
-                Phone No:
-                <input type="tel" id="phone" placeholder="Phone Number" required>
-            </label>
+            <label for="phone">Phone Number:</label>
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="Enter your phone number"
+                required>
         </div>
 
+
+        <!-- SERVICE LOCATION -->
+
         <div class="Name">
-            <label>Location:</label>
+            <label for="location">Service Location:</label>
 
             <select id="location" name="location" required>
-                <option value="">Select Location</option>
-                <option value="Hostel A">Hostel A</option>
-                <option value="Hostel B">Hostel B</option>
-                <option value="Lecture Hall">Lecture Hall</option>
+                <option value="">Select Service Location</option>
+                <option value="On Campus">On Campus</option>
                 <option value="Off Campus">Off Campus</option>
             </select>
         </div>
 
-        <div class="Name">
-            <label>
-                Area:
-                <input type="text" id="area" placeholder="Area">
-            </label>
+
+        <!-- ON-CAMPUS DETAILS -->
+
+        <div class="Name" id="campusGroup" hidden>
+            <label for="campus">Campus:</label>
+
+            <select id="campus" name="campus">
+                <option value="">Select Campus</option>
+                <option value="Bosso Campus">Bosso Campus</option>
+                <option value="Gidan-Kwano Campus">Gidan-Kwano Campus</option>
+            </select>
         </div>
 
-        <div class="Name">
-            <label>
-                Local Bus Stop:
-                <input type="text" id="busStop" placeholder="Bus Stop">
-            </label>
+
+        <div class="Name" id="placeTypeGroup" hidden>
+            <label for="placeType">Location Category:</label>
+
+            <select id="placeType" name="placeType">
+                <option value="">Select Category</option>
+                <option value="Hostel">Student Hostel</option>
+                <option value="School">School</option>
+                <option value="Lecture Hall">Lecture Hall</option>
+                <option value="Other">Other Campus Location</option>
+            </select>
         </div>
 
-        <div class="Name">
-            <label>
-                Residential Address:
-                <input type="text" id="address" placeholder="Residential Address">
-            </label>
+
+        <!-- SCHOOL SELECTION -->
+
+        <div class="Name" id="schoolGroup" hidden>
+            <label for="school">School:</label>
+
+            <select id="school" name="school">
+                <option value="">Select Your School</option>
+
+                <option value="SAMET">School of Agricultural Management and Extension Technology</option>
+                <option value="SAFT">School of Agronomy and Forestry Technology</option>
+                <option value="SAT">School of Architectural Technology</option>
+                <option value="SFAT">School of Food Science and Agricultural Technology</option>
+                <option value="SEET">School of Electrical Engineering and Technology</option>
+                <option value="SET">School of Environmental Technology</option>
+                <option value="SIT">School of Innovative Technology</option>
+                <option value="SICT">School of Information and Communication Technology</option>
+                <option value="SLS">School of Life Sciences</option>
+                <option value="SPS">School of Physical Sciences</option>
+                <option value="SSTE">School of Science and Technology Education</option>
+                <option value="SBMS">School of Basic Medical Sciences</option>
+                <option value="SAHS">School of Allied Health Sciences</option>
+                <option value="USPHS">School of Pharmaceutical Sciences</option>
+                <option value="SIPET">School of Infrastructure, Process Engineering and Technology</option>
+                <option value="PGS">Postgraduate School</option>
+
+                <option value="Other">Other / Not Listed</option>
+            </select>
         </div>
 
-        <div class="Name">
-            <label>
-                Description:
 
-                <textarea
-                    id="description"
-                    name="description"
-                    rows="5"
-                    cols="40"
-                    placeholder="Enter your description here..."
-                    required></textarea>
+        <!-- BUILDING / SPECIFIC LOCATION -->
 
+        <div class="Name" id="specificLocationGroup" hidden>
+            <label for="specificLocation">
+                Building / Specific Location:
             </label>
+
+            <input
+                type="text"
+                id="specificLocation"
+                name="specificLocation"
+                placeholder="Enter hostel, school or building name">
         </div>
+
+
+        <!-- HOSTEL DETAILS -->
+
+        <div class="Name" id="blockGroup" hidden>
+            <label for="block">Block:</label>
+
+            <input
+                type="text"
+                id="block"
+                name="block"
+                placeholder="Enter block (if applicable)">
+        </div>
+
+
+        <div class="Name" id="roomGroup" hidden>
+            <label for="room">Room Number:</label>
+
+            <input
+                type="text"
+                id="room"
+                name="room"
+                placeholder="Enter room number">
+        </div>
+
+
+        <!-- OFF-CAMPUS DETAILS -->
+
+        <div class="Name" id="areaGroup" hidden>
+            <label for="area">Area:</label>
+
+            <input
+                type="text"
+                id="area"
+                name="area"
+                placeholder="e.g. Bosso, Tunga, Kpakungu">
+        </div>
+
+
+        <div class="Name" id="busStopGroup" hidden>
+            <label for="busStop">Nearest Bus Stop:</label>
+
+            <input
+                type="text"
+                id="busStop"
+                name="busStop"
+                placeholder="Enter nearest bus stop">
+        </div>
+
+
+        <div class="Name" id="addressGroup" hidden>
+            <label for="address">Street / Residential Address:</label>
+
+            <input
+                type="text"
+                id="address"
+                name="address"
+                placeholder="Enter your address">
+        </div>
+
+
+        <div class="Name" id="landmarkGroup" hidden>
+            <label for="landmark">Nearest Landmark:</label>
+
+            <input
+                type="text"
+                id="landmark"
+                name="landmark"
+                placeholder="Enter nearby landmark">
+        </div>
+
+
+        <!-- ADDITIONAL DIRECTIONS -->
+
+        <div class="Name" id="directionsGroup" hidden>
+            <label for="directions">Additional Directions:</label>
+
+            <textarea
+                id="directions"
+                name="directions"
+                rows="3"
+                placeholder="Help the technician locate you"></textarea>
+        </div>
+
+
+        <!-- FAULT DESCRIPTION -->
+
+        <div class="Name">
+            <label for="description">Description:</label>
+
+            <textarea
+                id="description"
+                name="description"
+                rows="5"
+                placeholder="Describe the electrical fault or service needed..."
+                required></textarea>
+        </div>
+
+
+        <!-- URGENCY -->
 
         <div>
-<h3>Urgency</h3>
+            <h3>Urgency</h3>
 
-<div class="urgency-group">
+            <div class="urgency-group">
 
-    <div class="checkbox">
-        <label>
-            <input type="radio" name="urgency" value="Low">
-            Low <ion-icon name="bulb"></ion-icon>
-        </label>
-    </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="radio" name="urgency" value="Low">
+                        Low
+                        <ion-icon name="bulb"></ion-icon>
+                    </label>
+                </div>
 
-    <div class="checkbox">
-        <label>
-            <input type="radio" name="urgency" value="Medium">
-            Medium  <ion-icon name="flash"></ion-icon>
-        </label>
-    </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="radio" name="urgency" value="Medium">
+                        Medium
+                        <ion-icon name="flash"></ion-icon>
+                    </label>
+                </div>
 
-    <div class="checkbox">
-        <label>
-            <input type="radio" name="urgency" value="High">
-            High <ion-icon name="warning"></ion-icon>
-        </label>
-    </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="radio" name="urgency" value="High">
+                        High
+                        <ion-icon name="warning"></ion-icon>
+                    </label>
+                </div>
 
-</div>
-
+            </div>
         </div>
+
+
+        <!-- SUBMIT -->
 
         <button type="submit">
             Submit Request
-
         </button>
+
         <p id="successMessage"></p>
 
     </form>
-  <a href="home.html" class="exit-link">
-    <button>
-      EXIT
+
+
+    <!-- EXIT -->
+
+    <a href="home.html" class="exit-link">
+        EXIT
         <ion-icon name="exit-outline" size="medium"></ion-icon>
-        </button>
-                </a>
+    </a>
+
 </section>
 
-<script type="module" src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js"></script>
+
+<!-- IONICONS -->
+
+<script
+    type="module"
+    src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.esm.js">
+</script>
+
+<script
+    nomodule
+    src="https://unpkg.com/ionicons@8.0.13/dist/ionicons/ionicons.js">
+</script>
+
+
+<!-- REQUEST SCRIPT -->
+
 <script type="module" src="request.js"></script>
 
 </body>

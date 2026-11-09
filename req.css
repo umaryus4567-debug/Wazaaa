@@ -345,3 +345,6 @@ vertical-align:middle;
         min-height:55px;
     }
 }
+[hidden] {
+    display: none !important;
+}

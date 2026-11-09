@@ -315,6 +315,145 @@ async function updateWebsiteStatistics() {
     }
 
 }
+
+/*==================================
+SAFE LOCATION DETAILS DISPLAY
+==================================*/
+
+function escapeHTML(value) {
+
+    return String(value ?? "").replace(
+        /[&<>"']/g,
+        character => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        })[character]
+    );
+
+}
+
+
+function getLocationDetails(data) {
+
+    const line = (label, value) => {
+
+        if (!value) return "";
+
+        return `
+            <p>
+                <b>${label}:</b>
+                ${escapeHTML(value)}
+            </p>
+        `;
+
+    };
+
+
+    let details = "";
+
+
+    /*==================================
+    ON-CAMPUS LOCATION
+    ==================================*/
+
+    if (data.Location === "On Campus") {
+
+        details += line("Campus", data.Campus);
+
+        details += line(
+            "Category",
+            data.PlaceType || data.LocationType
+        );
+
+
+        /* SCHOOL DETAILS */
+
+        if (data.PlaceType === "School") {
+
+            details += line("School", data.School);
+
+            details += line(
+                "School Code",
+                data.SchoolCode
+            );
+
+        }
+
+
+        /* BUILDING */
+
+        details += line(
+            "Building / Specific Location",
+            data.Building || data.SpecificLocation
+        );
+
+
+        /* HOSTEL DETAILS */
+
+        if (data.PlaceType === "Hostel") {
+
+            details += line("Block", data.Block);
+
+            details += line("Room", data.Room);
+
+        }
+
+    }
+
+
+    /*==================================
+    OFF-CAMPUS LOCATION
+    ==================================*/
+
+    else if (data.Location === "Off Campus") {
+
+        details += line("Area", data.Area);
+
+        details += line(
+            "Nearest Bus Stop",
+            data.BusStop
+        );
+
+        details += line(
+            "Residential Address",
+            data.Address
+        );
+
+        details += line(
+            "Nearest Landmark",
+            data.Landmark
+        );
+
+    }
+
+
+    /*==================================
+    ADDITIONAL DIRECTIONS
+    ==================================*/
+
+    details += line(
+        "Additional Directions",
+        data.Directions
+    );
+
+
+    if (!details) return "";
+
+
+    return `
+        <div class="request-location-details">
+
+            <h4>📍 Service Location Details</h4>
+
+            ${details}
+
+        </div>
+    `;
+
+}
 /* ==========================
    RENDER REQUESTS
 ========================== */
@@ -357,6 +496,8 @@ const isDeclined =
 
 const isCancelled =
     data.Status === "Cancelled";
+      const locationDetails =
+    getLocationDetails(data);
 
 card.innerHTML = `
 
@@ -364,7 +505,9 @@ card.innerHTML = `
 
 <p><b>Phone:</b> ${data.Phone || ""}</p>
 
-<p><b>Location:</b> ${data.Location || ""}</p>
+<p><b>Location:</b> ${escapeHTML(data.Location || "")}</p>
+
+${locationDetails}
 
 <p><b>Description:</b> ${data.Description || ""}</p>
 
@@ -483,29 +626,36 @@ searchInput.addEventListener(
         const filtered =
         allRequests.filter((request) => {
 
-            return (
-                (request.Customername || "")
-                .toLowerCase()
-                .includes(keyword)
+            return [
 
-                ||
+    request.Customername,
+    request.Phone,
+    request.Location,
+    request.Status,
 
-                (request.Phone || "")
-                .toLowerCase()
-                .includes(keyword)
+    request.Campus,
+    request.PlaceType,
+    request.School,
+    request.SchoolCode,
 
-                ||
+    request.Building,
+    request.SpecificLocation,
 
-                (request.Location || "")
-                .toLowerCase()
-                .includes(keyword)
+    request.Block,
+    request.Room,
 
-                ||
+    request.Area,
+    request.BusStop,
+    request.Address,
+    request.Landmark,
 
-                (request.Status || "")
-                .toLowerCase()
-                .includes(keyword)
-            );
+    request.Description
+
+].some(value =>
+    String(value || "")
+        .toLowerCase()
+        .includes(keyword)
+);
         });
 
         renderRequests(filtered);
