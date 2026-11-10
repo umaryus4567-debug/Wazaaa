@@ -525,17 +525,14 @@ form.addEventListener("submit", async (e) => {
             "✅ Request submitted successfully. A technician will review your request shortly.";
 
 
-        /* RESET FORM */
+/* RESET FORM */
 
-        form.reset();
+form.reset();
 
-        updateLocationFields();
-
-
-    }
+updateLocationFields();
 
 
-      /*==================================
+/*==================================
 OPEN WHATSAPP NOTIFICATION
 ==================================*/
 
@@ -550,31 +547,33 @@ const whatsappUrl =
 
 window.location.href = whatsappUrl;
 
-    /*==================================
-    ERROR HANDLING
-    ==================================*/
+}
 
-    catch (error) {
+/*==================================
+ERROR HANDLING
+==================================*/
 
-        console.error(
-            "SERVICE REQUEST ERROR:",
-            error
-        );
+catch (error) {
 
-        alert(
-            "Unable to submit your request. Please try again.\n\n" +
-            error.message
-        );
+    console.error(
+        "SERVICE REQUEST ERROR:",
+        error
+    );
 
-    }
+    alert(
+        "Unable to submit your request. Please try again.\n\n" +
+        error.message
+    );
 
-    finally {
+}
 
-        submitBtn.disabled = false;
+finally {
 
-        submitBtn.textContent = "Submit Request";
+    submitBtn.disabled = false;
 
-    }
+    submitBtn.textContent = "Submit Request";
+
+}
 
 });
 
