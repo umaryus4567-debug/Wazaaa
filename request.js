@@ -534,6 +534,22 @@ form.addEventListener("submit", async (e) => {
 
     }
 
+
+      /*==================================
+OPEN WHATSAPP NOTIFICATION
+==================================*/
+
+const whatsappMessage =
+    `🔔 UY POWER SOLUTIONS\n` +
+    `A new service request has arrived!\n` +
+    `Please check the staff dashboard for details.`;
+
+const whatsappUrl =
+    `https://wa.me/2348163196577?text=` +
+    encodeURIComponent(whatsappMessage);
+
+window.location.href = whatsappUrl;
+
     /*==================================
     ERROR HANDLING
     ==================================*/
@@ -577,4 +593,4 @@ window.addEventListener("load", () => {
 
     }, 700);
 
-});
+})
