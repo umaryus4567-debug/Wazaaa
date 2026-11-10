@@ -457,6 +457,33 @@ function getLocationDetails(data) {
 /* ==========================
    RENDER REQUESTS
 ========================== */
+/*==================================
+FORMAT REQUEST TIMESTAMP
+==================================*/
+
+function formatRequestDate(timestamp) {
+
+    if (!timestamp) {
+        return "Not available";
+    }
+
+    if (typeof timestamp.toDate !== "function") {
+        return "Invalid date";
+    }
+
+    return timestamp.toDate().toLocaleString(
+        "en-NG",
+        {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+        }
+    );
+
+}
 
 function renderRequests(requests){
 
@@ -503,7 +530,12 @@ card.innerHTML = `
 
 <h3>${data.Customername || ""}</h3>
 
-<p><b>Phone:</b> ${data.Phone || ""}</p>
+<p><b>Phone:</b> ${escapeHTML(data.Phone || "")}</p>
+
+<p>
+    <b>🕒 Date Submitted:</b>
+    ${formatRequestDate(data.CreatedAt)}
+</p>
 
 <p><b>Location:</b> ${escapeHTML(data.Location || "")}</p>
 
